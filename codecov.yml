@@ -1,0 +1,8 @@
+ignore:
+    - "**/__init__.py"
+    - "polar_express/bin/.*"
+    - "polar_express/vendor/.*"
+
+coverage:
+  status:
+    patch: off

@@ -28,7 +28,10 @@ class All:
         Set all of your available steps here.
         This is only used for data logging operations, not computation purposes.
         """
-        self.step_list = [steps.Raw()]
+        self.step_list = [
+            steps.SelectData(),
+            steps.ComputeCellMetrics(),
+        ]
 
     def run(
         self, clean: bool = False, debug: bool = False, **kwargs,
@@ -76,17 +79,28 @@ class All:
             # If you want to clean the local staging directories pass clean
             # If you want to utilize some debugging functionality pass debug
             # If you don't utilize any of these, just pass the parameters you need.
-            select_data(
+
+            #step 1: select cells and store in annotation file
+            selected_cells = select_data(
                 clean=clean,
                 debug=debug,
                 **kwargs,  # Allows us to pass `--n {some integer}` or other params
             )
 
+            # #step 2: compute metrics for each of the cells
+            # metrics_path = compute_cell_metrics(
+            #     data_path,
+            #     clean=clean,
+            #     debug=debug,
+            #     **kwargs,  # Allows us to pass `--n {some integer}` or other params
+            # )
+
         # Run flow and get ending state
         state = flow.run(executor=exe)
 
         # Get and display any outputs you want to see on your local terminal
-        log.info(raw.get_result(state, flow))
+        # log.info(select_data.get_result(state, flow))
+        # log.info(compute_cell_metrics.get_result(state, flow))
 
     def pull(self):
         """

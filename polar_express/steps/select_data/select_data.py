@@ -4,6 +4,7 @@
 import logging
 from pathlib import Path
 from typing import Dict, List, Optional, Union
+import pandas as pd
 
 from datastep import Step, log_run_params
 
@@ -23,9 +24,12 @@ class SelectData(Step):
         super().__init__(direct_upstream_tasks=direct_upstream_tasks, config=config)
 
     @log_run_params
-    def run(self, **kwargs):
+    def run(
+        self,
+        **kwargs
+    ):
         """
-        Run a pure function.
+        Select cells from annotation table
 
         Protected Parameters
         --------------------
@@ -44,24 +48,34 @@ class SelectData(Step):
 
         Returns
         -------
-        result: Any
-            A pickable object or value that is the result of any processing you do.
+        selected_cells: Path
+            Path to manifest file that contains a path to a CSV file with annotation of selected cells
         """
-        # Your code here
-        #
-        # The `self.step_local_staging_dir` is exposed to save files in
-        #
-        # The user should set `self.manifest` to a dataframe of absolute paths that
-        # point to the created files and each files metadata
-        #
-        # By default, `self.filepath_columns` is ["filepath"], but should be edited
-        # if there are more than a single column of filepaths
-        #
-        # By default, `self.metadata_columns` is [], but should be edited to include
-        # any columns that should be parsed for metadata and attached to objects
-        #
-        # The user should not rely on object state to retrieve results from prior steps.
-        # I.E. do not call use the attribute self.upstream_tasks to retrieve data.
-        # Pass the required path to a directory of files, the path to a prior manifest,
-        # or in general, the exact parameters required for this function to run.
-        return
+
+        # Configure manifest dataframe for storage tracking
+        self.manifest = pd.DataFrame(index=range(1), columns=["filepath"])
+
+        # Directory assignments
+        cell_annotation_dir = self.step_local_staging_dir / "annotation"
+        cell_annotation_dir.mkdir(exist_ok=True)
+
+        # Select ER cells
+        # Point to master annotation file
+        cell3D_root = Path('/allen/aics/modeling/theok/Projects/MitoticClassifierPlayground/Org3Dcells')
+        csvfile = cell3D_root / 'Annotation' / 'ann.csv'
+        cells = pd.read_csv(csvfile)
+        # Load in and select ER cells in interphase (stage = 0)
+        selectedcells = cells[(cells['Interphase and Mitotic Stages (stage)'] == 0)
+                              & (cells[('Structure')] == 'Endoplasmic reticulum')]
+        # Save selected cells
+        selected_cell_csv = cell_annotation_dir / 'ann_sc.csv'
+        selectedcells.to_csv(selected_cell_csv)
+        log.info(f"{len(selectedcells)} ER cells in interphase are selected")
+        # Add the path to the manifest
+        self.manifest.at[0, "filepath"] = selected_cell_csv
+
+        # Save the manifest
+        manifest_file = self.step_local_staging_dir / "manifest.csv"
+        self.manifest.to_csv(manifest_file, index=False)
+
+        return manifest_file

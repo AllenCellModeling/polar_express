@@ -48,12 +48,9 @@ class SelectData(Step):
 
         Returns
         -------
-        selected_cells: Path
+        selected_cells_manifest: Path
             Path to manifest file that contains a path to a CSV file with annotation of selected cells
         """
-
-        # Configure manifest dataframe for storage tracking
-        self.manifest = pd.DataFrame(index=range(1), columns=["filepath"])
 
         # Directory assignments
         cell_annotation_dir = self.step_local_staging_dir / "annotation"
@@ -71,9 +68,12 @@ class SelectData(Step):
         selected_cell_csv = cell_annotation_dir / 'ann_sc.csv'
         selectedcells.to_csv(selected_cell_csv)
         log.info(f"{len(selectedcells)} ER cells in interphase are selected")
+
+        # Handling of the manifest
+        # Configure manifest dataframe for storage tracking
+        self.manifest = pd.DataFrame(index=range(1), columns=["filepath"])
         # Add the path to the manifest
         self.manifest.at[0, "filepath"] = selected_cell_csv
-
         # Save the manifest
         manifest_file = self.step_local_staging_dir / "manifest.csv"
         self.manifest.to_csv(manifest_file, index=False)

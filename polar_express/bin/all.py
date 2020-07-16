@@ -81,26 +81,26 @@ class All:
             # If you don't utilize any of these, just pass the parameters you need.
 
             #step 1: select cells and store in annotation file
-            selected_cells = select_data(
+            selected_cells_manifest = select_data(
                 clean=clean,
                 debug=debug,
                 **kwargs,  # Allows us to pass `--n {some integer}` or other params
             )
 
-            # #step 2: compute metrics for each of the cells
-            # metrics_path = compute_cell_metrics(
-            #     data_path,
-            #     clean=clean,
-            #     debug=debug,
-            #     **kwargs,  # Allows us to pass `--n {some integer}` or other params
-            # )
+            #step 2: compute metrics for each of the cells
+            cell_metrics_manifest = compute_cell_metrics(
+                selected_cells_manifest,
+                clean=clean,
+                debug=debug,
+                **kwargs,  # Allows us to pass `--n {some integer}` or other params
+            )
 
         # Run flow and get ending state
         state = flow.run(executor=exe)
 
         # Get and display any outputs you want to see on your local terminal
-        # log.info(select_data.get_result(state, flow))
-        # log.info(compute_cell_metrics.get_result(state, flow))
+        log.info(select_data.get_result(state, flow))
+        log.info(compute_cell_metrics.get_result(state, flow))
 
     def pull(self):
         """

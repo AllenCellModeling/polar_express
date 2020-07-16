@@ -55,7 +55,8 @@ class All:
         https://docs.prefect.io/core/
         """
         # Initalize steps
-        raw = steps.Raw()
+        select_data = steps.SelectData()
+        compute_cell_metrics = steps.ComputeCellMetrics()
 
         # Choose executor
         if debug:
@@ -75,7 +76,7 @@ class All:
             # If you want to clean the local staging directories pass clean
             # If you want to utilize some debugging functionality pass debug
             # If you don't utilize any of these, just pass the parameters you need.
-            raw(
+            select_data(
                 clean=clean,
                 debug=debug,
                 **kwargs,  # Allows us to pass `--n {some integer}` or other params

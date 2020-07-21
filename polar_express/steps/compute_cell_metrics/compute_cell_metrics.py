@@ -65,6 +65,11 @@ class ComputeCellMetrics(Step):
         filepath_column: str
             If providing a path to a csv manifest, the column to use for matrices.
             Default: "filepath"
+        AB_mode: str
+            "quadrants" if AB compartments should split the cell into quadrants,
+            "hemispheres" if AB compartments should split the cell into halves.
+        num_angular_compartments : int
+            The number of equal-size angles the cell should be split into for the angular compartment analysis.
 
         Returns
         -------
@@ -96,7 +101,7 @@ class ComputeCellMetrics(Step):
 
         # Main loop to create
         for i in tqdm(range(no_of_cells), desc="Computing metrics for cells"):
-        #for i in tqdm(range(2), desc="Computing metrics for cells"):
+
             # image file
             file   = selected_cells['Path'].iloc[i]
             cellid = selected_cells['CellId'].iloc[i]
@@ -133,19 +138,19 @@ class ComputeCellMetrics(Step):
                                "mem" : mem,
                                "gfp" : gfp}
 
-            # compute nucleus metrics
+            # compute z metrics
             bot_of_cell, bot_of_nucleus, centroid_of_nucleus, top_of_nucleus, top_of_cell = findVerticalCutoffs(im, masked_channels)
 
-            nucleus_metrics = {"bot_of_cell" : bot_of_cell,
+            z_metrics = {"bot_of_cell" : bot_of_cell,
                                "bot_of_nucleus" : bot_of_nucleus,
                                "centroid_of_nucleus" : centroid_of_nucleus,
                                "top_of_nucleus" : top_of_nucleus,
                                "top_of_cell" : top_of_cell}
 
             # compute fold change metrics
-            AB_fold_changes, AB_cyto_vol, AB_gfp_intensities = findFoldChange_AB(im, masked_channels, nucleus_metrics,
+            AB_fold_changes, AB_cyto_vol, AB_gfp_intensities = findFoldChange_AB(im, masked_channels, z_metrics,
                                                                                  vol_scale_factor, mode=AB_mode)
-            Ang_fold_changes, Ang_cyto_vol, Ang_gfp_intensities = findFoldChange_Angular(im, masked_channels, nucleus_metrics,
+            Ang_fold_changes, Ang_cyto_vol, Ang_gfp_intensities = findFoldChange_Angular(im, masked_channels, z_metrics,
                                                                                          vol_scale_factor, num_sections=num_angular_compartments)
 
             # store metrics
@@ -178,6 +183,7 @@ class ComputeCellMetrics(Step):
                 pfile.unlink()
             with open(pfile, "wb") as f:
                 pickle.dump(metric, f)
+
             # Add the path to the manifest
             self.manifest.at[i, "filepath"] = pfile
 

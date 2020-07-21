@@ -38,7 +38,7 @@ class GatherTestVisualize(Step):
         **kwargs
     ):
         """
-        Run a pure function.
+        Gather, test, visualize
 
         Protected Parameters
         --------------------
@@ -54,29 +54,18 @@ class GatherTestVisualize(Step):
 
         Parameters
         ----------
+        cell_metrics_manifest: Optional[Path]
+            Path to manifest file that contains a path to pickle files with the stored metrics for selected cells
+            Default: self.step_local_staging_dir.parent / computecellmetrics / manifest.csv
+        filepath_column: str
+            If providing a path to a csv manifest, the column to use for matrices.
+            Default: "filepath"
 
         Returns
         -------
-        result: Any
-            A pickable object or value that is the result of any processing you do.
+        visualizations_manifest: Path
+            Path to manifest file that contains paths to image files of the generated visualizations
         """
-        # Your code here
-        #
-        # The `self.step_local_staging_dir` is exposed to save files in
-        #
-        # The user should set `self.manifest` to a dataframe of absolute paths that
-        # point to the created files and each files metadata
-        #
-        # By default, `self.filepath_columns` is ["filepath"], but should be edited
-        # if there are more than a single column of filepaths
-        #
-        # By default, `self.metadata_columns` is [], but should be edited to include
-        # any columns that should be parsed for metadata and attached to objects
-        #
-        # The user should not rely on object state to retrieve results from prior steps.
-        # I.E. do not call use the attribute self.upstream_tasks to retrieve data.
-        # Pass the required path to a directory of files, the path to a prior manifest,
-        # or in general, the exact parameters required for this function to run.
 
         # Directory assignments
         vis_dir = self.step_local_staging_dir / "visualizations"
@@ -84,17 +73,14 @@ class GatherTestVisualize(Step):
 
         # Manifest from previous step
         if cell_metrics_manifest is None:
-            print('REACHED A')
             cell_metrics_manifest = (
                 self.step_local_staging_dir.parent / "computecellmetrics" / "manifest.csv"
             )
 
         # Load manifest (from Path to Dataframe)
         cell_metrics_manifest = pd.read_csv(cell_metrics_manifest)
-
         cell_pickles = cell_metrics_manifest[filepath_column]
         no_of_cells = len(cell_pickles)
-        print('The number of cells is: ' + str(no_of_cells))
 
         with (open(cell_pickles.iloc[0], "rb")) as openfile:
             curr_metrics = pickle.load(openfile)
@@ -110,20 +96,21 @@ class GatherTestVisualize(Step):
         
         num_angular_compartments = curr_metrics['num_angular_compartments']
 
-        AB_fc_storage = np.zeros([no_of_cells, num_AB_compartments]) # Create storage data matrix
-        AB_cyto_storage = np.zeros([no_of_cells, num_AB_compartments]) # Create storage data matrix
-        AB_gfp_storage = np.zeros([no_of_cells, num_AB_compartments]) # Create storage data matrix
+        # Create storage data matrices for AB compartments
+        AB_fc_storage = np.zeros([no_of_cells, num_AB_compartments])
+        AB_cyto_storage = np.zeros([no_of_cells, num_AB_compartments])
+        AB_gfp_storage = np.zeros([no_of_cells, num_AB_compartments])
 
-        Angular_fc_storage = np.zeros([no_of_cells, num_angular_compartments]) # Create storage data matrix
-        Angular_cyto_storage = np.zeros([no_of_cells, num_angular_compartments]) # Create storage data matrix
-        Angular_gfp_storage = np.zeros([no_of_cells, num_angular_compartments]) # Create storage data matrix
+        # Create storage data matrix for Angular compartments
+        Angular_fc_storage = np.zeros([no_of_cells, num_angular_compartments])
+        Angular_cyto_storage = np.zeros([no_of_cells, num_angular_compartments])
+        Angular_gfp_storage = np.zeros([no_of_cells, num_angular_compartments])
 
         for index in tqdm(range(no_of_cells), desc="Generating Visualizations"):
 
             with (open(cell_pickles.iloc[index], "rb")) as openfile:
                 curr_metrics = pickle.load(openfile)
 
-            #print(curr_metrics)
             AB_fc_storage[index, :] = curr_metrics['AB_fold_changes']
             AB_cyto_storage[index, :] = curr_metrics['AB_cyto_vol']
             AB_gfp_storage[index, :] = curr_metrics['AB_gfp_intensities']

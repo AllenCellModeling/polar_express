@@ -3,22 +3,35 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import scipy as sp
 
-# Helper methods for violin plot: finding IQR values
-def adjacent_values(vals, q1, q3):
-    upper_adjacent_value = q3 + (q3 - q1) * 1.5
-    upper_adjacent_value = np.clip(upper_adjacent_value, q3, vals[-1])
-
-    lower_adjacent_value = q1 - (q3 - q1) * 1.5
-    lower_adjacent_value = np.clip(lower_adjacent_value, vals[0], q1)
-    return lower_adjacent_value, upper_adjacent_value
-
-# Helper method to make violin plots. Creates 'num_compartments' violins corresponding to the various compaartments determined
-# by the 'method' being used. Takes either 'AB' or 'Angular' as the method.
 def makeViolinPlot(method, num_compartments, data, y_label, structure, num_samples, path):
+
+    """
+
+    Helper method to make violin plots. Creates 'num_compartments' violins corresponding to the various compaartments determined
+    by the 'method' being used. Takes either 'AB' or 'Angular' as the method.
+
+    Parameters
+    ----------
+    method : str
+        "AB" if AB compartments is the method to visualize
+        "Angular" if angular compartments is the method to visualize
+    num_compartments : int
+        the number of compartments (violins)
+    data : numpy array where each column represents a section of the cell, and each row is a sample
+    y_label : str
+        label of the y-axis
+    structure : str
+        the structure that the GFP tags
+    num_samples : int
+        the number of images (samples) that the data contains
+    path : str
+        path to the directory that the visualization should be saves to
+
+    """
+
     if (method != 'AB' and method != 'Angular'):
         raise Exception('Invalid mode entered. Please use \'AB\' or \'Angular\'.')
 
-    # Plot the results
     fig, ax1 = plt.subplots()
 
     ax1.set_title(method + ' Compartments: ' + str(structure)
@@ -40,7 +53,7 @@ def makeViolinPlot(method, num_compartments, data, y_label, structure, num_sampl
 
     plt.axhline(y=0, color='r', linestyle='-')
 
-    # save visualizations
+    # save visualization
     if path.is_file():
         path.unlink()
 

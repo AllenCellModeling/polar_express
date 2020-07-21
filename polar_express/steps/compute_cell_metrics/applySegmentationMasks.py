@@ -13,8 +13,8 @@ def applySegmentationMasks(im, channel_indices):
 
     Parameters
     ----------
-    imgPath : Path object pointing to the image to be segmented
-    annPath: Path object pointing to the annotation file of the image
+    im : image to be segmented, in the form of a 4D numpy array
+    channel_indices : dictionary mapping the channels to their indices
 
     Returns
     -------
@@ -26,8 +26,6 @@ def applySegmentationMasks(im, channel_indices):
     gfp : unsegmented GFP channel
 
     """
-
-    #im = np.squeeze(imread(imgPath))
 
     # unpack channel indices
     ch_dna = channel_indices["ch_dna"]

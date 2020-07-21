@@ -31,6 +31,7 @@ class All:
         self.step_list = [
             steps.SelectData(),
             steps.ComputeCellMetrics(),
+            steps.GatherTestVisualize()
         ]
 
     def run(
@@ -60,6 +61,7 @@ class All:
         # Initalize steps
         select_data = steps.SelectData()
         compute_cell_metrics = steps.ComputeCellMetrics()
+        gather_test_visualize = steps.GatherTestVisualize()
 
         # Choose executor
         if debug:
@@ -95,12 +97,21 @@ class All:
                 **kwargs,  # Allows us to pass `--n {some integer}` or other params
             )
 
+            #step 3: gather the computed metrics and create visualizations
+            gather_visualize_manifest = gather_test_visualize(
+                cell_metrics_manifest,
+                clean=clean,
+                debug=debug,
+                **kwargs,  # Allows us to pass `--n {some integer}` or other params
+            )
+
         # Run flow and get ending state
         state = flow.run(executor=exe)
 
         # Get and display any outputs you want to see on your local terminal
         log.info(select_data.get_result(state, flow))
         log.info(compute_cell_metrics.get_result(state, flow))
+        log.info(gather_test_visualize.get_result(state, flow))
 
     def pull(self):
         """

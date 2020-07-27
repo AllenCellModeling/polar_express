@@ -57,6 +57,7 @@ requirements = [
     "Pillow",
     "tqdm",
     "aicsimageio",
+    "seaborn",
 ]
 
 extra_requirements = {

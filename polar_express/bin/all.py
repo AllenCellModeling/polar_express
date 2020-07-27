@@ -82,14 +82,14 @@ class All:
             # If you want to utilize some debugging functionality pass debug
             # If you don't utilize any of these, just pass the parameters you need.
 
-            #step 1: select cells and store in annotation file
+            # step 1: select cells and store in annotation file
             selected_cells_manifest = select_data(
                 clean=clean,
                 debug=debug,
                 **kwargs,  # Allows us to pass `--n {some integer}` or other params
             )
 
-            #step 2: compute metrics for each of the cells
+            # step 2: compute metrics for each of the cells
             cell_metrics_manifest = compute_cell_metrics(
                 selected_cells_manifest,
                 clean=clean,
@@ -97,8 +97,8 @@ class All:
                 **kwargs,  # Allows us to pass `--n {some integer}` or other params
             )
 
-            #step 3: gather the computed metrics and create visualizations
-            gather_visualize_manifest = gather_test_visualize(
+            # step 3: gather the computed metrics and create visualizations
+            gather_test_visualize(
                 cell_metrics_manifest,
                 clean=clean,
                 debug=debug,

@@ -49,7 +49,8 @@ class SelectData(Step):
         Returns
         -------
         selected_cells_manifest: Path
-            Path to manifest file that contains a path to a CSV file with annotation of selected cells
+            Path to manifest file that contains a path to a CSV file with annotation of
+            selected cells
         """
 
         # Directory assignments
@@ -58,7 +59,8 @@ class SelectData(Step):
 
         # Select ER cells
         # Point to master annotation file
-        cell3D_root = Path('/allen/aics/modeling/theok/Projects/MitoticClassifierPlayground/Org3Dcells')
+        cell3D_root = Path('/allen/aics/modeling/theok/Projects'
+                           + '/MitoticClassifierPlayground/Org3Dcells')
         csvfile = cell3D_root / 'Annotation' / 'ann.csv'
         cells = pd.read_csv(csvfile)
         # Load in and select ER cells in interphase (stage = 0)

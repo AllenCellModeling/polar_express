@@ -1,15 +1,12 @@
-from pathlib import Path
 import numpy as np
 
-# Third party
-from aicsimageio import AICSImage, imread
 
 def applySegmentationMasks(im, channel_indices):
     """
 
     Applies each availible segmentation mask to the corresponding channel.
-    Takes an image (in the form of a 4-dimensional matrix) as input and returns the dna, membrane,
-    and gfp channels after the segmentation has been applied to the image.
+    Takes an image (in the form of a 4-dimensional matrix) as input and returns the dna,
+    membrane, and gfp channels after the segmentation has been applied to the image.
 
     Parameters
     ----------

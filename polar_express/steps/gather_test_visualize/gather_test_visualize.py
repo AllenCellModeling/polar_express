@@ -6,7 +6,6 @@ from pathlib import Path
 from typing import Dict, List, Optional, Union
 import pandas as pd
 from tqdm import tqdm
-from aicsimageio import AICSImage, imread
 import numpy as np
 import pickle
 
@@ -55,8 +54,10 @@ class GatherTestVisualize(Step):
         Parameters
         ----------
         cell_metrics_manifest: Optional[Path]
-            Path to manifest file that contains a path to pickle files with the stored metrics for selected cells
-            Default: self.step_local_staging_dir.parent / computecellmetrics / manifest.csv
+            Path to manifest file that contains a path to pickle files with the stored
+            metrics for selected cells
+            Default: self.step_local_staging_dir.parent / computecellmetrics
+                     / manifest.csv
         filepath_column: str
             If providing a path to a csv manifest, the column to use for matrices.
             Default: "filepath"
@@ -64,7 +65,8 @@ class GatherTestVisualize(Step):
         Returns
         -------
         visualizations_manifest: Path
-            Path to manifest file that contains paths to image files of the generated visualizations
+            Path to manifest file that contains paths to image files of the generated
+            visualizations
         """
 
         # Directory assignments
@@ -74,7 +76,8 @@ class GatherTestVisualize(Step):
         # Manifest from previous step
         if cell_metrics_manifest is None:
             cell_metrics_manifest = (
-                self.step_local_staging_dir.parent / "computecellmetrics" / "manifest.csv"
+                self.step_local_staging_dir.parent / "computecellmetrics"
+                / "manifest.csv"
             )
 
         # Load manifest (from Path to Dataframe)
@@ -92,8 +95,9 @@ class GatherTestVisualize(Step):
         elif (curr_metrics['AB_mode'] == 'hemispheres'):
             num_AB_compartments = 2
         else:
-            raise Exception('Invalid mode entered. Please use \'quadrants\' or \'hemispheres\'.')
-        
+            raise Exception('Invalid mode entered. Use \'quadrants\' '
+                            + 'or \'hemispheres\'.')
+
         num_angular_compartments = curr_metrics['num_angular_compartments']
 
         # Create storage data matrices for AB compartments
@@ -125,27 +129,40 @@ class GatherTestVisualize(Step):
         self.manifest = pd.DataFrame(index=range(num_plots), columns=["filepath"])
 
         i = 0
-        
+
         for mode in ['AB', 'Angular']:
             for plot in ['FC', 'Cyto', 'GFP']:
 
                 if (mode == 'AB'):
-                    path = vis_dir / (mode + "_" + str(num_AB_compartments) + "_" + structure + "_" + plot + ".png")
+                    path = vis_dir / (mode + "_" + str(num_AB_compartments) + "_"
+                                      + structure + "_" + plot + ".png")
                     if (plot == 'FC'):
-                        makeViolinPlot(mode, num_AB_compartments, AB_fc_storage, 'Fold Change (GFP to Cytoplasm Volume)', structure, no_of_cells, path)
+                        makeViolinPlot(mode, num_AB_compartments, AB_fc_storage,
+                                       'Fold Change (GFP to Cytoplasm Volume)',
+                                       structure, no_of_cells, path)
                     elif (plot == 'Cyto'):
-                        makeViolinPlot(mode, num_AB_compartments, AB_cyto_storage, 'Cytoplasm Volume', structure, no_of_cells, path)
+                        makeViolinPlot(mode, num_AB_compartments, AB_cyto_storage,
+                                       'Cytoplasm Volume', structure, no_of_cells, path)
                     elif (plot == 'GFP'):
-                        makeViolinPlot(mode, num_AB_compartments, AB_gfp_storage, 'GFP Intensity', structure, no_of_cells, path)
+                        makeViolinPlot(mode, num_AB_compartments, AB_gfp_storage,
+                                       'GFP Intensity', structure, no_of_cells, path)
 
                 elif (mode == 'Angular'):
-                    path = vis_dir / (mode + "_" + str(num_angular_compartments) + "_" + structure + "_" + plot + ".png")
+                    path = vis_dir / (mode + "_" + str(num_angular_compartments) + "_"
+                                      + structure + "_" + plot + ".png")
                     if (plot == 'FC'):
-                        makeViolinPlot(mode, num_angular_compartments, Angular_fc_storage, 'Fold Change (GFP to Cytoplasm Volume)', structure, no_of_cells, path)
+                        makeViolinPlot(mode, num_angular_compartments,
+                                       Angular_fc_storage,
+                                       'Fold Change (GFP to Cytoplasm Volume)',
+                                       structure, no_of_cells, path)
                     elif (plot == 'Cyto'):
-                        makeViolinPlot(mode, num_angular_compartments, Angular_cyto_storage, 'Cytoplasm Volume', structure, no_of_cells, path)
+                        makeViolinPlot(mode, num_angular_compartments,
+                                       Angular_cyto_storage, 'Cytoplasm Volume',
+                                       structure, no_of_cells, path)
                     elif (plot == 'GFP'):
-                        makeViolinPlot(mode, num_angular_compartments, Angular_gfp_storage, 'GFP Intensity', structure, no_of_cells, path)
+                        makeViolinPlot(mode, num_angular_compartments,
+                                       Angular_gfp_storage, 'GFP Intensity', structure,
+                                       no_of_cells, path)
 
                 # Add the path to the manifest
                 self.manifest.at[i, "filepath"] = path

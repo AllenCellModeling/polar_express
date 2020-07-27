@@ -6,7 +6,7 @@ from pathlib import Path
 from typing import Dict, List, Optional, Union
 import pandas as pd
 from tqdm import tqdm
-from aicsimageio import AICSImage, imread
+from aicsimageio import imread
 import numpy as np
 import pickle
 
@@ -38,8 +38,8 @@ class ComputeCellMetrics(Step):
         self,
         selected_cells_manifest: Optional[Path] = None,
         filepath_column: str = "filepath",
-        AB_mode = "quadrants",
-        num_angular_compartments = 8,
+        AB_mode="quadrants",
+        num_angular_compartments=8,
         **kwargs
     ):
         """
@@ -60,7 +60,8 @@ class ComputeCellMetrics(Step):
         Parameters
         ----------
         selected_cells_manifest: Optional[Path]
-            Path to manifest file that contains a path to a CSV file with annotation of selected cells
+            Path to manifest file that contains a path to a CSV file with annotation of
+            selected cells
             Default: self.step_local_staging_dir.parent / selectdata / manifest.csv
         filepath_column: str
             If providing a path to a csv manifest, the column to use for matrices.
@@ -69,12 +70,14 @@ class ComputeCellMetrics(Step):
             "quadrants" if AB compartments should split the cell into quadrants,
             "hemispheres" if AB compartments should split the cell into halves.
         num_angular_compartments : int
-            The number of equal-size angles the cell should be split into for the angular compartment analysis.
+            The number of equal-size angles the cell should be split into for the
+            angular compartment analysis.
 
         Returns
         -------
         cell_metrics_manifest: Path
-            Path to manifest file that contains paths to compute metrics for each of the selected cells
+            Path to manifest file that contains paths to compute metrics for each of the
+            selected cells
         """
 
         # Directory assignments
@@ -103,7 +106,7 @@ class ComputeCellMetrics(Step):
         for i in tqdm(range(no_of_cells), desc="Computing metrics for cells"):
 
             # image file
-            file   = selected_cells['Path'].iloc[i]
+            file = selected_cells['Path'].iloc[i]
             cellid = selected_cells['CellId'].iloc[i]
 
             # read in image file
@@ -129,7 +132,12 @@ class ComputeCellMetrics(Step):
                                "ch_seg_cell" : ch_seg_cell}
 
             # Get the segmentation channels
-            seg_dna, seg_mem, seg_gfp, dna, mem, gfp = applySegmentationMasks(im, channel_indices)
+            (seg_dna,
+             seg_mem,
+             seg_gfp,
+             dna,
+             mem,
+             gfp) = applySegmentationMasks(im, channel_indices)
 
             masked_channels = {"seg_dna" : seg_dna,
                                "seg_mem" : seg_mem,
@@ -139,26 +147,38 @@ class ComputeCellMetrics(Step):
                                "gfp" : gfp}
 
             # compute z metrics
-            bot_of_cell, bot_of_nucleus, centroid_of_nucleus, top_of_nucleus, top_of_cell = findVerticalCutoffs(im, masked_channels)
+            (bot_of_cell, bot_of_nucleus, centroid_of_nucleus, top_of_nucleus,
+             top_of_cell) = findVerticalCutoffs(im, masked_channels)
 
             z_metrics = {"bot_of_cell" : bot_of_cell,
-                               "bot_of_nucleus" : bot_of_nucleus,
-                               "centroid_of_nucleus" : centroid_of_nucleus,
-                               "top_of_nucleus" : top_of_nucleus,
-                               "top_of_cell" : top_of_cell}
+                         "bot_of_nucleus" : bot_of_nucleus,
+                         "centroid_of_nucleus" : centroid_of_nucleus,
+                         "top_of_nucleus" : top_of_nucleus,
+                         "top_of_cell" : top_of_cell}
 
             # compute fold change metrics
-            AB_fold_changes, AB_cyto_vol, AB_gfp_intensities = findFoldChange_AB(im, masked_channels, z_metrics,
-                                                                                 vol_scale_factor, mode=AB_mode)
-            Ang_fold_changes, Ang_cyto_vol, Ang_gfp_intensities = findFoldChange_Angular(im, masked_channels, z_metrics,
-                                                                                         vol_scale_factor, num_sections=num_angular_compartments)
+            (AB_fold_changes,
+             AB_cyto_vol,
+             AB_gfp_intensities) = findFoldChange_AB(
+                masked_channels,
+                z_metrics,
+                vol_scale_factor,
+                mode=AB_mode)
+            (Ang_fold_changes,
+             Ang_cyto_vol,
+             Ang_gfp_intensities) = findFoldChange_Angular(
+                masked_channels,
+                z_metrics,
+                vol_scale_factor,
+                num_sections=num_angular_compartments)
 
             # store metrics
             metric = {"structure" : selected_cells['Structure'].iloc[i],
-                      "vol_cell" : np.sum(seg_mem) * vol_scale_factor,
+                      "vol_cell" : np.sum(seg_mem > 0) * vol_scale_factor,
                       "height_cell" : (top_of_cell - bot_of_cell) * pixelScaleZ,
-                      "vol_nucleus" : np.sum(seg_dna) * vol_scale_factor,
-                      "height_nucleus" : (top_of_nucleus - bot_of_nucleus) * pixelScaleZ,
+                      "vol_nucleus" : np.sum(seg_dna > 0) * vol_scale_factor,
+                      "height_nucleus" : ((top_of_nucleus - bot_of_nucleus)
+                                          * pixelScaleZ),
                       "min_z_dna" : bot_of_nucleus,
                       "max_z_dna" : top_of_nucleus,
                       "min_z_cell" : bot_of_cell,
@@ -174,7 +194,10 @@ class ComputeCellMetrics(Step):
                       "num_angular_compartments" : num_angular_compartments,
                       "Ang_fold_changes" : Ang_fold_changes,
                       "Ang_cyto_vol" : Ang_cyto_vol,
-                      "Ang_gfp_intensities" : Ang_gfp_intensities
+                      "Ang_gfp_intensities" : Ang_gfp_intensities,
+                      "x_dim" : seg_dna.shape[2], 
+                      "y_dim" : seg_dna.shape[1],
+                      "z_dim" : seg_dna.shape[0]
                       }
 
             # save metric

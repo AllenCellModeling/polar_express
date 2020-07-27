@@ -1,30 +1,36 @@
 import numpy as np
 
-def findFoldChange_AB(im, masked_channels, z_metrics, vol_scale_factor, mode='quadrants'):
+
+def findFoldChange_AB(masked_channels, z_metrics, vol_scale_factor, mode='quadrants'):
     """
 
-    Helper method that finds and returns, for each of the cell sections, the fold change of the proportion of gfp intensity
-    to cytoplasm volume, as well as the corresponding cytoplasm volume and gfp intensity data. Takes the image with which to
-    find the fold change as input. If mode = 'quadrants', makes computations based on the cell being divided into 4 vertical
-    quadrants. If mode = 'hemispheres', makes computations based on the cell being divided into 2 vertical quadrants.
+    Helper method that finds and returns, for each of the cell sections, the fold change
+    of the proportion of gfp intensity to cytoplasm volume, as well as the corresponding
+    cytoplasm volume and gfp intensity data. Takes the image with which to find the fold
+    change as input. If mode = 'quadrants', makes computations based on the cell being
+    divided into 4 vertical quadrants. If mode = 'hemispheres', makes computations based
+    on the cell being divided into 2 vertical quadrants.
 
     Parameters
     ----------
-    im : image of the cell to be analyzed, in the form of a 4D numpy array.
     masked_channels : dictionary containing the dna, membrane, and gfp channels, as
         well as their segmentation channels.
-    z_metrics : dictionary containing the z-values of the boundaries between the AB compartments,
-        as well as the coordinates of the nuclar centroid.
-    vol_scale_factor : int representing the multiplication factor to get from pixel volume to real volume.
+    z_metrics : dictionary containing the z-values of the boundaries between the AB
+        compartments, as well as the coordinates of the nuclar centroid.
+    vol_scale_factor : int representing the multiplication factor to get from pixel
+        volume to real volume.
     mode : str
         "quadrants" if AB compartments should split the cell into quadrants,
         "hemispheres" if AB compartments should split the cell into halves.
 
     Returns
     -------
-    cyto_vol : numpy array, where cyto_vol[i] is the total number of voxels between dna_seq and mem_seq for section "i"
-    gfp_intensities : numpy array, where gfp_intensities[i] is the total summed intensity of gfp channel for section"i"
-    fold_changes : numpy array, where fold_changes[i] is the fold change of GFP intensity over cytoplasm volume for section "i"
+    cyto_vol : numpy array, where cyto_vol[i] is the total number of voxels between
+        dna_seq and mem_seq for section "i"
+    gfp_intensities : numpy array, where gfp_intensities[i] is the total summed
+        intensity of gfp channel for section "i"
+    fold_changes : numpy array, where fold_changes[i] is the fold change of GFP
+        intensity over cytoplasm volume for section "i"
 
     """
 
@@ -33,19 +39,16 @@ def findFoldChange_AB(im, masked_channels, z_metrics, vol_scale_factor, mode='qu
     elif (mode == 'hemispheres'):
         num_compartments = 2
     else:
-        raise Exception('Invalid mode entered. Please use \'quadrants\' or \'hemispheres\'.')
+        raise Exception('Invalid mode entered. Enter \'quadrants\' or \'hemispheres\'.')
 
     cyto_vol = np.zeros(num_compartments)
     gfp_intensities = np.zeros(num_compartments)
-    top_stack = None # Keeps track of top layer of the current section
-    bot_stack = None # Keeps track of bottom layer of the current section
+    top_stack = None  # Keeps track of top layer of the current section
+    bot_stack = None  # Keeps track of bottom layer of the current section
 
     # Unpack masked segmentation channels
     seg_dna = masked_channels["seg_dna"]
     seg_mem = masked_channels["seg_mem"]
-    seg_gfp = masked_channels["seg_gfp"]
-    dna = masked_channels["dna"]
-    mem = masked_channels["mem"]
     gfp = masked_channels["gfp"]
 
     # Unpack z metrics
@@ -60,33 +63,34 @@ def findFoldChange_AB(im, masked_channels, z_metrics, vol_scale_factor, mode='qu
 
         if (mode == 'quadrants'):
 
-            if (section == 0): # top quarter of cell
-                top_stack = top_of_cell
+            if (section == 0):  # top quarter of cell
+                top_stack = top_of_cell + 1
                 bot_stack = top_of_nucleus
-            elif (section == 1): # top half of nucleus
+            elif (section == 1):  # top half of nucleus
                 top_stack = top_of_nucleus
                 bot_stack = int(centroid_of_nucleus[2])
-            elif (section == 2): # bottom half of nucleus
+            elif (section == 2):  # bottom half of nucleus
                 top_stack = int(centroid_of_nucleus[2])
                 bot_stack = bot_of_nucleus
-            else: # bottom quarter of cell
+            else:  # bottom quarter of cell
                 top_stack = bot_of_nucleus
                 bot_stack = bot_of_cell
 
-        else: # mode == 'hemispheres'
+        else:  # mode == 'hemispheres'
 
-            if (section == 0): # top half of cell
-                top_stack = top_of_cell
+            if (section == 0):  # top half of cell
+                top_stack = top_of_cell + 1
                 bot_stack = int(centroid_of_nucleus[2])
-            else: # bottom half of cell
+            else:  # bottom half of cell
                 top_stack = int(centroid_of_nucleus[2])
                 bot_stack = bot_of_cell
 
         for stack in range(bot_stack, top_stack):
             # Increment by number of voxels between cell membrane and nucleus
-            cyto_vol[section] += np.count_nonzero(seg_mem[stack,:,:] > 0) - np.count_nonzero(seg_dna[stack,:,:] > 0)
+            cyto_vol[section] += (np.count_nonzero(seg_mem[stack, :, :] > 0)
+                                  - np.count_nonzero(seg_dna[stack, :, :] > 0))
             # Increment by total gfp intensity of this stack
-            gfp_intensities[section] += np.sum(gfp[stack,:,:])
+            gfp_intensities[section] += np.sum(gfp[stack, :, :])
 
     # Normalize
     cyto_vol = cyto_vol / np.sum(cyto_vol)
@@ -102,7 +106,8 @@ def findFoldChange_AB(im, masked_channels, z_metrics, vol_scale_factor, mode='qu
 
         # Check for cytoplasm volume of 0
         if (cyto_vol[section] != 0 and gfp_intensities[section] != 0):
-            fold_changes[section] = np.log2(gfp_intensities[section] / cyto_vol[section])
+            fold_changes[section] = np.log2(gfp_intensities[section]
+                                            / cyto_vol[section])
 
         elif (cyto_vol[section] == 0):
             print('Cytoplasm volume of 0 detected')
@@ -113,51 +118,51 @@ def findFoldChange_AB(im, masked_channels, z_metrics, vol_scale_factor, mode='qu
     return fold_changes, cyto_vol, gfp_intensities
 
 
-def findFoldChange_Angular(im, masked_channels, z_metrics, vol_scale_factor, num_sections):
+def findFoldChange_Angular(masked_channels, z_metrics, vol_scale_factor, num_sections):
 
     """
 
-    Helper method that finds and returns, for each of the cell sections, the fold change of the proportion of gfp intensity
-    to cytoplasm volume, as well as the corresponding cytoplasm volume and gfp intensity data. Takes the image with which to
-    find the fold change as input. Divides the cell into "num_sections" equal-sized angular compartments.
+    Helper method that finds and returns, for each of the cell sections, the fold change
+    of the proportion of gfp intensity to cytoplasm volume, as well as the corresponding
+    cytoplasm volume and gfp intensity data. Takes the image with which to find the fold
+    change as input. Divides the cell into "num_sections" equal-sized angular
+    compartments.
 
     Parameters
     ----------
-    im : image of the cell to be analyzed, in the form of a 4D numpy array.
     masked_channels : dictionary containing the dna, membrane, and gfp channels, as
         well as their segmentation channels.
-    z_metrics : dictionary containing the z-values of the boundaries between the AB compartments,
-        as well as the coordinates of the nuclar centroid.
-    vol_scale_factor : int representing the multiplication factor to get from pixel volume to real volume.
+    z_metrics : dictionary containing the z-values of the boundaries between the AB
+        compartments, as well as the coordinates of the nuclar centroid.
+    vol_scale_factor : int representing the multiplication factor to get from pixel
+        volume to real volume.
     num_sections : int
-        The number of equal-size angles the cell should be split into for the angular compartment analysis.
+        The number of equal-size angles the cell should be split into for the angular
+        compartment analysis.
 
     Returns
     -------
-    cyto_vol : numpy array, where cyto_vol[i] is the total number of voxels between dna_seq and mem_seq for section "i"
-    gfp_intensities : numpy array, where gfp_intensities[i] is the total summed intensity of gfp channel for section"i"
-    fold_changes : numpy array, where fold_changes[i] is the fold change of GFP intensity over cytoplasm volume for section "i"
+    cyto_vol : numpy array, where cyto_vol[i] is the total number of voxels between
+        dna_seq and mem_seq for section "i"
+    gfp_intensities : numpy array, where gfp_intensities[i] is the total summed
+        intensity of gfp channel for section"i"
+    fold_changes : numpy array, where fold_changes[i] is the fold change of GFP
+        intensity over cytoplasm volume for section "i"
 
     """
 
     # Unpack masked segmentation channels
+    # Channels are in the form (z,y,x)
     seg_dna = masked_channels["seg_dna"]
     seg_mem = masked_channels["seg_mem"]
-    seg_gfp = masked_channels["seg_gfp"]
-    dna = masked_channels["dna"]
-    mem = masked_channels["mem"]
     gfp = masked_channels["gfp"]
 
     # Unpack nucleus metrics
-    bot_of_cell = z_metrics["bot_of_cell"]
-    bot_of_nucleus = z_metrics["bot_of_nucleus"]
     centroid_of_nucleus = z_metrics["centroid_of_nucleus"]
-    top_of_nucleus = z_metrics["top_of_nucleus"]
-    top_of_cell = z_metrics["top_of_cell"]
 
-    x = im[0,:,:,:].shape[2] # x-dimension of 3d cell image
-    y = im[0,:,:,:].shape[1] # y-dimension of 3d cell image
-    z = im[0,:,:,:].shape[0] # z-dimension of 3d cell image
+    x = seg_dna.shape[2]  # x-dimension of 3d cell image
+    y = seg_dna.shape[1]  # y-dimension of 3d cell image
+    z = seg_dna.shape[0]  # z-dimension of 3d cell image
 
     # Make 3d matrices for x,y,z channels
 
@@ -198,14 +203,18 @@ def findFoldChange_Angular(im, masked_channels, z_metrics, vol_scale_factor, num
         cos_upper_bound_angle = np.cos(upper_bound_angle)
         cos_lower_bound_angle = np.cos(lower_bound_angle)
 
-        mask = (res > cos_lower_bound_angle) * (res <= cos_upper_bound_angle)
+        if (section == num_sections - 1):
+            mask = (res >= cos_lower_bound_angle) * (res <= cos_upper_bound_angle)
+        else:
+            mask = (res >= cos_lower_bound_angle) * (res < cos_upper_bound_angle)
         mask = np.swapaxes(mask, 0, 2)
 
         masked_seg_mem = mask * seg_mem
         masked_seg_dna = mask * seg_dna
 
         # Increment by number of voxels between cell membrane and nucleus
-        cyto_vol[section] += np.count_nonzero(masked_seg_mem) - np.count_nonzero(masked_seg_dna)
+        cyto_vol[section] += (np.count_nonzero(masked_seg_mem)
+                              - np.count_nonzero(masked_seg_dna))
         gfp_intensities[section] += np.sum(gfp * mask)
 
         count += np.sum(mask)
@@ -224,7 +233,8 @@ def findFoldChange_Angular(im, masked_channels, z_metrics, vol_scale_factor, num
 
         # Check for cytoplasm volume of 0
         if (cyto_vol[section] != 0 and gfp_intensities[section] != 0):
-            fold_changes[section] = np.log2(gfp_intensities[section] / cyto_vol[section])
+            fold_changes[section] = np.log2(gfp_intensities[section]
+                                            / cyto_vol[section])
 
         elif (cyto_vol[section] == 0):
             print('Cytoplasm volume of 0 detected')

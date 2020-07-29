@@ -17,6 +17,7 @@ from .applySegmentationMasks import applySegmentationMasks
 from .findVerticalCutoffs import findVerticalCutoffs
 from .FoldChangeFunctions import findFoldChange_AB
 from .FoldChangeFunctions import findFoldChange_Angular
+from .computeVoxelMatrix import compute_voxel_matrix
 
 ###############################################################################
 
@@ -117,6 +118,8 @@ class ComputeCellMetrics(Step):
             pixelScaleY = selected_cells['PixelScaleY'].iloc[i]
             pixelScaleZ = selected_cells['PixelScaleZ'].iloc[i]
             vol_scale_factor = pixelScaleX * pixelScaleY * pixelScaleZ
+            # pixel scale factors stored in (z,y,x) order
+            scale_factors = np.array([pixelScaleZ, pixelScaleY, pixelScaleX])
 
             # get the channel indices
             ch_dna = selected_cells['ch_dna'].iloc[i]
@@ -172,6 +175,10 @@ class ComputeCellMetrics(Step):
                 vol_scale_factor,
                 num_sections=num_angular_compartments)
 
+            # compute (nx4) voxel matrix
+            voxel_matrix = compute_voxel_matrix(scale_factors, centroid_of_nucleus,
+                                                masked_channels)
+
             # store metrics
             metric = {"structure" : selected_cells['Structure'].iloc[i],
                       "vol_cell" : np.sum(seg_mem > 0) * vol_scale_factor,
@@ -197,7 +204,9 @@ class ComputeCellMetrics(Step):
                       "Ang_gfp_intensities" : Ang_gfp_intensities,
                       "x_dim" : seg_dna.shape[2], 
                       "y_dim" : seg_dna.shape[1],
-                      "z_dim" : seg_dna.shape[0]
+                      "z_dim" : seg_dna.shape[0],
+                      "scale_factors" : scale_factors,
+                      "voxel_matrix" : voxel_matrix
                       }
 
             # save metric

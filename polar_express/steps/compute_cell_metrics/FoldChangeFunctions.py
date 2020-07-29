@@ -68,9 +68,9 @@ def findFoldChange_AB(masked_channels, z_metrics, vol_scale_factor, mode='quadra
                 bot_stack = top_of_nucleus
             elif (section == 1):  # top half of nucleus
                 top_stack = top_of_nucleus
-                bot_stack = int(centroid_of_nucleus[2])
+                bot_stack = int(centroid_of_nucleus[0])
             elif (section == 2):  # bottom half of nucleus
-                top_stack = int(centroid_of_nucleus[2])
+                top_stack = int(centroid_of_nucleus[0])
                 bot_stack = bot_of_nucleus
             else:  # bottom quarter of cell
                 top_stack = bot_of_nucleus
@@ -80,9 +80,9 @@ def findFoldChange_AB(masked_channels, z_metrics, vol_scale_factor, mode='quadra
 
             if (section == 0):  # top half of cell
                 top_stack = top_of_cell + 1
-                bot_stack = int(centroid_of_nucleus[2])
+                bot_stack = int(centroid_of_nucleus[0])
             else:  # bottom half of cell
-                top_stack = int(centroid_of_nucleus[2])
+                top_stack = int(centroid_of_nucleus[0])
                 bot_stack = bot_of_cell
 
         for stack in range(bot_stack, top_stack):
@@ -181,9 +181,9 @@ def findFoldChange_Angular(masked_channels, z_metrics, vol_scale_factor, num_sec
     zmat = np.repeat(zvec[np.newaxis, :], y, axis=0)
     znd = np.repeat(zmat[np.newaxis, :, :], x, axis=0)
 
-    xnd = xnd - centroid_of_nucleus[0]
+    xnd = xnd - centroid_of_nucleus[2]
     ynd = ynd - centroid_of_nucleus[1]
-    znd = znd - centroid_of_nucleus[2]
+    znd = znd - centroid_of_nucleus[0]
 
     res = znd / np.sqrt(xnd ** 2 + ynd ** 2 + znd ** 2)
 

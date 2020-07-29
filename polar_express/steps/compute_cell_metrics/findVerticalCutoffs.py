@@ -1,4 +1,5 @@
 import numpy as np
+from scipy import ndimage
 
 
 def findVerticalCutoffs(im, masked_channels):
@@ -19,7 +20,7 @@ def findVerticalCutoffs(im, masked_channels):
     bot_of_cell : z-coordinate of bottom-most cell membrane voxel
     bot_of_nucleus : z-coordinate of bottom-most nucleus voxel
     centroid_of_nucleus : tuple respresenting coordinates of centroid of nucleus in the
-        form (x,y,z)
+        form (z,y,x)
     top_of_nucleus : z-coordinate of top-most nucleus voxel
     top_of_cell : z-coordinate of top-most cell membrane voxel
 
@@ -28,7 +29,7 @@ def findVerticalCutoffs(im, masked_channels):
     # z-stack indices of the 4 sections of the cell
     top_of_cell = None
     top_of_nucleus = None
-    centroid_of_nucleus = np.zeros(3)
+    centroid_of_nucleus = None  # np.zeros(3)
     bot_of_nucleus = None
     bot_of_cell = None
 
@@ -77,32 +78,14 @@ def findVerticalCutoffs(im, masked_channels):
             top_of_nucleus = prev_stack
 
     # Find the centroid of the nucleus
-
-    nucleus_voxel_count = 0
-
-    # Iterate through the z-stacks that belong to the nucleus
-    for stack in range(bot_of_nucleus, top_of_nucleus):
-
-        # Get the x and y coordinates of the nucleus voxels of the current z-stack
-        x_indices, y_indices = np.where(seg_dna[stack] != 0)
-        num_voxels_in_stack = x_indices.size
-        nucleus_voxel_count += num_voxels_in_stack
-
-        # Increment each centroid coordinate by the sum of the corresponding coordinates
-        # of this stack
-        centroid_of_nucleus[0] += np.sum(x_indices)
-        centroid_of_nucleus[1] += np.sum(y_indices)
-        centroid_of_nucleus[2] += num_voxels_in_stack * stack
-
-    # Find the mean of each dimension
-    centroid_of_nucleus = centroid_of_nucleus / nucleus_voxel_count
+    centroid_of_nucleus = ndimage.measurements.center_of_mass(seg_dna)
 
     # Check for unexpected positions of cell sections
     if (top_of_nucleus > top_of_cell or bot_of_nucleus < bot_of_cell):
         print('Nucleus exceeds boundaries of cell membrane!')
 
-    if (centroid_of_nucleus[2] > top_of_nucleus
-            or centroid_of_nucleus[2] < bot_of_nucleus):
+    if (centroid_of_nucleus[0] > top_of_nucleus
+            or centroid_of_nucleus[0] < bot_of_nucleus):
         print('Centroid of nucleus exceeds boundaries of nucleus!')
 
     if (bot_of_cell > top_of_cell or bot_of_nucleus > top_of_nucleus):

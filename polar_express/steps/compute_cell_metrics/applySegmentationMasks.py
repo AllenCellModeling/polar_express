@@ -25,11 +25,11 @@ def applySegmentationMasks(im, channel_indices):
     """
 
     # unpack channel indices
-    ch_dna = channel_indices["ch_dna"]
-    ch_memb = channel_indices["ch_memb"]
-    ch_struct = channel_indices["ch_struct"]
-    ch_seg_nuc = channel_indices["ch_seg_nuc"]
-    ch_seg_cell = channel_indices["ch_seg_cell"]
+    ch_dna = int(channel_indices["ch_dna"])
+    ch_memb = int(channel_indices["ch_memb"])
+    ch_struct = int(channel_indices["ch_struct"])
+    ch_seg_nuc = int(channel_indices["ch_seg_nuc"])
+    ch_seg_cell = int(channel_indices["ch_seg_cell"])
 
     # dna channel
     dna = np.squeeze(im[ch_dna, :, :, :])

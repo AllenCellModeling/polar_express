@@ -26,6 +26,7 @@ class SelectData(Step):
     @log_run_params
     def run(
         self,
+        dataset='/allen/aics/modeling/theok/Projects/Data/Org3Dcells',
         **kwargs
     ):
         """
@@ -45,6 +46,10 @@ class SelectData(Step):
 
         Parameters
         ----------
+        dataset: str
+            Path to the directory containing the .tiff files to be passed into the
+            datastep workflow. The directory should also contain a sub-directory
+            "Annotation" which holds ann.csv
 
         Returns
         -------
@@ -59,8 +64,7 @@ class SelectData(Step):
 
         # Select ER cells
         # Point to master annotation file
-        cell3D_root = Path('/allen/aics/modeling/theok/Projects'
-                           + '/Data/Org3Dcells')
+        cell3D_root = Path(dataset)
         csvfile = cell3D_root / 'Annotation' / 'ann.csv'
         cells = pd.read_csv(csvfile)
         # Load in and select ER cells in interphase (stage = 0)

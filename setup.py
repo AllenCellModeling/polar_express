@@ -58,7 +58,7 @@ requirements = [
     "tqdm",
     "aicsimageio",
     "seaborn",
-    "cv2"
+    "opencv-python"
 ]
 
 extra_requirements = {

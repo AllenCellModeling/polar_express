@@ -206,7 +206,8 @@ class ComputeCellMetrics(Step):
                       "y_dim" : seg_dna.shape[1],
                       "z_dim" : seg_dna.shape[0],
                       "scale_factors" : scale_factors,
-                      "voxel_matrix" : voxel_matrix
+                      "voxel_matrix" : voxel_matrix,
+                      "channels" : masked_channels
                       }
 
             # save metric

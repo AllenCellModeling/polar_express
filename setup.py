@@ -58,6 +58,7 @@ requirements = [
     "tqdm",
     "aicsimageio",
     "seaborn",
+    "cv2"
 ]
 
 extra_requirements = {

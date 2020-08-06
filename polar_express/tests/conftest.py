@@ -11,7 +11,6 @@ import pandas as pd
 
 from polar_express.steps import SelectData
 from polar_express.steps import ComputeCellMetrics
-from polar_express.steps import GatherTestVisualize
 
 ###############################################################################
 
@@ -20,9 +19,11 @@ from polar_express.steps import GatherTestVisualize
 def data_dir() -> Path:
     return Path(__file__).parent / "test_data"
 
+
 @pytest.fixture
 def data_metrics_dir() -> Path:
     return Path(__file__).parent / "test_data_metrics"
+
 
 @pytest.fixture
 def test_image(data_dir):
@@ -31,27 +32,25 @@ def test_image(data_dir):
     im = np.squeeze(imread(file))
     return im
 
+
 @pytest.fixture
 def true_image_metrics(data_metrics_dir):
-    # read in metrics dictionary
+    # read in griybd truth metrics dictionary
     metrics_file = data_metrics_dir / "cell_30827.pickle"
     with (open(metrics_file, "rb")) as openfile:
         metrics = pickle.load(openfile)
     return metrics
 
+
 @pytest.fixture
 def test_image_metrics(data_metrics_dir):
-    # Load manifest (from Path to Dataframe)
-    cell_metrics_manifest = data_metrics_dir / "cell_metrics_manifest.csv"
-    cell_metrics_manifest = pd.read_csv(cell_metrics_manifest)
+    # read in computed metrics dictionary
+    cell_30827 = "local_staging/computecellmetrics/metrics/cell_30827.pickle"
+    with (open(cell_30827, "rb")) as openfile:
+        metrics = pickle.load(openfile)
 
-    cell_pickles = cell_metrics_manifest["filepath"]
-    no_of_cells = len(cell_pickles)
+    return metrics
 
-    with (open(cell_pickles.iloc[0], "rb")) as openfile:
-        curr_metrics = pickle.load(openfile)
-
-    return curr_metrics
 
 @pytest.fixture(scope="session", autouse=True)  # Execute this before running any tests
 def execute_before_any_test():

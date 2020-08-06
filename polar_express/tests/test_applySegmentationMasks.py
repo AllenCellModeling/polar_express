@@ -1,13 +1,10 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import pytest
-from pathlib import Path
 import numpy as np
-from aicsimageio import imread
-import pickle
 
 #######################################################################################
+
 
 def testChannelsEqual(test_image_metrics, true_image_metrics):
 
@@ -23,6 +20,7 @@ def testChannelsEqual(test_image_metrics, true_image_metrics):
                       == true_image_metrics['channels']['mem'])
     assert np.alltrue(test_image_metrics['channels']['gfp']
                       == true_image_metrics['channels']['gfp'])
+
 
 def testValuesNonNegative(test_image_metrics):
 

@@ -19,6 +19,8 @@ from .FoldChangeFunctions import findFoldChange_AB
 from .FoldChangeFunctions import findFoldChange_Angular
 from .computeVoxelMatrix import compute_voxel_matrix
 
+from polar_express.definitions import ROOT_DIR
+
 ###############################################################################
 
 log = logging.getLogger(__name__)
@@ -111,7 +113,14 @@ class ComputeCellMetrics(Step):
             cellid = selected_cells['CellId'].iloc[i]
 
             # read in image file
-            im = np.squeeze(imread(file))
+            try:
+                im = np.squeeze(imread(file))  # provided absolute path
+            except FileNotFoundError:
+                try:
+                    rel_path = ROOT_DIR + file  # provided relative path
+                    im = np.squeeze(imread(rel_path))
+                except FileNotFoundError:
+                    raise
 
             # additional image information
             pixelScaleX = selected_cells['PixelScaleX'].iloc[i]

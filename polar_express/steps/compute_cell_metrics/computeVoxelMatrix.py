@@ -25,8 +25,9 @@ def compute_voxel_matrix(scale_factors, centroid, masked_channels):
 
     # column 2 of the matrix
     angles = [np.arccos(np.dot(unit_z_vector, cyto_indices[i, :] - centroid)
-              / (np.dot(cyto_indices[i, :] - centroid,
-              cyto_indices[i, :] - centroid) ** 0.5)) for i in range(num_voxels)]
+                        / (np.dot(cyto_indices[i, :] - centroid,
+                                  cyto_indices[i, :] - centroid)
+                        ** 0.5)) for i in range(num_voxels)]
 
     seg_dna_shell = ndi.distance_transform_cdt(seg_dna == 0, 'taxicab') == 1
     nucleus_shell_indices = np.where(seg_dna_shell != 0)
@@ -35,7 +36,7 @@ def compute_voxel_matrix(scale_factors, centroid, masked_channels):
 
     # column 3 of the matrix
     nucleus_dists = [np.min(distance.cdist(np.reshape(cyto_indices[i, :],
-                     (1,3)), nucleus_shell_indices, 'euclidean'))
+                     (1, 3)), nucleus_shell_indices, 'euclidean'))
                      for i in range(num_voxels)]
 
     seg_mem_shell = ndi.distance_transform_cdt(seg_mem == 0, 'taxicab') == 1
@@ -45,6 +46,6 @@ def compute_voxel_matrix(scale_factors, centroid, masked_channels):
 
     # column 4 of the matrix
     mem_dists = [np.min(distance.cdist(np.reshape(cyto_indices[i, :],
-                 (1,3)), mem_shell_indices, 'euclidean')) for i in range(num_voxels)]
+                 (1, 3)), mem_shell_indices, 'euclidean')) for i in range(num_voxels)]
 
     return np.array([cyto_intensities, angles, nucleus_dists, mem_dists]).T

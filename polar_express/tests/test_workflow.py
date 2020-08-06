@@ -11,6 +11,7 @@ from polar_express.steps import GatherTestVisualize
 
 #######################################################################################
 
+
 @pytest.fixture
 def select_data_manifest(data_dir):
     # Initialize step
@@ -20,6 +21,7 @@ def select_data_manifest(data_dir):
     output_manifest = step.run(data_dir)
     output_manifest = dd.read_csv(output_manifest)
     return output_manifest
+
 
 @pytest.fixture
 def cell_metrics_manifest_1(select_data_manifest):
@@ -31,6 +33,7 @@ def cell_metrics_manifest_1(select_data_manifest):
     output_manifest = dd.read_csv(output_manifest)
     return output_manifest
 
+
 @pytest.fixture
 def cell_metrics_manifest_2(select_data_manifest):
     # Initialize step
@@ -40,6 +43,7 @@ def cell_metrics_manifest_2(select_data_manifest):
     output_manifest = step.run(AB_mode='quadrants', num_angular_compartments=8)
     output_manifest = dd.read_csv(output_manifest)
     return output_manifest
+
 
 @pytest.fixture
 def gtv_manifest(cell_metrics_manifest_1):
@@ -51,10 +55,8 @@ def gtv_manifest(cell_metrics_manifest_1):
     output_manifest = dd.read_csv(output_manifest)
     return output_manifest
 
-def test_selectData(data_dir, select_data_manifest):
 
-    # Read input dataset
-    input_dataset = dd.read_csv(data_dir / "Annotation/ann.csv")
+def test_selectData(data_dir, select_data_manifest):
 
     # Run asserts
 
@@ -72,6 +74,7 @@ def test_selectData(data_dir, select_data_manifest):
         Path(f).resolve(strict=True)
         for f in select_data_manifest['filepath']
     )
+
 
 # AB compartments: hemispheres, Angular compartments: 2
 # We expect results to be the same, to a certain degree of significance
@@ -94,6 +97,7 @@ def test_computeCellMetrics_setting1(cell_metrics_manifest_1):
         for f in cell_metrics_manifest_1['filepath']
     )
 
+
 # AB compartments: quadrants, Angular compartments: 8
 # We do not expect results to be the same
 def test_computeCellMetrics_setting2(cell_metrics_manifest_2):
@@ -114,6 +118,7 @@ def test_computeCellMetrics_setting2(cell_metrics_manifest_2):
         Path(f).resolve(strict=True)
         for f in cell_metrics_manifest_2['filepath']
     )
+
 
 def test_gatherTestVisualize(gtv_manifest):
 

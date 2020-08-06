@@ -2,7 +2,7 @@ from pathlib import Path
 import numpy as np
 
 # Third party
-from aicsimageio import AICSImage, imread
+from aicsimageio import imread
 from skimage.morphology import ball, binary_closing
 from scipy import ndimage
 import pandas as pd
@@ -15,7 +15,8 @@ import matplotlib
 import cv2
 
 
-def makeartificialGFP(selected_cell, artificial_cell_dir, vizcells, artificial_plot_dir):
+def makeartificialGFP(selected_cell, artificial_cell_dir,
+                      vizcells, artificial_plot_dir):
     """
 
     Method to create artificial GFP datasets based on 3D images of real cells
@@ -23,9 +24,11 @@ def makeartificialGFP(selected_cell, artificial_cell_dir, vizcells, artificial_p
     Parameters
     ----------
     selected_cell : Pandas Series object with information about the selected cell
-    artificial_cell_dir : Path to folder where the artificial GFP cells (tiff files) should be stored
+    artificial_cell_dir : Path to folder where the artificial GFP cells (tiff files)
+        should be stored
     vizcells : List of cell IDs that will be visualized
-    artificial_plot_dir : Path to folder with slice and stack tiffs of the artificial GFP cells
+    artificial_plot_dir : Path to folder with slice and stack tiffs of the artificial
+        GFP cells
 
     Returns
     -------
@@ -38,7 +41,7 @@ def makeartificialGFP(selected_cell, artificial_cell_dir, vizcells, artificial_p
     file = selected_cell['Path']
     cellid = selected_cell['CellId']
 
-    #visualize or not
+    # visualize or not
     if cellid in vizcells:
         viz_flag = True
     else:
@@ -71,8 +74,9 @@ def makeartificialGFP(selected_cell, artificial_cell_dir, vizcells, artificial_p
 
     # %% Apply artificial dataset
     art_cells = pd.DataFrame()
-    art_dataset_types = ['Uniform', 'Uniform + noise', 'Top Half Uniform', 'Top Half Uniform + noise',
-                         'Tight around Nucleus', 'Loose around Membrane', 'Top Half Nucleus', 'Bottom Membrane']
+    art_dataset_types = ['Uniform', 'Uniform + noise', 'Top Half Uniform', 
+                         'Top Half Uniform + noise', 'Tight around Nucleus',
+                         'Loose around Membrane', 'Top Half Nucleus', 'Bottom Membrane']
     for ii, adt in enumerate(art_dataset_types):
 
         if adt == 'Uniform':
@@ -100,27 +104,35 @@ def makeartificialGFP(selected_cell, artificial_cell_dir, vizcells, artificial_p
             gfp_art[seg_gfp > 0] = x
             gfp_art[0:center_of_nucleus[0], :, :] = 0
         elif adt == 'Tight around Nucleus':
-            q = np.multiply(seg_gfp, ndimage.gaussian_filter(seg_dna, sigma=[3 * 0.108333333 / 0.29, 5, 5]))
+            q = np.multiply(seg_gfp, ndimage.gaussian_filter(seg_dna,
+                                                             sigma=[3 * 0.108333333
+                                                                    / 0.29, 5, 5]))
             q = q * (255 / np.max(q))
             gfp_art = copy.copy(q)
         elif adt == 'Loose around Membrane':
-            q = np.multiply(seg_gfp, ndimage.gaussian_filter(255 - seg_mem, sigma=[6 * 0.108333333 / 0.29, 5, 5]))
+            q = np.multiply(seg_gfp, ndimage.gaussian_filter(255 - seg_mem,
+                                                             sigma=[6 * 0.108333333
+                                                                    / 0.29, 5, 5]))
             q = q * (255 / np.max(q))
             gfp_art = copy.copy(q)
         elif adt == 'Top Half Nucleus':
-            q = np.multiply(seg_gfp, ndimage.gaussian_filter(seg_dna, sigma=[3 * 0.108333333 / 0.29, 5, 5]))
+            q = np.multiply(seg_gfp, ndimage.gaussian_filter(seg_dna,
+                                                             sigma=[3 * 0.108333333
+                                                                    / 0.29, 5, 5]))
             q = q * (255 / np.max(q))
             gfp_art = copy.copy(q)
             gfp_art[0:center_of_nucleus[0], :, :] = 0
         elif adt == 'Bottom Membrane':
-            q = np.multiply(seg_gfp, ndimage.gaussian_filter(255 - seg_mem, sigma=[6 * 0.108333333 / 0.29, 5, 5]))
+            q = np.multiply(seg_gfp, ndimage.gaussian_filter(255 - seg_mem,
+                                                             sigma=[6 * 0.108333333
+                                                                    / 0.29, 5, 5]))
             q = q * (255 / np.max(q))
             gfp_art = copy.copy(q)
             gfp_art[bottom_of_cell + 5:, :, :] = 0
 
         # Add to new tiff file
         imart = copy.deepcopy(imorg)
-        imart[:,:,ch_struct,:,:,:] = gfp_art.astype('uint8')
+        imart[:, :, ch_struct, :, :, :] = gfp_art.astype('uint8')
         imart[:, :, ch_seg_nuc, :, :, :] = seg_dna
         imart[:, :, ch_seg_cell, :, :, :] = seg_mem
         tfile = artificial_cell_dir / f"cell_{cellid}_{adt}.tiff"
@@ -135,6 +147,7 @@ def makeartificialGFP(selected_cell, artificial_cell_dir, vizcells, artificial_p
 
     return art_cells
 
+
 def makeTIFFsliceandstack(selected_cell, artificial_plot_dir):
     """
 
@@ -142,8 +155,10 @@ def makeTIFFsliceandstack(selected_cell, artificial_plot_dir):
 
     Parameters
     ----------
-    selected_cell : Pandas Series object with information about the selected cell including path to the tiff file
-    artificial_plot_dir : Path to folder with slice and stack tiffs of the artificial GFP cells
+    selected_cell : Pandas Series object with information about the selected cell
+        including path to the tiff file
+    artificial_plot_dir : Path to folder with slice and stack tiffs of the artificial
+        GFP cells
 
     Returns
     -------
@@ -171,7 +186,7 @@ def makeTIFFsliceandstack(selected_cell, artificial_plot_dir):
     DNA_color = [100, 100, 200]
     OUT_color = [150, 150, 150]
     GFP_colors = np.array([[0, 0, 0],
-                  [0, 255, 0]])
+                           [0, 255, 0]])
     seg_dna_un = np.unique(seg_dna)
     seg_mem_un = np.unique(seg_mem)
     gfp_minmax = [np.amin(gfp_art[seg_gfp > 0]), np.amax(gfp_art[seg_gfp > 0])]
@@ -196,10 +211,10 @@ def makeTIFFsliceandstack(selected_cell, artificial_plot_dir):
     hb = 5
     h12 = h - yd - hb
     h1 = np.floor(h12 / 2)
-    h2 = np.ceil(h12 / 2)
+    # h2 = np.ceil(h12 / 2)
     h34 = h - zde - hb
     h3 = np.floor(h34 / 2)
-    h4 = np.ceil(h34 / 2)
+    # h4 = np.ceil(h34 / 2)
     cmap = matplotlib.cm.get_cmap('YlOrRd')
     z_color = np.dot(255, cmap(0.15))
     y_color = np.dot(255, cmap(0.6))
@@ -349,43 +364,75 @@ def makeTIFFsliceandstack(selected_cell, artificial_plot_dir):
         YZ_array2[:, :, i] = tm.T
 
     plot_array = np.zeros((h, w, 3), dtype=np.uint8)
-    plot_array[int(h1 + hb - 1):int(h1 + hb + yd - 1), int(w1 + wb - 1):int(w1 + wb + xd - 1), :] = XY_array
+    plot_array[int(h1 + hb - 1):int(h1 + hb + yd - 1),
+               int(w1 + wb - 1):int(w1 + wb + xd - 1),
+               :] = XY_array
     plot_array[int(h3 + hb - 1):int(h3 + hb + zde - 1),
-    int(w1 + wb + xd + w2 + wb - 1):int(w1 + wb + xd + w2 + wb + xd - 1), :] = XZ_array2
+               int(w1 + wb + xd + w2 + wb - 1):int(w1 + wb + xd + w2 + wb + xd - 1),
+               :] = XZ_array2
     plot_array[int(h3 + hb - 1):int(h3 + hb + zde - 1),
-    int(w1 + wb + xd + w2 + wb + xd + w2 + wb - 1):int(w1 + wb + xd + w2 + wb + xd + w2 + wb + yd - 1), :] = YZ_array2
+               int(w1 + wb + xd + w2 + wb + xd + w2 + wb - 1):int(w1 + wb + xd + w2
+                                                                  + wb + xd + w2 + wb
+                                                                  + yd - 1),
+               :] = YZ_array2
 
     for i in np.arange(3):
-        plot_array[int(h1 + hb - 1):int(h1 + hb + yd - 1), int(w1 - 1):int(w1 + wb - 1), i] = y_color[i]
-        plot_array[int(h1 - 1):int(h1 + hb - 1), int(w1 + wb - 1):int(w1 + wb + xd - 1), i] = x_color[i]
-        plot_array[int(h3 - 1):int(h3 + hb - 1), int(w1 + wb + xd + w2 + wb - 1):int(w1 + wb + xd + w2 + wb + xd - 1),
-        i] = x_color[i]
-        plot_array[int(h3 + hb - 1):int(h3 + hb + zde - 1), int(w1 + wb + xd + w2 - 1):int(w1 + wb + xd + w2 + wb - 1),
-        i] = z_color[i]
+        plot_array[int(h1 + hb - 1):int(h1 + hb + yd - 1),
+                   int(w1 - 1):int(w1 + wb - 1),
+                   i] = y_color[i]
+        plot_array[int(h1 - 1):int(h1 + hb - 1),
+                   int(w1 + wb - 1):int(w1 + wb + xd - 1),
+                   i] = x_color[i]
         plot_array[int(h3 - 1):int(h3 + hb - 1),
-        int(w1 + wb + xd + w2 + wb + xd + w2 + wb - 1):int(w1 + wb + xd + w2 + wb + xd + w2 + wb + yd - 1), i] = \
-        y_color[i]
+                   int(w1 + wb + xd + w2 + wb - 1):int(w1 + wb + xd + w2 + wb + xd - 1),
+                   i] = x_color[i]
         plot_array[int(h3 + hb - 1):int(h3 + hb + zde - 1),
-        int(w1 + wb + xd + w2 + wb + xd + w2 - 1):int(w1 + wb + xd + w2 + wb + xd + w2 + wb - 1), i] = z_color[i]
+                   int(w1 + wb + xd + w2 - 1):int(w1 + wb + xd + w2 + wb - 1),
+                   i] = z_color[i]
+        plot_array[int(h3 - 1):int(h3 + hb - 1),
+                   int(w1 + wb + xd + w2 + wb + xd + w2 + wb - 1):int(w1 + wb + xd + w2
+                                                                      + wb + xd + w2
+                                                                      + wb + yd - 1),
+                   i] = y_color[i]
+        plot_array[int(h3 + hb - 1):int(h3 + hb + zde - 1),
+                   int(w1 + wb + xd + w2 + wb + xd + w2 - 1):int(w1 + wb + xd + w2 + wb
+                                                                 + xd + w2 + wb - 1),
+                   i] = z_color[i]
 
     # x,y,z
     plot_array[int(h1 + hb + yd - 1):int(h1 + hb + yd + hl - 1),
-    int(w1 + wb + np.floor(xd / 2) - wl - 1):int(w1 + wb + np.floor(xd / 2) - 1), :] = np.flip(xmat, axis=0)
+               int(w1 + wb + np.floor(xd / 2) - wl - 1):int(w1 + wb
+                                                            + np.floor(xd / 2) - 1),
+               :] = np.flip(xmat, axis=0)
     plot_array[int(h1 + hb + yd - 1):int(h1 + hb + yd + hl - 1),
-    int(w1 + wb + np.floor(xd / 2) - 1):int(w1 + wb + np.floor(xd / 2) - 1) + wl, :] = np.flip(ymat, axis=0)
+               int(w1 + wb + np.floor(xd / 2) - 1):int(w1 + wb
+                                                       + np.floor(xd / 2) - 1) + wl,
+               :] = np.flip(ymat, axis=0)
     plot_array[int(h3 + hb + zde - 1):int(h3 + hb + zde + hl - 1),
-    int(w1 + wb + xd + w2 + wb + np.floor(xd / 2) - wl - 1):int(w1 + wb + xd + w2 + wb + np.floor(xd / 2) - 1),
-    :] = np.flip(xmat, axis=0)
+               int(w1 + wb + xd + w2 + wb
+                   + np.floor(xd / 2) - wl - 1):int(w1 + wb + xd + w2 + wb
+                                                    + np.floor(xd / 2) - 1),
+               :] = np.flip(xmat, axis=0)
     plot_array[int(h3 + hb + zde - 1):int(h3 + hb + zde + hl - 1),
-    int(w1 + wb + xd + w2 + wb + np.floor(xd / 2) - 1):int(w1 + wb + xd + w2 + wb + np.floor(xd / 2) - 1) + wl,
-    :] = np.flip(zmat, axis=0)
+               int(w1 + wb + xd + w2 + wb
+                   + np.floor(xd / 2) - 1):int(w1 + wb + xd + w2 + wb
+                                               + np.floor(xd / 2) - 1) + wl,
+               :] = np.flip(zmat, axis=0)
 
     plot_array[int(h3 + hb + zde - 1):int(h3 + hb + zde + hl - 1),
-    int(w1 + wb + xd + w2 + wb + xd + w2 + wb + np.floor(yd / 2) - wl - 1):int(
-        w1 + wb + xd + w2 + wb + xd + w2 + wb + np.floor(yd / 2) - 1), :] = np.flip(ymat, axis=0)
+               int(w1 + wb + xd + w2 + wb
+                   + xd + w2 + wb + np.floor(yd / 2) - wl - 1):int(w1 + wb + xd + w2
+                                                                   + wb + xd + w2 + wb
+                                                                   + np.floor(yd / 2)
+                                                                   - 1),
+               :] = np.flip(ymat, axis=0)
     plot_array[int(h3 + hb + zde - 1):int(h3 + hb + zde + hl - 1),
-    int(w1 + wb + xd + w2 + wb + xd + w2 + wb + np.floor(yd / 2) - 1):int(
-        w1 + wb + xd + w2 + wb + xd + w2 + wb + np.floor(yd / 2) + wl - 1), :] = np.flip(zmat, axis=0)
+               int(w1 + wb + xd + w2 + wb
+                   + xd + w2 + wb + np.floor(yd / 2) - 1):int(w1 + wb + xd + w2 + wb
+                                                              + xd + w2 + wb
+                                                              + np.floor(yd / 2)
+                                                              + wl - 1),
+               :] = np.flip(zmat, axis=0)
 
     plot_array = np.flip(plot_array, axis=0)
 
@@ -395,12 +442,12 @@ def makeTIFFsliceandstack(selected_cell, artificial_plot_dir):
     plt.savefig(slicefile, format="png", dpi=1000)
     plt.close()
 
-    #slice builders
+    # slice builders
 
-    #final plotting array
-    Zplot_array = np.zeros((zd, h, w, 3), dtype = np.uint8)
+    # final plotting array
+    Zplot_array = np.zeros((zd, h, w, 3), dtype=np.uint8)
 
-    for slice in tqdm(np.arange(zd),'Slicing'):
+    for slice in tqdm(np.arange(zd), 'Slicing'):
 
         # XY array
         mem_XY_array = np.squeeze(seg_mem[slice, :, :])
@@ -496,50 +543,83 @@ def makeTIFFsliceandstack(selected_cell, artificial_plot_dir):
             tm = cv2.resize(tm, dsize=(zde, yd), interpolation=cv2.INTER_NEAREST)
             YZ_array2[:, :, i] = tm.T
 
-
-        plot_array = np.zeros((h, w, 3), dtype = np.uint8)
-        plot_array[int(h1+hb-1):int(h1+hb+yd-1),int(w1+wb-1):int(w1+wb+xd-1),:] = XY_array
-        plot_array[int(h3+hb-1):int(h3+hb+zde-1), int(w1+wb+xd+w2+wb-1):int(w1+wb+xd+w2+wb+xd-1), :] = XZ_array2
-        plot_array[int(h3+hb-1):int(h3+hb+zde-1), int(w1+wb+xd+w2+wb+xd+w2+wb-1):int(w1+wb+xd+w2+wb+xd+w2+wb+yd-1), :] = YZ_array2
+        plot_array = np.zeros((h, w, 3), dtype=np.uint8)
+        plot_array[int(h1 + hb - 1):int(h1 + hb + yd - 1),
+                   int(w1 + wb - 1):int(w1 + wb + xd - 1),
+                   :] = XY_array
+        plot_array[int(h3 + hb - 1):int(h3 + hb + zde - 1),
+                   int(w1 + wb + xd + w2 + wb - 1):int(w1 + wb + xd + w2 + wb + xd - 1),
+                   :] = XZ_array2
+        plot_array[int(h3 + hb - 1):int(h3 + hb + zde - 1),
+                   int(w1 + wb + xd + w2
+                       + wb + xd + w2 + wb - 1):int(w1 + wb + xd + w2
+                                                    + wb + xd + w2 + wb + yd - 1),
+                   :] = YZ_array2
 
         for i in np.arange(3):
-            plot_array[int(h1 + hb - 1):int(h1 + hb + yd - 1), int(w1 - 1):int(w1 + wb - 1), i] = y_color[i]
-            plot_array[int(h1 - 1):int(h1 + hb - 1), int(w1 + wb - 1):int(w1 + wb + xd - 1), i] = x_color[i]
-            plot_array[int(h3 - 1):int(h3 + hb - 1), int(w1 + wb + xd + w2 + wb - 1):int(w1 + wb + xd + w2 + wb + xd - 1),
-            i] = x_color[i]
-            plot_array[int(h3 + hb - 1):int(h3 + hb + zde - 1), int(w1 + wb + xd + w2 - 1):int(w1 + wb + xd + w2 + wb - 1),
-            i] = z_color[i]
+            plot_array[int(h1 + hb - 1):int(h1 + hb + yd - 1),
+                       int(w1 - 1):int(w1 + wb - 1),
+                       i] = y_color[i]
+            plot_array[int(h1 - 1):int(h1 + hb - 1),
+                       int(w1 + wb - 1):int(w1 + wb + xd - 1),
+                       i] = x_color[i]
             plot_array[int(h3 - 1):int(h3 + hb - 1),
-            int(w1 + wb + xd + w2 + wb + xd + w2 + wb - 1):int(w1 + wb + xd + w2 + wb + xd + w2 + wb + yd - 1), i] = \
-            y_color[i]
+                       int(w1 + wb + xd + w2 + wb - 1):int(w1 + wb + xd + w2
+                                                           + wb + xd - 1),
+                       i] = x_color[i]
             plot_array[int(h3 + hb - 1):int(h3 + hb + zde - 1),
-            int(w1 + wb + xd + w2 + wb + xd + w2 - 1):int(w1 + wb + xd + w2 + wb + xd + w2 + wb - 1), i] = z_color[i]
+                       int(w1 + wb + xd + w2 - 1):int(w1 + wb + xd + w2 + wb - 1),
+                       i] = z_color[i]
+            plot_array[int(h3 - 1):int(h3 + hb - 1),
+                       int(w1 + wb + xd + w2
+                           + wb + xd + w2 + wb - 1):int(w1 + wb + xd + w2
+                                                        + wb + xd + w2 + wb + yd - 1),
+                       i] = y_color[i]
+            plot_array[int(h3 + hb - 1):int(h3 + hb + zde - 1),
+                       int(w1 + wb + xd + w2
+                           + wb + xd + w2 - 1):int(w1 + wb + xd + w2
+                                                   + wb + xd + w2 + wb - 1),
+                       i] = z_color[i]
 
         # x,y,z
         plot_array[int(h1 + hb + yd - 1):int(h1 + hb + yd + hl - 1),
-        int(w1 + wb + np.floor(xd / 2) - wl - 1):int(w1 + wb + np.floor(xd / 2) - 1), :] = np.flip(xmat, axis=0)
+                   int(w1 + wb + np.floor(xd / 2) - wl - 1):int(w1 + wb
+                                                                + np.floor(xd / 2) - 1),
+                   :] = np.flip(xmat, axis=0)
         plot_array[int(h1 + hb + yd - 1):int(h1 + hb + yd + hl - 1),
-        int(w1 + wb + np.floor(xd / 2) - 1):int(w1 + wb + np.floor(xd / 2) - 1) + wl, :] = np.flip(ymat, axis=0)
+                   int(w1 + wb + np.floor(xd / 2) - 1):int(w1 + wb
+                                                           + np.floor(xd / 2) - 1) + wl,
+                   :] = np.flip(ymat, axis=0)
         plot_array[int(h3 + hb + zde - 1):int(h3 + hb + zde + hl - 1),
-        int(w1 + wb + xd + w2 + wb + np.floor(xd / 2) - wl - 1):int(w1 + wb + xd + w2 + wb + np.floor(xd / 2) - 1),
-        :] = np.flip(xmat, axis=0)
+                   int(w1 + wb + xd + w2
+                       + wb + np.floor(xd / 2) - wl - 1):int(w1 + wb + xd + w2 + wb
+                                                             + np.floor(xd / 2) - 1),
+                   :] = np.flip(xmat, axis=0)
         plot_array[int(h3 + hb + zde - 1):int(h3 + hb + zde + hl - 1),
-        int(w1 + wb + xd + w2 + wb + np.floor(xd / 2) - 1):int(w1 + wb + xd + w2 + wb + np.floor(xd / 2) - 1) + wl,
-        :] = np.flip(zmat, axis=0)
+                   int(w1 + wb + xd + w2
+                       + wb + np.floor(xd / 2) - 1):int(w1 + wb + xd + w2 + wb
+                                                        + np.floor(xd / 2) - 1) + wl,
+                   :] = np.flip(zmat, axis=0)
 
         plot_array[int(h3 + hb + zde - 1):int(h3 + hb + zde + hl - 1),
-        int(w1 + wb + xd + w2 + wb + xd + w2 + wb + np.floor(yd / 2) - wl - 1):int(
-            w1 + wb + xd + w2 + wb + xd + w2 + wb + np.floor(yd / 2) - 1), :] = np.flip(ymat, axis=0)
+                   int(w1 + wb + xd + w2
+                       + wb + xd + w2 + wb
+                       + np.floor(yd / 2) - wl - 1):int(w1 + wb + xd + w2
+                                                        + wb + xd + w2 + wb
+                                                        + np.floor(yd / 2) - 1),
+                   :] = np.flip(ymat, axis=0)
         plot_array[int(h3 + hb + zde - 1):int(h3 + hb + zde + hl - 1),
-        int(w1 + wb + xd + w2 + wb + xd + w2 + wb + np.floor(yd / 2) - 1):int(
-            w1 + wb + xd + w2 + wb + xd + w2 + wb + np.floor(yd / 2) + wl - 1), :] = np.flip(zmat, axis=0)
+                   int(w1 + wb + xd + w2
+                       + wb + xd + w2 + wb
+                       + np.floor(yd / 2) - 1):int(w1 + wb + xd + w2
+                                                   + wb + xd + w2 + wb
+                                                   + np.floor(yd / 2) + wl - 1),
+                   :] = np.flip(zmat, axis=0)
 
         plot_array = np.flip(plot_array, axis=0)
 
-        Zplot_array[slice,:,:,:] = plot_array
+        Zplot_array[slice, :, :, :] = plot_array
 
-
-    #%%
     Zplot_array.shape = 1, zd, 1, h, w, 3  # dimensions in TZCYXS order
     stackfile = artificial_plot_dir / f"Stack_{cellid}_{adt}.tiff"
     tifffile.imwrite(stackfile, Zplot_array, imagej=True)

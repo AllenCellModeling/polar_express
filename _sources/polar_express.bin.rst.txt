@@ -1,0 +1,30 @@
+polar\_express.bin package
+==========================
+
+Submodules
+----------
+
+polar\_express.bin.all module
+-----------------------------
+
+.. automodule:: polar_express.bin.all
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+polar\_express.bin.cli module
+-----------------------------
+
+.. automodule:: polar_express.bin.cli
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+
+Module contents
+---------------
+
+.. automodule:: polar_express.bin
+   :members:
+   :undoc-members:
+   :show-inheritance:

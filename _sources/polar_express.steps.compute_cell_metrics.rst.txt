@@ -1,0 +1,54 @@
+polar\_express.steps.compute\_cell\_metrics package
+===================================================
+
+Submodules
+----------
+
+polar\_express.steps.compute\_cell\_metrics.FoldChangeFunctions module
+----------------------------------------------------------------------
+
+.. automodule:: polar_express.steps.compute_cell_metrics.FoldChangeFunctions
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+polar\_express.steps.compute\_cell\_metrics.applySegmentationMasks module
+-------------------------------------------------------------------------
+
+.. automodule:: polar_express.steps.compute_cell_metrics.applySegmentationMasks
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+polar\_express.steps.compute\_cell\_metrics.computeVoxelMatrix module
+---------------------------------------------------------------------
+
+.. automodule:: polar_express.steps.compute_cell_metrics.computeVoxelMatrix
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+polar\_express.steps.compute\_cell\_metrics.compute\_cell\_metrics module
+-------------------------------------------------------------------------
+
+.. automodule:: polar_express.steps.compute_cell_metrics.compute_cell_metrics
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+polar\_express.steps.compute\_cell\_metrics.findVerticalCutoffs module
+----------------------------------------------------------------------
+
+.. automodule:: polar_express.steps.compute_cell_metrics.findVerticalCutoffs
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+
+Module contents
+---------------
+
+.. automodule:: polar_express.steps.compute_cell_metrics
+   :members:
+   :undoc-members:
+   :show-inheritance:

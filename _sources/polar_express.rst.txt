@@ -1,0 +1,30 @@
+polar\_express package
+======================
+
+Subpackages
+-----------
+
+.. toctree::
+
+   polar_express.bin
+   polar_express.steps
+
+Submodules
+----------
+
+polar\_express.definitions module
+---------------------------------
+
+.. automodule:: polar_express.definitions
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+
+Module contents
+---------------
+
+.. automodule:: polar_express
+   :members:
+   :undoc-members:
+   :show-inheritance:

@@ -1,0 +1,30 @@
+polar\_express.steps.select\_data package
+=========================================
+
+Submodules
+----------
+
+polar\_express.steps.select\_data.artificialGFP module
+------------------------------------------------------
+
+.. automodule:: polar_express.steps.select_data.artificialGFP
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+polar\_express.steps.select\_data.select\_data module
+-----------------------------------------------------
+
+.. automodule:: polar_express.steps.select_data.select_data
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+
+Module contents
+---------------
+
+.. automodule:: polar_express.steps.select_data
+   :members:
+   :undoc-members:
+   :show-inheritance:

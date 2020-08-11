@@ -4,8 +4,9 @@ import seaborn as sns
 import scipy as sp
 
 
-def makeViolinPlot(method, num_compartments, data, y_label,
-                   structure, num_samples, path):
+def makeViolinPlot(
+    method, num_compartments, data, y_label, structure, num_samples, path
+):
 
     """
 
@@ -33,31 +34,43 @@ def makeViolinPlot(method, num_compartments, data, y_label,
 
     """
 
-    if (method != 'AB' and method != 'Angular'):
-        raise Exception('Invalid mode entered. Please use \'AB\' or \'Angular\'.')
+    if method != "AB" and method != "Angular":
+        raise Exception("Invalid mode entered. Please use 'AB' or 'Angular'.")
 
     fig, ax1 = plt.subplots()
 
-    ax1.set_title(method + ' Compartments: ' + str(structure)
-                  + '\n(' + str(num_compartments) + ' compartments, ' + str(num_samples)
-                  + ' samples)')
+    ax1.set_title(
+        method
+        + " Compartments: "
+        + str(structure)
+        + "\n("
+        + str(num_compartments)
+        + " compartments, "
+        + str(num_samples)
+        + " samples)"
+    )
     ax1.set_ylabel(y_label)
     ax1 = sns.violinplot(data=data)
 
-    labels = ['Sec ' + str(i) for i in range(num_compartments)]
-    ax1.get_xaxis().set_tick_params(direction='out')
-    ax1.xaxis.set_ticks_position('bottom')
+    labels = ["Sec " + str(i) for i in range(num_compartments)]
+    ax1.get_xaxis().set_tick_params(direction="out")
+    ax1.xaxis.set_ticks_position("bottom")
     ax1.set_xticks(np.arange(0, len(labels)))
     ax1.set_xticklabels(labels)
 
     cols = [data[:, i] for i in range(data.shape[1])]
     kruskal_h, kruskal_p = sp.stats.kruskal(*cols)
 
-    ax1.text(0.95, 0.01, 'Kruskal-Wallis p-value: ' + str(kruskal_p),
-             verticalalignment='bottom', horizontalalignment='right',
-             transform=ax1.transAxes)
+    ax1.text(
+        0.95,
+        0.01,
+        "Kruskal-Wallis p-value: " + str(kruskal_p),
+        verticalalignment="bottom",
+        horizontalalignment="right",
+        transform=ax1.transAxes,
+    )
 
-    plt.axhline(y=0, color='r', linestyle='-')
+    plt.axhline(y=0, color="r", linestyle="-")
 
     # save visualization
     if path.is_file():

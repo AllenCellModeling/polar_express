@@ -28,9 +28,9 @@ class SelectData(Step):
     @log_run_params
     def run(
         self,
-        dataset='/allen/aics/modeling/theok/Projects/Data/Org3Dcells',
+        dataset="/allen/aics/modeling/theok/Projects/Data/Org3Dcells",
         artflag=False,
-        **kwargs
+        **kwargs,
     ):
         """
         Select cells from annotation table
@@ -67,7 +67,7 @@ class SelectData(Step):
 
         # Point to master annotation file
         cell3D_root = Path(dataset)
-        csvfile = cell3D_root / 'Annotation' / 'ann.csv'
+        csvfile = cell3D_root / "Annotation" / "ann.csv"
         cells = pd.read_csv(csvfile)
 
         if artflag is True:
@@ -83,19 +83,21 @@ class SelectData(Step):
             selectedcells = cells.sample(n=N, random_state=1)
             no_of_cells = len(selectedcells)
             Nex = 2
-            vizcells = list(selectedcells['CellId'].sample(n=Nex, random_state=1))
+            vizcells = list(selectedcells["CellId"].sample(n=Nex, random_state=1))
 
             # Main loop to create
             art_cells_compiled = pd.DataFrame()
             for i in tqdm(range(no_of_cells), desc="Creating artificial cells"):
                 # Pandas series with information about cell
                 selectedcell = selectedcells.iloc[i]
-                art_cells = makeartificialGFP(selectedcell, artificial_cell_dir,
-                                              vizcells, artificial_plot_dir)
-                art_cells_compiled = art_cells_compiled.append(art_cells,
-                                                               ignore_index=True)
+                art_cells = makeartificialGFP(
+                    selectedcell, artificial_cell_dir, vizcells, artificial_plot_dir
+                )
+                art_cells_compiled = art_cells_compiled.append(
+                    art_cells, ignore_index=True
+                )
 
-            selected_cell_csv = cell_annotation_dir / 'ann_sc.csv'
+            selected_cell_csv = cell_annotation_dir / "ann_sc.csv"
             art_cells_compiled.to_csv(selected_cell_csv)
             log.info(f"{len(selectedcells)} Art cells are selected")
 
@@ -112,11 +114,12 @@ class SelectData(Step):
 
             # Select ER cells
             # Load in and select ER cells in interphase (stage = 0)
-            selectedcells = cells[(cells['Interphase and Mitotic Stages (stage)'] == 0)
-                                  & (cells[('Structure')]
-                                     == 'Endoplasmic reticulum')].sample(n=3)
+            selectedcells = cells[
+                (cells["Interphase and Mitotic Stages (stage)"] == 0)
+                & (cells[("Structure")] == "Endoplasmic reticulum")
+            ].sample(n=3)
             # Save selected cells
-            selected_cell_csv = cell_annotation_dir / 'ann_sc.csv'
+            selected_cell_csv = cell_annotation_dir / "ann_sc.csv"
             selectedcells.to_csv(selected_cell_csv)
             log.info(f"{len(selectedcells)} ER cells in interphase are selected")
 

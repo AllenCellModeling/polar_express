@@ -31,7 +31,7 @@ class All:
         self.step_list = [
             steps.SelectData(),
             steps.ComputeCellMetrics(),
-            steps.GatherTestVisualize()
+            steps.GatherTestVisualize(),
         ]
 
     def run(

@@ -29,7 +29,7 @@ def cell_metrics_manifest_1(select_data_manifest):
     step = ComputeCellMetrics()
 
     # Ensure that it still runs
-    output_manifest = step.run(AB_mode='hemispheres', num_angular_compartments=2)
+    output_manifest = step.run(AB_mode="hemispheres", num_angular_compartments=2)
     output_manifest = dd.read_csv(output_manifest)
     return output_manifest
 
@@ -40,7 +40,7 @@ def cell_metrics_manifest_2(select_data_manifest):
     step = ComputeCellMetrics()
 
     # Ensure that it still runs
-    output_manifest = step.run(AB_mode='quadrants', num_angular_compartments=8)
+    output_manifest = step.run(AB_mode="quadrants", num_angular_compartments=8)
     output_manifest = dd.read_csv(output_manifest)
     return output_manifest
 
@@ -62,18 +62,14 @@ def test_selectData(data_dir, select_data_manifest):
 
     # Check expected columns
     assert all(
-        expected_col in select_data_manifest.columns
-        for expected_col in ['filepath']
+        expected_col in select_data_manifest.columns for expected_col in ["filepath"]
     )
 
     # Check output length
     assert len(select_data_manifest) == 1
 
     # Check all expected files exist
-    assert all(
-        Path(f).resolve(strict=True)
-        for f in select_data_manifest['filepath']
-    )
+    assert all(Path(f).resolve(strict=True) for f in select_data_manifest["filepath"])
 
 
 # AB compartments: hemispheres, Angular compartments: 2
@@ -84,8 +80,7 @@ def test_computeCellMetrics_setting1(cell_metrics_manifest_1):
 
     # Check expected columns
     assert all(
-        expected_col in cell_metrics_manifest_1.columns
-        for expected_col in ['filepath']
+        expected_col in cell_metrics_manifest_1.columns for expected_col in ["filepath"]
     )
 
     # Check output length
@@ -93,8 +88,7 @@ def test_computeCellMetrics_setting1(cell_metrics_manifest_1):
 
     # Check all expected files exist
     assert all(
-        Path(f).resolve(strict=True)
-        for f in cell_metrics_manifest_1['filepath']
+        Path(f).resolve(strict=True) for f in cell_metrics_manifest_1["filepath"]
     )
 
 
@@ -106,8 +100,7 @@ def test_computeCellMetrics_setting2(cell_metrics_manifest_2):
 
     # Check expected columns
     assert all(
-        expected_col in cell_metrics_manifest_2.columns
-        for expected_col in ['filepath']
+        expected_col in cell_metrics_manifest_2.columns for expected_col in ["filepath"]
     )
 
     # Check output length
@@ -115,8 +108,7 @@ def test_computeCellMetrics_setting2(cell_metrics_manifest_2):
 
     # Check all expected files exist
     assert all(
-        Path(f).resolve(strict=True)
-        for f in cell_metrics_manifest_2['filepath']
+        Path(f).resolve(strict=True) for f in cell_metrics_manifest_2["filepath"]
     )
 
 
@@ -125,16 +117,10 @@ def test_gatherTestVisualize(gtv_manifest):
     # Run asserts
 
     # Check expected columns
-    assert all(
-        expected_col in gtv_manifest.columns
-        for expected_col in ['filepath']
-    )
+    assert all(expected_col in gtv_manifest.columns for expected_col in ["filepath"])
 
     # Check output length
     assert len(gtv_manifest) == 6  # The expected number of visualizations generated
 
     # Check all expected files exist
-    assert all(
-        Path(f).resolve(strict=True)
-        for f in gtv_manifest['filepath']
-    )
+    assert all(Path(f).resolve(strict=True) for f in gtv_manifest["filepath"])

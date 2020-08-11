@@ -69,7 +69,7 @@ def execute_before_any_test():
     step = ComputeCellMetrics()
 
     # Ensure that it still runs
-    cell_metrics_manifest = step.run(AB_mode='quadrants', num_angular_compartments=8)
+    cell_metrics_manifest = step.run(AB_mode="quadrants", num_angular_compartments=8)
 
     # Load manifest (from Path to Dataframe)
     cell_metrics_manifest = pd.read_csv(cell_metrics_manifest)

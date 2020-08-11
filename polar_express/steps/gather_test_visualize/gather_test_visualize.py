@@ -76,7 +76,8 @@ class GatherTestVisualize(Step):
         # Manifest from previous step
         if cell_metrics_manifest is None:
             cell_metrics_manifest = (
-                self.step_local_staging_dir.parent / "computecellmetrics"
+                self.step_local_staging_dir.parent
+                / "computecellmetrics"
                 / "manifest.csv"
             )
 
@@ -88,17 +89,18 @@ class GatherTestVisualize(Step):
         with (open(cell_pickles.iloc[0], "rb")) as openfile:
             curr_metrics = pickle.load(openfile)
 
-        structure = curr_metrics['structure']
+        structure = curr_metrics["structure"]
 
-        if (curr_metrics['AB_mode'] == 'quadrants'):
+        if curr_metrics["AB_mode"] == "quadrants":
             num_AB_compartments = 4
-        elif (curr_metrics['AB_mode'] == 'hemispheres'):
+        elif curr_metrics["AB_mode"] == "hemispheres":
             num_AB_compartments = 2
         else:
-            raise Exception('Invalid mode entered. Use \'quadrants\' '
-                            + 'or \'hemispheres\'.')
+            raise Exception(
+                "Invalid mode entered. Use 'quadrants' " + "or 'hemispheres'."
+            )
 
-        num_angular_compartments = curr_metrics['num_angular_compartments']
+        num_angular_compartments = curr_metrics["num_angular_compartments"]
 
         # Create storage data matrices for AB compartments
         AB_fc_storage = np.zeros([no_of_cells, num_AB_compartments])
@@ -115,13 +117,13 @@ class GatherTestVisualize(Step):
             with (open(cell_pickles.iloc[index], "rb")) as openfile:
                 curr_metrics = pickle.load(openfile)
 
-            AB_fc_storage[index, :] = curr_metrics['AB_fold_changes']
-            AB_cyto_storage[index, :] = curr_metrics['AB_cyto_vol']
-            AB_gfp_storage[index, :] = curr_metrics['AB_gfp_intensities']
+            AB_fc_storage[index, :] = curr_metrics["AB_fold_changes"]
+            AB_cyto_storage[index, :] = curr_metrics["AB_cyto_vol"]
+            AB_gfp_storage[index, :] = curr_metrics["AB_gfp_intensities"]
 
-            Angular_fc_storage[index, :] = curr_metrics['Ang_fold_changes']
-            Angular_cyto_storage[index, :] = curr_metrics['Ang_cyto_vol']
-            Angular_gfp_storage[index, :] = curr_metrics['Ang_gfp_intensities']
+            Angular_fc_storage[index, :] = curr_metrics["Ang_fold_changes"]
+            Angular_cyto_storage[index, :] = curr_metrics["Ang_cyto_vol"]
+            Angular_gfp_storage[index, :] = curr_metrics["Ang_gfp_intensities"]
 
         num_plots = 6
 
@@ -130,39 +132,92 @@ class GatherTestVisualize(Step):
 
         i = 0
 
-        for mode in ['AB', 'Angular']:
-            for plot in ['FC', 'Cyto', 'GFP']:
+        for mode in ["AB", "Angular"]:
+            for plot in ["FC", "Cyto", "GFP"]:
 
-                if (mode == 'AB'):
-                    path = vis_dir / (mode + "_" + str(num_AB_compartments) + "_"
-                                      + structure + "_" + plot + ".png")
-                    if (plot == 'FC'):
-                        makeViolinPlot(mode, num_AB_compartments, AB_fc_storage,
-                                       'Fold Change (GFP to Cytoplasm Volume)',
-                                       structure, no_of_cells, path)
-                    elif (plot == 'Cyto'):
-                        makeViolinPlot(mode, num_AB_compartments, AB_cyto_storage,
-                                       'Cytoplasm Volume', structure, no_of_cells, path)
-                    elif (plot == 'GFP'):
-                        makeViolinPlot(mode, num_AB_compartments, AB_gfp_storage,
-                                       'GFP Intensity', structure, no_of_cells, path)
+                if mode == "AB":
+                    path = vis_dir / (
+                        mode
+                        + "_"
+                        + str(num_AB_compartments)
+                        + "_"
+                        + structure
+                        + "_"
+                        + plot
+                        + ".png"
+                    )
+                    if plot == "FC":
+                        makeViolinPlot(
+                            mode,
+                            num_AB_compartments,
+                            AB_fc_storage,
+                            "Fold Change (GFP to Cytoplasm Volume)",
+                            structure,
+                            no_of_cells,
+                            path,
+                        )
+                    elif plot == "Cyto":
+                        makeViolinPlot(
+                            mode,
+                            num_AB_compartments,
+                            AB_cyto_storage,
+                            "Cytoplasm Volume",
+                            structure,
+                            no_of_cells,
+                            path,
+                        )
+                    elif plot == "GFP":
+                        makeViolinPlot(
+                            mode,
+                            num_AB_compartments,
+                            AB_gfp_storage,
+                            "GFP Intensity",
+                            structure,
+                            no_of_cells,
+                            path,
+                        )
 
-                elif (mode == 'Angular'):
-                    path = vis_dir / (mode + "_" + str(num_angular_compartments) + "_"
-                                      + structure + "_" + plot + ".png")
-                    if (plot == 'FC'):
-                        makeViolinPlot(mode, num_angular_compartments,
-                                       Angular_fc_storage,
-                                       'Fold Change (GFP to Cytoplasm Volume)',
-                                       structure, no_of_cells, path)
-                    elif (plot == 'Cyto'):
-                        makeViolinPlot(mode, num_angular_compartments,
-                                       Angular_cyto_storage, 'Cytoplasm Volume',
-                                       structure, no_of_cells, path)
-                    elif (plot == 'GFP'):
-                        makeViolinPlot(mode, num_angular_compartments,
-                                       Angular_gfp_storage, 'GFP Intensity', structure,
-                                       no_of_cells, path)
+                elif mode == "Angular":
+                    path = vis_dir / (
+                        mode
+                        + "_"
+                        + str(num_angular_compartments)
+                        + "_"
+                        + structure
+                        + "_"
+                        + plot
+                        + ".png"
+                    )
+                    if plot == "FC":
+                        makeViolinPlot(
+                            mode,
+                            num_angular_compartments,
+                            Angular_fc_storage,
+                            "Fold Change (GFP to Cytoplasm Volume)",
+                            structure,
+                            no_of_cells,
+                            path,
+                        )
+                    elif plot == "Cyto":
+                        makeViolinPlot(
+                            mode,
+                            num_angular_compartments,
+                            Angular_cyto_storage,
+                            "Cytoplasm Volume",
+                            structure,
+                            no_of_cells,
+                            path,
+                        )
+                    elif plot == "GFP":
+                        makeViolinPlot(
+                            mode,
+                            num_angular_compartments,
+                            Angular_gfp_storage,
+                            "GFP Intensity",
+                            structure,
+                            no_of_cells,
+                            path,
+                        )
 
                 # Add the path to the manifest
                 self.manifest.at[i, "filepath"] = path

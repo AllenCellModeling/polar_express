@@ -45,21 +45,19 @@ def findVerticalCutoffs(im, masked_channels):
         prev_stack = stack - 1
 
         # The bottom of cell membrane is at the bottom of image
-        if (prev_stack == 0 and np.sum(seg_mem[prev_stack, :, :]) != 0):
+        if prev_stack == 0 and np.sum(seg_mem[prev_stack, :, :]) != 0:
             bot_of_cell = prev_stack
 
         # The top of cell membrance is at the top of image
-        if (stack == num_z_stacks - 1 and np.sum(seg_mem[stack, :, :]) != 0):
+        if stack == num_z_stacks - 1 and np.sum(seg_mem[stack, :, :]) != 0:
             top_of_cell = stack
 
         # The bottom layer of the cell membrane
-        if (np.sum(seg_mem[prev_stack, :, :]) == 0
-                and np.sum(seg_mem[stack, :, :]) != 0):
+        if np.sum(seg_mem[prev_stack, :, :]) == 0 and np.sum(seg_mem[stack, :, :]) != 0:
             bot_of_cell = stack
 
         # The top layer of the cell membrane
-        if (np.sum(seg_mem[prev_stack, :, :]) != 0
-                and np.sum(seg_mem[stack, :, :]) == 0):
+        if np.sum(seg_mem[prev_stack, :, :]) != 0 and np.sum(seg_mem[stack, :, :]) == 0:
             top_of_cell = prev_stack
 
     # Find where the nucleus starts and ends
@@ -68,32 +66,40 @@ def findVerticalCutoffs(im, masked_channels):
         prev_stack = stack - 1
 
         # The bottom layer of the nucleus
-        if (np.sum(seg_dna[prev_stack, :, :]) == 0
-                and np.sum(seg_dna[stack, :, :]) != 0):
+        if np.sum(seg_dna[prev_stack, :, :]) == 0 and np.sum(seg_dna[stack, :, :]) != 0:
             bot_of_nucleus = stack
 
         # The top layer of the nucleus
-        if (np.sum(seg_dna[prev_stack, :, :]) != 0
-                and np.sum(seg_dna[stack, :, :]) == 0):
+        if np.sum(seg_dna[prev_stack, :, :]) != 0 and np.sum(seg_dna[stack, :, :]) == 0:
             top_of_nucleus = prev_stack
 
     # Find the centroid of the nucleus
     centroid_of_nucleus = ndimage.measurements.center_of_mass(seg_dna)
 
     # Check for unexpected positions of cell sections
-    if (top_of_nucleus > top_of_cell or bot_of_nucleus < bot_of_cell):
-        print('Nucleus exceeds boundaries of cell membrane!')
+    if top_of_nucleus > top_of_cell or bot_of_nucleus < bot_of_cell:
+        print("Nucleus exceeds boundaries of cell membrane!")
 
-    if (centroid_of_nucleus[0] > top_of_nucleus
-            or centroid_of_nucleus[0] < bot_of_nucleus):
-        print('Centroid of nucleus exceeds boundaries of nucleus!')
+    if (
+        centroid_of_nucleus[0] > top_of_nucleus
+        or centroid_of_nucleus[0] < bot_of_nucleus
+    ):
+        print("Centroid of nucleus exceeds boundaries of nucleus!")
 
-    if (bot_of_cell > top_of_cell or bot_of_nucleus > top_of_nucleus):
-        print('Bottom layer of organelle exceeds top layer!')
+    if bot_of_cell > top_of_cell or bot_of_nucleus > top_of_nucleus:
+        print("Bottom layer of organelle exceeds top layer!")
 
-    if (any(elem is None for elem in [bot_of_cell, bot_of_nucleus, centroid_of_nucleus,
-            top_of_nucleus, top_of_cell])):
-        print('No value assigned to a vertical cutoff!')
+    if any(
+        elem is None
+        for elem in [
+            bot_of_cell,
+            bot_of_nucleus,
+            centroid_of_nucleus,
+            top_of_nucleus,
+            top_of_cell,
+        ]
+    ):
+        print("No value assigned to a vertical cutoff!")
 
     # Return the results
     return bot_of_cell, bot_of_nucleus, centroid_of_nucleus, top_of_nucleus, top_of_cell

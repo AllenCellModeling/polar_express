@@ -1,7 +1,7 @@
 import numpy as np
 
 
-def findFoldChange_AB(masked_channels, z_metrics, vol_scale_factor, mode='quadrants'):
+def findFoldChange_AB(masked_channels, z_metrics, vol_scale_factor, mode="quadrants"):
     """
 
     Helper method that finds and returns, for each of the cell sections, the fold change
@@ -34,12 +34,12 @@ def findFoldChange_AB(masked_channels, z_metrics, vol_scale_factor, mode='quadra
 
     """
 
-    if (mode == 'quadrants'):
+    if mode == "quadrants":
         num_compartments = 4
-    elif (mode == 'hemispheres'):
+    elif mode == "hemispheres":
         num_compartments = 2
     else:
-        raise Exception('Invalid mode entered. Enter \'quadrants\' or \'hemispheres\'.')
+        raise Exception("Invalid mode entered. Enter 'quadrants' or 'hemispheres'.")
 
     cyto_vol = np.zeros(num_compartments)
     gfp_intensities = np.zeros(num_compartments)
@@ -61,15 +61,15 @@ def findFoldChange_AB(masked_channels, z_metrics, vol_scale_factor, mode='quadra
     # Find top and bottom of current z-stack
     for section in range(num_compartments):
 
-        if (mode == 'quadrants'):
+        if mode == "quadrants":
 
-            if (section == 0):  # top quarter of cell
+            if section == 0:  # top quarter of cell
                 top_stack = top_of_cell + 1
                 bot_stack = top_of_nucleus
-            elif (section == 1):  # top half of nucleus
+            elif section == 1:  # top half of nucleus
                 top_stack = top_of_nucleus
                 bot_stack = int(centroid_of_nucleus[0])
-            elif (section == 2):  # bottom half of nucleus
+            elif section == 2:  # bottom half of nucleus
                 top_stack = int(centroid_of_nucleus[0])
                 bot_stack = bot_of_nucleus
             else:  # bottom quarter of cell
@@ -78,7 +78,7 @@ def findFoldChange_AB(masked_channels, z_metrics, vol_scale_factor, mode='quadra
 
         else:  # mode == 'hemispheres'
 
-            if (section == 0):  # top half of cell
+            if section == 0:  # top half of cell
                 top_stack = top_of_cell + 1
                 bot_stack = int(centroid_of_nucleus[0])
             else:  # bottom half of cell
@@ -87,15 +87,16 @@ def findFoldChange_AB(masked_channels, z_metrics, vol_scale_factor, mode='quadra
 
         for stack in range(bot_stack, top_stack):
             # Increment by number of voxels between cell membrane and nucleus
-            cyto_vol[section] += (np.count_nonzero(seg_mem[stack, :, :] > 0)
-                                  - np.count_nonzero(seg_dna[stack, :, :] > 0))
+            cyto_vol[section] += np.count_nonzero(
+                seg_mem[stack, :, :] > 0
+            ) - np.count_nonzero(seg_dna[stack, :, :] > 0)
             # Increment by total gfp intensity of this stack
             gfp_intensities[section] += np.sum(gfp[stack, :, :])
 
     # Normalize
     cyto_vol = cyto_vol / np.sum(cyto_vol)
 
-    # Scale volume by pixel scale factor 
+    # Scale volume by pixel scale factor
     cyto_vol = cyto_vol * vol_scale_factor
     gfp_intensities = gfp_intensities / np.sum(gfp_intensities)
 
@@ -105,15 +106,16 @@ def findFoldChange_AB(masked_channels, z_metrics, vol_scale_factor, mode='quadra
     for section in range(num_compartments):
 
         # Check for cytoplasm volume of 0
-        if (cyto_vol[section] != 0 and gfp_intensities[section] != 0):
-            fold_changes[section] = np.log2(gfp_intensities[section]
-                                            / cyto_vol[section])
+        if cyto_vol[section] != 0 and gfp_intensities[section] != 0:
+            fold_changes[section] = np.log2(
+                gfp_intensities[section] / cyto_vol[section]
+            )
 
-        elif (cyto_vol[section] == 0):
-            print('Cytoplasm volume of 0 detected')
+        elif cyto_vol[section] == 0:
+            print("Cytoplasm volume of 0 detected")
 
-        elif (gfp_intensities[section] == 0):
-            print('GFP intensity of 0 detected')
+        elif gfp_intensities[section] == 0:
+            print("GFP intensity of 0 detected")
 
     return fold_changes, cyto_vol, gfp_intensities
 
@@ -203,7 +205,7 @@ def findFoldChange_Angular(masked_channels, z_metrics, vol_scale_factor, num_sec
         cos_upper_bound_angle = np.cos(upper_bound_angle)
         cos_lower_bound_angle = np.cos(lower_bound_angle)
 
-        if (section == num_sections - 1):
+        if section == num_sections - 1:
             mask = (res >= cos_lower_bound_angle) * (res <= cos_upper_bound_angle)
         else:
             mask = (res >= cos_lower_bound_angle) * (res < cos_upper_bound_angle)
@@ -213,8 +215,9 @@ def findFoldChange_Angular(masked_channels, z_metrics, vol_scale_factor, num_sec
         masked_seg_dna = mask * seg_dna
 
         # Increment by number of voxels between cell membrane and nucleus
-        cyto_vol[section] += (np.count_nonzero(masked_seg_mem)
-                              - np.count_nonzero(masked_seg_dna))
+        cyto_vol[section] += np.count_nonzero(masked_seg_mem) - np.count_nonzero(
+            masked_seg_dna
+        )
         gfp_intensities[section] += np.sum(gfp * mask)
 
         count += np.sum(mask)
@@ -232,14 +235,15 @@ def findFoldChange_Angular(masked_channels, z_metrics, vol_scale_factor, num_sec
     for section in range(num_sections):
 
         # Check for cytoplasm volume of 0
-        if (cyto_vol[section] != 0 and gfp_intensities[section] != 0):
-            fold_changes[section] = np.log2(gfp_intensities[section]
-                                            / cyto_vol[section])
+        if cyto_vol[section] != 0 and gfp_intensities[section] != 0:
+            fold_changes[section] = np.log2(
+                gfp_intensities[section] / cyto_vol[section]
+            )
 
-        elif (cyto_vol[section] == 0):
-            print('Cytoplasm volume of 0 detected')
+        elif cyto_vol[section] == 0:
+            print("Cytoplasm volume of 0 detected")
 
-        elif (gfp_intensities[section] == 0):
-            print('GFP intensity of 0 detected')
+        elif gfp_intensities[section] == 0:
+            print("GFP intensity of 0 detected")
 
     return fold_changes, cyto_vol, gfp_intensities

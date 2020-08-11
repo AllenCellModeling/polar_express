@@ -198,14 +198,14 @@
 <span class="c1">###############################################################################</span>
 
 
-<div class="viewcode-block" id="Raw"><a class="viewcode-back" href="../../../../polar_express.steps.raw.html#polar_express.steps.Raw">[docs]</a><span class="k">class</span> <span class="nc">Raw</span><span class="p">(</span><span class="n">Step</span><span class="p">):</span>
+<div class="viewcode-block" id="Raw"><a class="viewcode-back" href="../../../../polar_express.steps.raw.html#polar_express.steps.raw.raw.Raw">[docs]</a><span class="k">class</span> <span class="nc">Raw</span><span class="p">(</span><span class="n">Step</span><span class="p">):</span>
     <span class="c1"># You only need to have an __init__ if you aren&#39;t using the default values</span>
     <span class="c1"># In this case, we could get rid of it but for the purposes of this example</span>
     <span class="c1"># we will keep it.</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">direct_upstream_tasks</span><span class="o">=</span><span class="p">[],</span> <span class="n">config</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">direct_upstream_tasks</span><span class="o">=</span><span class="n">direct_upstream_tasks</span><span class="p">,</span> <span class="n">config</span><span class="o">=</span><span class="n">config</span><span class="p">)</span>
 
-<div class="viewcode-block" id="Raw.run"><a class="viewcode-back" href="../../../../polar_express.steps.raw.html#polar_express.steps.Raw.run">[docs]</a>    <span class="nd">@log_run_params</span>
+<div class="viewcode-block" id="Raw.run"><a class="viewcode-back" href="../../../../polar_express.steps.raw.html#polar_express.steps.raw.raw.Raw.run">[docs]</a>    <span class="nd">@log_run_params</span>
     <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Path</span><span class="p">]:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Generate N random images and save them to /images.</span>

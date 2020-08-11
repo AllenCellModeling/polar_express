@@ -198,126 +198,14 @@
 <div class="section" id="submodules">
 <h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
 </div>
-<div class="section" id="module-polar_express.steps.gather_test_visualize.gather_test_visualize">
-<span id="polar-express-steps-gather-test-visualize-gather-test-visualize-module"></span><h2>polar_express.steps.gather_test_visualize.gather_test_visualize module<a class="headerlink" href="#module-polar_express.steps.gather_test_visualize.gather_test_visualize" title="Permalink to this headline">¶</a></h2>
-<dl class="class">
-<dt id="polar_express.steps.gather_test_visualize.gather_test_visualize.GatherTestVisualize">
-<em class="property">class </em><code class="sig-prename descclassname">polar_express.steps.gather_test_visualize.gather_test_visualize.</code><code class="sig-name descname">GatherTestVisualize</code><span class="sig-paren">(</span><em class="sig-param">direct_upstream_tasks: List[Step] = [&lt;class 'polar_express.steps.compute_cell_metrics.compute_cell_metrics.ComputeCellMetrics'&gt;], config: Union[str, pathlib.Path, Dict[str, str], None] = None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/polar_express/steps/gather_test_visualize/gather_test_visualize.html#GatherTestVisualize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#polar_express.steps.gather_test_visualize.gather_test_visualize.GatherTestVisualize" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">datastep.step.Step</span></code></p>
-<dl class="method">
-<dt id="polar_express.steps.gather_test_visualize.gather_test_visualize.GatherTestVisualize.run">
-<code class="sig-name descname">run</code><span class="sig-paren">(</span><em class="sig-param">cell_metrics_manifest: Optional[pathlib.Path] = None</em>, <em class="sig-param">filepath_column: str = 'filepath'</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/polar_express/steps/gather_test_visualize/gather_test_visualize.html#GatherTestVisualize.run"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#polar_express.steps.gather_test_visualize.gather_test_visualize.GatherTestVisualize.run" title="Permalink to this definition">¶</a></dt>
-<dd><p>Gather, test, visualize</p>
-<dl class="simple">
-<dt>distributed_executor_address: Optional[str]</dt><dd><p>An optional executor address to pass to some computation engine.</p>
-</dd>
-<dt>clean: bool</dt><dd><p>Should the local staging directory be cleaned prior to this run.
-Default: False (Do not clean)</p>
-</dd>
-<dt>debug: bool</dt><dd><p>A debug flag for the developer to use to manipulate how much data runs,
-how it is processed, etc.
-Default: False (Do not debug)</p>
-</dd>
-</dl>
-<dl class="field-list">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul>
-<li><p><strong>cell_metrics_manifest</strong> (<em>Optional[Path]</em>) – Path to manifest file that contains a path to pickle files with the stored
-metrics for selected cells
-Default: self.step_local_staging_dir.parent / computecellmetrics</p>
-<blockquote>
-<div><p>/ manifest.csv</p>
-</div></blockquote>
-</li>
-<li><p><strong>filepath_column</strong> (<em>str</em>) – If providing a path to a csv manifest, the column to use for matrices.
-Default: “filepath”</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p><strong>visualizations_manifest</strong> – Path to manifest file that contains paths to image files of the generated
-visualizations</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>Path</p>
-</dd>
-</dl>
-</dd></dl>
-
-</dd></dl>
-
+<div class="section" id="polar-express-steps-gather-test-visualize-gather-test-visualize-module">
+<h2>polar_express.steps.gather_test_visualize.gather_test_visualize module<a class="headerlink" href="#polar-express-steps-gather-test-visualize-gather-test-visualize-module" title="Permalink to this headline">¶</a></h2>
 </div>
-<div class="section" id="module-polar_express.steps.gather_test_visualize.violinPlotHelper">
-<span id="polar-express-steps-gather-test-visualize-violinplothelper-module"></span><h2>polar_express.steps.gather_test_visualize.violinPlotHelper module<a class="headerlink" href="#module-polar_express.steps.gather_test_visualize.violinPlotHelper" title="Permalink to this headline">¶</a></h2>
-<dl class="function">
-<dt id="polar_express.steps.gather_test_visualize.violinPlotHelper.makeViolinPlot">
-<code class="sig-prename descclassname">polar_express.steps.gather_test_visualize.violinPlotHelper.</code><code class="sig-name descname">makeViolinPlot</code><span class="sig-paren">(</span><em class="sig-param">method</em>, <em class="sig-param">num_compartments</em>, <em class="sig-param">data</em>, <em class="sig-param">y_label</em>, <em class="sig-param">structure</em>, <em class="sig-param">num_samples</em>, <em class="sig-param">path</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/polar_express/steps/gather_test_visualize/violinPlotHelper.html#makeViolinPlot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#polar_express.steps.gather_test_visualize.violinPlotHelper.makeViolinPlot" title="Permalink to this definition">¶</a></dt>
-<dd><p>Helper method to make violin plots. Creates ‘num_compartments’ violins corresponding
-to the various compaartments determined by the ‘method’ being used. Takes either
-‘AB’ or ‘Angular’ as the method.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>method</strong> (<em>str</em>) – “AB” if AB compartments is the method to visualize
-“Angular” if angular compartments is the method to visualize</p></li>
-<li><p><strong>num_compartments</strong> (<em>int</em>) – the number of compartments (violins)</p></li>
-<li><p><strong>data</strong> (<em>numpy array where each column represents a section of the cell, and each</em>) – row is a sample</p></li>
-<li><p><strong>y_label</strong> (<em>str</em>) – label of the y-axis</p></li>
-<li><p><strong>structure</strong> (<em>str</em>) – the structure that the GFP tags</p></li>
-<li><p><strong>num_samples</strong> (<em>int</em>) – the number of images (samples) that the data contains</p></li>
-<li><p><strong>path</strong> (<em>str</em>) – path to the directory that the visualization should be saves to</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
+<div class="section" id="polar-express-steps-gather-test-visualize-violinplothelper-module">
+<h2>polar_express.steps.gather_test_visualize.violinPlotHelper module<a class="headerlink" href="#polar-express-steps-gather-test-visualize-violinplothelper-module" title="Permalink to this headline">¶</a></h2>
 </div>
-<div class="section" id="module-polar_express.steps.gather_test_visualize">
-<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-polar_express.steps.gather_test_visualize" title="Permalink to this headline">¶</a></h2>
-<dl class="class">
-<dt id="polar_express.steps.gather_test_visualize.GatherTestVisualize">
-<em class="property">class </em><code class="sig-prename descclassname">polar_express.steps.gather_test_visualize.</code><code class="sig-name descname">GatherTestVisualize</code><span class="sig-paren">(</span><em class="sig-param">direct_upstream_tasks: List[Step] = [&lt;class 'polar_express.steps.compute_cell_metrics.compute_cell_metrics.ComputeCellMetrics'&gt;], config: Union[str, pathlib.Path, Dict[str, str], None] = None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/polar_express/steps/gather_test_visualize/gather_test_visualize.html#GatherTestVisualize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#polar_express.steps.gather_test_visualize.GatherTestVisualize" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">datastep.step.Step</span></code></p>
-<dl class="method">
-<dt id="polar_express.steps.gather_test_visualize.GatherTestVisualize.run">
-<code class="sig-name descname">run</code><span class="sig-paren">(</span><em class="sig-param">cell_metrics_manifest: Optional[pathlib.Path] = None</em>, <em class="sig-param">filepath_column: str = 'filepath'</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/polar_express/steps/gather_test_visualize/gather_test_visualize.html#GatherTestVisualize.run"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#polar_express.steps.gather_test_visualize.GatherTestVisualize.run" title="Permalink to this definition">¶</a></dt>
-<dd><p>Gather, test, visualize</p>
-<dl class="simple">
-<dt>distributed_executor_address: Optional[str]</dt><dd><p>An optional executor address to pass to some computation engine.</p>
-</dd>
-<dt>clean: bool</dt><dd><p>Should the local staging directory be cleaned prior to this run.
-Default: False (Do not clean)</p>
-</dd>
-<dt>debug: bool</dt><dd><p>A debug flag for the developer to use to manipulate how much data runs,
-how it is processed, etc.
-Default: False (Do not debug)</p>
-</dd>
-</dl>
-<dl class="field-list">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul>
-<li><p><strong>cell_metrics_manifest</strong> (<em>Optional[Path]</em>) – Path to manifest file that contains a path to pickle files with the stored
-metrics for selected cells
-Default: self.step_local_staging_dir.parent / computecellmetrics</p>
-<blockquote>
-<div><p>/ manifest.csv</p>
-</div></blockquote>
-</li>
-<li><p><strong>filepath_column</strong> (<em>str</em>) – If providing a path to a csv manifest, the column to use for matrices.
-Default: “filepath”</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p><strong>visualizations_manifest</strong> – Path to manifest file that contains paths to image files of the generated
-visualizations</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>Path</p>
-</dd>
-</dl>
-</dd></dl>
-
-</dd></dl>
-
+<div class="section" id="module-contents">
+<h2>Module contents<a class="headerlink" href="#module-contents" title="Permalink to this headline">¶</a></h2>
 </div>
 </div>
 

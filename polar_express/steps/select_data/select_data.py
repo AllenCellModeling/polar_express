@@ -5,7 +5,9 @@ import logging
 from pathlib import Path
 from typing import Dict, List, Optional, Union
 import pandas as pd
+import numpy as np
 from tqdm import tqdm
+from aics_dask_utils import DistributedHandler
 
 from datastep import Step, log_run_params
 from .artificialGFP import makeartificialGFP
@@ -25,11 +27,32 @@ class SelectData(Step):
     ):
         super().__init__(direct_upstream_tasks=direct_upstream_tasks, config=config)
 
+    @staticmethod
+    def _example_func(row_index: int, row: pd.Series) -> int:
+        # Invert a large matrix
+        inv = np.linalg.inv(np.random.rand(1000, 1000))
+        i = int(row_index)
+        return i
+
+    @staticmethod
+    def _create_art_cells(
+        row_index: int,
+        selectedcell: pd.Series,
+        artificial_cell_dir: Path,
+        vizcells: List,
+        artificial_plot_dir: Path,
+    ) -> pd.DataFrame:
+        # Create artificial cells
+        art_cells = makeartificialGFP(selectedcell, artificial_cell_dir, vizcells, artificial_plot_dir)
+
+        return art_cells
+
     @log_run_params
     def run(
         self,
         dataset="/allen/aics/modeling/theok/Projects/Data/Org3Dcells",
         artflag=False,
+        distributed_executor_address: Optional[str] = None,
         **kwargs,
     ):
         """
@@ -53,6 +76,14 @@ class SelectData(Step):
             Path to the directory containing the .tiff files to be passed into the
             datastep workflow. The directory should also contain a sub-directory
             "Annotation" which holds ann.csv
+
+        artflag: Optional[Bool]
+            Flag indicating to run artificial GFP generation in cells
+            Default: False
+
+        distributed_executor_address: Optional[str]
+            An optional executor address to pass to some computation engine.
+            Default: None
 
         Returns
         -------
@@ -86,16 +117,38 @@ class SelectData(Step):
             vizcells = list(selectedcells["CellId"].sample(n=Nex, random_state=1))
 
             # Main loop to create
+            # art_cells_compiled = pd.DataFrame()
+            # for i in tqdm(range(no_of_cells), desc="Creating artificial cells"):
+            #     # Pandas series with information about cell
+            #     selectedcell = selectedcells.iloc[i]
+            #     art_cells = makeartificialGFP(
+            #         selectedcell, artificial_cell_dir, vizcells, artificial_plot_dir
+            #     )
+            #     art_cells_compiled = art_cells_compiled.append(
+            #         art_cells, ignore_index=True
+            #     )
+
+            print('Starting distributed run')
+            # Process each row
+            with DistributedHandler(distributed_executor_address) as handler:
+                # Start processing
+                results = handler.batched_map(
+                    self._create_art_cells,
+                    # Convert dataframe iterrows into two lists of items to iterate over
+                    # One list will be row index
+                    # One list will be the pandas series of every row
+                    *zip(*list(selectedcells.iterrows())),
+                    # Pass the other parameters as list of the same thing for each
+                    # mapped function call
+                    [artificial_cell_dir for i in range(len(dataset))],
+                    [vizcells for i in range(len(dataset))],
+                    [artificial_plot_dir for i in range(len(dataset))],
+                )
+
+            # Generate features paths rows
             art_cells_compiled = pd.DataFrame()
-            for i in tqdm(range(no_of_cells), desc="Creating artificial cells"):
-                # Pandas series with information about cell
-                selectedcell = selectedcells.iloc[i]
-                art_cells = makeartificialGFP(
-                    selectedcell, artificial_cell_dir, vizcells, artificial_plot_dir
-                )
-                art_cells_compiled = art_cells_compiled.append(
-                    art_cells, ignore_index=True
-                )
+            for result in results:
+                art_cells_compiled = art_cells_compiled.append(result, ignore_index=True)
 
             selected_cell_csv = cell_annotation_dir / "ann_sc.csv"
             art_cells_compiled.to_csv(selected_cell_csv)
@@ -117,7 +170,7 @@ class SelectData(Step):
             selectedcells = cells[
                 (cells["Interphase and Mitotic Stages (stage)"] == 0)
                 & (cells[("Structure")] == "Endoplasmic reticulum")
-            ].sample(n=3)
+            ]
             # Save selected cells
             selected_cell_csv = cell_annotation_dir / "ann_sc.csv"
             selectedcells.to_csv(selected_cell_csv)
@@ -131,5 +184,19 @@ class SelectData(Step):
             # Save the manifest
             manifest_file = self.step_local_staging_dir / "manifest.csv"
             self.manifest.to_csv(manifest_file, index=False)
+
+            print('Starting distributed run')
+            # Process each row
+            with DistributedHandler(distributed_executor_address) as handler:
+                # Start processing
+                results = handler.batched_map(
+                    self._example_func,
+                    # Convert dataframe iterrows into two lists of items to iterate over
+                    # One list will be row index
+                    # One list will be the pandas series of every row
+                    *zip(*list(selectedcells.iterrows())),
+                )
+
+            print(results)
 
         return manifest_file

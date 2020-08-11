@@ -12,6 +12,10 @@ A datastep workflow to analyze GFP intensity of organelles along the Z-dimension
 ## Installation
 `pip install git+https://github.com/WillChen789/polar_express.git`
 
+## Documentation
+For full package documentation please visit
+[allencellmodeling.github.io/polar_express](https://allencellmodeling.github.io/polar_express/index.html).
+
 ## Development
 See [CONTRIBUTING.md](CONTRIBUTING.md) for information related to developing the code.
 

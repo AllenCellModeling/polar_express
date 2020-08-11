@@ -255,7 +255,8 @@
         <span class="c1"># Manifest from previous step</span>
         <span class="k">if</span> <span class="n">cell_metrics_manifest</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">cell_metrics_manifest</span> <span class="o">=</span> <span class="p">(</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">step_local_staging_dir</span><span class="o">.</span><span class="n">parent</span> <span class="o">/</span> <span class="s2">&quot;computecellmetrics&quot;</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">step_local_staging_dir</span><span class="o">.</span><span class="n">parent</span>
+                <span class="o">/</span> <span class="s2">&quot;computecellmetrics&quot;</span>
                 <span class="o">/</span> <span class="s2">&quot;manifest.csv&quot;</span>
             <span class="p">)</span>
 
@@ -267,17 +268,18 @@
         <span class="k">with</span> <span class="p">(</span><span class="nb">open</span><span class="p">(</span><span class="n">cell_pickles</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s2">&quot;rb&quot;</span><span class="p">))</span> <span class="k">as</span> <span class="n">openfile</span><span class="p">:</span>
             <span class="n">curr_metrics</span> <span class="o">=</span> <span class="n">pickle</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">openfile</span><span class="p">)</span>
 
-        <span class="n">structure</span> <span class="o">=</span> <span class="n">curr_metrics</span><span class="p">[</span><span class="s1">&#39;structure&#39;</span><span class="p">]</span>
+        <span class="n">structure</span> <span class="o">=</span> <span class="n">curr_metrics</span><span class="p">[</span><span class="s2">&quot;structure&quot;</span><span class="p">]</span>
 
-        <span class="k">if</span> <span class="p">(</span><span class="n">curr_metrics</span><span class="p">[</span><span class="s1">&#39;AB_mode&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;quadrants&#39;</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">curr_metrics</span><span class="p">[</span><span class="s2">&quot;AB_mode&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;quadrants&quot;</span><span class="p">:</span>
             <span class="n">num_AB_compartments</span> <span class="o">=</span> <span class="mi">4</span>
-        <span class="k">elif</span> <span class="p">(</span><span class="n">curr_metrics</span><span class="p">[</span><span class="s1">&#39;AB_mode&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;hemispheres&#39;</span><span class="p">):</span>
+        <span class="k">elif</span> <span class="n">curr_metrics</span><span class="p">[</span><span class="s2">&quot;AB_mode&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;hemispheres&quot;</span><span class="p">:</span>
             <span class="n">num_AB_compartments</span> <span class="o">=</span> <span class="mi">2</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Invalid mode entered. Use </span><span class="se">\&#39;</span><span class="s1">quadrants</span><span class="se">\&#39;</span><span class="s1"> &#39;</span>
-                            <span class="o">+</span> <span class="s1">&#39;or </span><span class="se">\&#39;</span><span class="s1">hemispheres</span><span class="se">\&#39;</span><span class="s1">.&#39;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span>
+                <span class="s2">&quot;Invalid mode entered. Use &#39;quadrants&#39; &quot;</span> <span class="o">+</span> <span class="s2">&quot;or &#39;hemispheres&#39;.&quot;</span>
+            <span class="p">)</span>
 
-        <span class="n">num_angular_compartments</span> <span class="o">=</span> <span class="n">curr_metrics</span><span class="p">[</span><span class="s1">&#39;num_angular_compartments&#39;</span><span class="p">]</span>
+        <span class="n">num_angular_compartments</span> <span class="o">=</span> <span class="n">curr_metrics</span><span class="p">[</span><span class="s2">&quot;num_angular_compartments&quot;</span><span class="p">]</span>
 
         <span class="c1"># Create storage data matrices for AB compartments</span>
         <span class="n">AB_fc_storage</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="n">no_of_cells</span><span class="p">,</span> <span class="n">num_AB_compartments</span><span class="p">])</span>
@@ -294,13 +296,13 @@
             <span class="k">with</span> <span class="p">(</span><span class="nb">open</span><span class="p">(</span><span class="n">cell_pickles</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">index</span><span class="p">],</span> <span class="s2">&quot;rb&quot;</span><span class="p">))</span> <span class="k">as</span> <span class="n">openfile</span><span class="p">:</span>
                 <span class="n">curr_metrics</span> <span class="o">=</span> <span class="n">pickle</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">openfile</span><span class="p">)</span>
 
-            <span class="n">AB_fc_storage</span><span class="p">[</span><span class="n">index</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">curr_metrics</span><span class="p">[</span><span class="s1">&#39;AB_fold_changes&#39;</span><span class="p">]</span>
-            <span class="n">AB_cyto_storage</span><span class="p">[</span><span class="n">index</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">curr_metrics</span><span class="p">[</span><span class="s1">&#39;AB_cyto_vol&#39;</span><span class="p">]</span>
-            <span class="n">AB_gfp_storage</span><span class="p">[</span><span class="n">index</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">curr_metrics</span><span class="p">[</span><span class="s1">&#39;AB_gfp_intensities&#39;</span><span class="p">]</span>
+            <span class="n">AB_fc_storage</span><span class="p">[</span><span class="n">index</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">curr_metrics</span><span class="p">[</span><span class="s2">&quot;AB_fold_changes&quot;</span><span class="p">]</span>
+            <span class="n">AB_cyto_storage</span><span class="p">[</span><span class="n">index</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">curr_metrics</span><span class="p">[</span><span class="s2">&quot;AB_cyto_vol&quot;</span><span class="p">]</span>
+            <span class="n">AB_gfp_storage</span><span class="p">[</span><span class="n">index</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">curr_metrics</span><span class="p">[</span><span class="s2">&quot;AB_gfp_intensities&quot;</span><span class="p">]</span>
 
-            <span class="n">Angular_fc_storage</span><span class="p">[</span><span class="n">index</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">curr_metrics</span><span class="p">[</span><span class="s1">&#39;Ang_fold_changes&#39;</span><span class="p">]</span>
-            <span class="n">Angular_cyto_storage</span><span class="p">[</span><span class="n">index</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">curr_metrics</span><span class="p">[</span><span class="s1">&#39;Ang_cyto_vol&#39;</span><span class="p">]</span>
-            <span class="n">Angular_gfp_storage</span><span class="p">[</span><span class="n">index</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">curr_metrics</span><span class="p">[</span><span class="s1">&#39;Ang_gfp_intensities&#39;</span><span class="p">]</span>
+            <span class="n">Angular_fc_storage</span><span class="p">[</span><span class="n">index</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">curr_metrics</span><span class="p">[</span><span class="s2">&quot;Ang_fold_changes&quot;</span><span class="p">]</span>
+            <span class="n">Angular_cyto_storage</span><span class="p">[</span><span class="n">index</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">curr_metrics</span><span class="p">[</span><span class="s2">&quot;Ang_cyto_vol&quot;</span><span class="p">]</span>
+            <span class="n">Angular_gfp_storage</span><span class="p">[</span><span class="n">index</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">curr_metrics</span><span class="p">[</span><span class="s2">&quot;Ang_gfp_intensities&quot;</span><span class="p">]</span>
 
         <span class="n">num_plots</span> <span class="o">=</span> <span class="mi">6</span>
 
@@ -309,39 +311,92 @@
 
         <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span>
 
-        <span class="k">for</span> <span class="n">mode</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;AB&#39;</span><span class="p">,</span> <span class="s1">&#39;Angular&#39;</span><span class="p">]:</span>
-            <span class="k">for</span> <span class="n">plot</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;FC&#39;</span><span class="p">,</span> <span class="s1">&#39;Cyto&#39;</span><span class="p">,</span> <span class="s1">&#39;GFP&#39;</span><span class="p">]:</span>
+        <span class="k">for</span> <span class="n">mode</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;AB&quot;</span><span class="p">,</span> <span class="s2">&quot;Angular&quot;</span><span class="p">]:</span>
+            <span class="k">for</span> <span class="n">plot</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;FC&quot;</span><span class="p">,</span> <span class="s2">&quot;Cyto&quot;</span><span class="p">,</span> <span class="s2">&quot;GFP&quot;</span><span class="p">]:</span>
 
-                <span class="k">if</span> <span class="p">(</span><span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;AB&#39;</span><span class="p">):</span>
-                    <span class="n">path</span> <span class="o">=</span> <span class="n">vis_dir</span> <span class="o">/</span> <span class="p">(</span><span class="n">mode</span> <span class="o">+</span> <span class="s2">&quot;_&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">num_AB_compartments</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;_&quot;</span>
-                                      <span class="o">+</span> <span class="n">structure</span> <span class="o">+</span> <span class="s2">&quot;_&quot;</span> <span class="o">+</span> <span class="n">plot</span> <span class="o">+</span> <span class="s2">&quot;.png&quot;</span><span class="p">)</span>
-                    <span class="k">if</span> <span class="p">(</span><span class="n">plot</span> <span class="o">==</span> <span class="s1">&#39;FC&#39;</span><span class="p">):</span>
-                        <span class="n">makeViolinPlot</span><span class="p">(</span><span class="n">mode</span><span class="p">,</span> <span class="n">num_AB_compartments</span><span class="p">,</span> <span class="n">AB_fc_storage</span><span class="p">,</span>
-                                       <span class="s1">&#39;Fold Change (GFP to Cytoplasm Volume)&#39;</span><span class="p">,</span>
-                                       <span class="n">structure</span><span class="p">,</span> <span class="n">no_of_cells</span><span class="p">,</span> <span class="n">path</span><span class="p">)</span>
-                    <span class="k">elif</span> <span class="p">(</span><span class="n">plot</span> <span class="o">==</span> <span class="s1">&#39;Cyto&#39;</span><span class="p">):</span>
-                        <span class="n">makeViolinPlot</span><span class="p">(</span><span class="n">mode</span><span class="p">,</span> <span class="n">num_AB_compartments</span><span class="p">,</span> <span class="n">AB_cyto_storage</span><span class="p">,</span>
-                                       <span class="s1">&#39;Cytoplasm Volume&#39;</span><span class="p">,</span> <span class="n">structure</span><span class="p">,</span> <span class="n">no_of_cells</span><span class="p">,</span> <span class="n">path</span><span class="p">)</span>
-                    <span class="k">elif</span> <span class="p">(</span><span class="n">plot</span> <span class="o">==</span> <span class="s1">&#39;GFP&#39;</span><span class="p">):</span>
-                        <span class="n">makeViolinPlot</span><span class="p">(</span><span class="n">mode</span><span class="p">,</span> <span class="n">num_AB_compartments</span><span class="p">,</span> <span class="n">AB_gfp_storage</span><span class="p">,</span>
-                                       <span class="s1">&#39;GFP Intensity&#39;</span><span class="p">,</span> <span class="n">structure</span><span class="p">,</span> <span class="n">no_of_cells</span><span class="p">,</span> <span class="n">path</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;AB&quot;</span><span class="p">:</span>
+                    <span class="n">path</span> <span class="o">=</span> <span class="n">vis_dir</span> <span class="o">/</span> <span class="p">(</span>
+                        <span class="n">mode</span>
+                        <span class="o">+</span> <span class="s2">&quot;_&quot;</span>
+                        <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">num_AB_compartments</span><span class="p">)</span>
+                        <span class="o">+</span> <span class="s2">&quot;_&quot;</span>
+                        <span class="o">+</span> <span class="n">structure</span>
+                        <span class="o">+</span> <span class="s2">&quot;_&quot;</span>
+                        <span class="o">+</span> <span class="n">plot</span>
+                        <span class="o">+</span> <span class="s2">&quot;.png&quot;</span>
+                    <span class="p">)</span>
+                    <span class="k">if</span> <span class="n">plot</span> <span class="o">==</span> <span class="s2">&quot;FC&quot;</span><span class="p">:</span>
+                        <span class="n">makeViolinPlot</span><span class="p">(</span>
+                            <span class="n">mode</span><span class="p">,</span>
+                            <span class="n">num_AB_compartments</span><span class="p">,</span>
+                            <span class="n">AB_fc_storage</span><span class="p">,</span>
+                            <span class="s2">&quot;Fold Change (GFP to Cytoplasm Volume)&quot;</span><span class="p">,</span>
+                            <span class="n">structure</span><span class="p">,</span>
+                            <span class="n">no_of_cells</span><span class="p">,</span>
+                            <span class="n">path</span><span class="p">,</span>
+                        <span class="p">)</span>
+                    <span class="k">elif</span> <span class="n">plot</span> <span class="o">==</span> <span class="s2">&quot;Cyto&quot;</span><span class="p">:</span>
+                        <span class="n">makeViolinPlot</span><span class="p">(</span>
+                            <span class="n">mode</span><span class="p">,</span>
+                            <span class="n">num_AB_compartments</span><span class="p">,</span>
+                            <span class="n">AB_cyto_storage</span><span class="p">,</span>
+                            <span class="s2">&quot;Cytoplasm Volume&quot;</span><span class="p">,</span>
+                            <span class="n">structure</span><span class="p">,</span>
+                            <span class="n">no_of_cells</span><span class="p">,</span>
+                            <span class="n">path</span><span class="p">,</span>
+                        <span class="p">)</span>
+                    <span class="k">elif</span> <span class="n">plot</span> <span class="o">==</span> <span class="s2">&quot;GFP&quot;</span><span class="p">:</span>
+                        <span class="n">makeViolinPlot</span><span class="p">(</span>
+                            <span class="n">mode</span><span class="p">,</span>
+                            <span class="n">num_AB_compartments</span><span class="p">,</span>
+                            <span class="n">AB_gfp_storage</span><span class="p">,</span>
+                            <span class="s2">&quot;GFP Intensity&quot;</span><span class="p">,</span>
+                            <span class="n">structure</span><span class="p">,</span>
+                            <span class="n">no_of_cells</span><span class="p">,</span>
+                            <span class="n">path</span><span class="p">,</span>
+                        <span class="p">)</span>
 
-                <span class="k">elif</span> <span class="p">(</span><span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;Angular&#39;</span><span class="p">):</span>
-                    <span class="n">path</span> <span class="o">=</span> <span class="n">vis_dir</span> <span class="o">/</span> <span class="p">(</span><span class="n">mode</span> <span class="o">+</span> <span class="s2">&quot;_&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">num_angular_compartments</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;_&quot;</span>
-                                      <span class="o">+</span> <span class="n">structure</span> <span class="o">+</span> <span class="s2">&quot;_&quot;</span> <span class="o">+</span> <span class="n">plot</span> <span class="o">+</span> <span class="s2">&quot;.png&quot;</span><span class="p">)</span>
-                    <span class="k">if</span> <span class="p">(</span><span class="n">plot</span> <span class="o">==</span> <span class="s1">&#39;FC&#39;</span><span class="p">):</span>
-                        <span class="n">makeViolinPlot</span><span class="p">(</span><span class="n">mode</span><span class="p">,</span> <span class="n">num_angular_compartments</span><span class="p">,</span>
-                                       <span class="n">Angular_fc_storage</span><span class="p">,</span>
-                                       <span class="s1">&#39;Fold Change (GFP to Cytoplasm Volume)&#39;</span><span class="p">,</span>
-                                       <span class="n">structure</span><span class="p">,</span> <span class="n">no_of_cells</span><span class="p">,</span> <span class="n">path</span><span class="p">)</span>
-                    <span class="k">elif</span> <span class="p">(</span><span class="n">plot</span> <span class="o">==</span> <span class="s1">&#39;Cyto&#39;</span><span class="p">):</span>
-                        <span class="n">makeViolinPlot</span><span class="p">(</span><span class="n">mode</span><span class="p">,</span> <span class="n">num_angular_compartments</span><span class="p">,</span>
-                                       <span class="n">Angular_cyto_storage</span><span class="p">,</span> <span class="s1">&#39;Cytoplasm Volume&#39;</span><span class="p">,</span>
-                                       <span class="n">structure</span><span class="p">,</span> <span class="n">no_of_cells</span><span class="p">,</span> <span class="n">path</span><span class="p">)</span>
-                    <span class="k">elif</span> <span class="p">(</span><span class="n">plot</span> <span class="o">==</span> <span class="s1">&#39;GFP&#39;</span><span class="p">):</span>
-                        <span class="n">makeViolinPlot</span><span class="p">(</span><span class="n">mode</span><span class="p">,</span> <span class="n">num_angular_compartments</span><span class="p">,</span>
-                                       <span class="n">Angular_gfp_storage</span><span class="p">,</span> <span class="s1">&#39;GFP Intensity&#39;</span><span class="p">,</span> <span class="n">structure</span><span class="p">,</span>
-                                       <span class="n">no_of_cells</span><span class="p">,</span> <span class="n">path</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;Angular&quot;</span><span class="p">:</span>
+                    <span class="n">path</span> <span class="o">=</span> <span class="n">vis_dir</span> <span class="o">/</span> <span class="p">(</span>
+                        <span class="n">mode</span>
+                        <span class="o">+</span> <span class="s2">&quot;_&quot;</span>
+                        <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">num_angular_compartments</span><span class="p">)</span>
+                        <span class="o">+</span> <span class="s2">&quot;_&quot;</span>
+                        <span class="o">+</span> <span class="n">structure</span>
+                        <span class="o">+</span> <span class="s2">&quot;_&quot;</span>
+                        <span class="o">+</span> <span class="n">plot</span>
+                        <span class="o">+</span> <span class="s2">&quot;.png&quot;</span>
+                    <span class="p">)</span>
+                    <span class="k">if</span> <span class="n">plot</span> <span class="o">==</span> <span class="s2">&quot;FC&quot;</span><span class="p">:</span>
+                        <span class="n">makeViolinPlot</span><span class="p">(</span>
+                            <span class="n">mode</span><span class="p">,</span>
+                            <span class="n">num_angular_compartments</span><span class="p">,</span>
+                            <span class="n">Angular_fc_storage</span><span class="p">,</span>
+                            <span class="s2">&quot;Fold Change (GFP to Cytoplasm Volume)&quot;</span><span class="p">,</span>
+                            <span class="n">structure</span><span class="p">,</span>
+                            <span class="n">no_of_cells</span><span class="p">,</span>
+                            <span class="n">path</span><span class="p">,</span>
+                        <span class="p">)</span>
+                    <span class="k">elif</span> <span class="n">plot</span> <span class="o">==</span> <span class="s2">&quot;Cyto&quot;</span><span class="p">:</span>
+                        <span class="n">makeViolinPlot</span><span class="p">(</span>
+                            <span class="n">mode</span><span class="p">,</span>
+                            <span class="n">num_angular_compartments</span><span class="p">,</span>
+                            <span class="n">Angular_cyto_storage</span><span class="p">,</span>
+                            <span class="s2">&quot;Cytoplasm Volume&quot;</span><span class="p">,</span>
+                            <span class="n">structure</span><span class="p">,</span>
+                            <span class="n">no_of_cells</span><span class="p">,</span>
+                            <span class="n">path</span><span class="p">,</span>
+                        <span class="p">)</span>
+                    <span class="k">elif</span> <span class="n">plot</span> <span class="o">==</span> <span class="s2">&quot;GFP&quot;</span><span class="p">:</span>
+                        <span class="n">makeViolinPlot</span><span class="p">(</span>
+                            <span class="n">mode</span><span class="p">,</span>
+                            <span class="n">num_angular_compartments</span><span class="p">,</span>
+                            <span class="n">Angular_gfp_storage</span><span class="p">,</span>
+                            <span class="s2">&quot;GFP Intensity&quot;</span><span class="p">,</span>
+                            <span class="n">structure</span><span class="p">,</span>
+                            <span class="n">no_of_cells</span><span class="p">,</span>
+                            <span class="n">path</span><span class="p">,</span>
+                        <span class="p">)</span>
 
                 <span class="c1"># Add the path to the manifest</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">manifest</span><span class="o">.</span><span class="n">at</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="s2">&quot;filepath&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">path</span>

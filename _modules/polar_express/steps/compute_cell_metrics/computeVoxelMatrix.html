@@ -203,29 +203,48 @@
     <span class="n">unit_z_vector</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
 
     <span class="c1"># column 2 of the matrix</span>
-    <span class="n">angles</span> <span class="o">=</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">arccos</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">unit_z_vector</span><span class="p">,</span> <span class="n">cyto_indices</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="p">:]</span> <span class="o">-</span> <span class="n">centroid</span><span class="p">)</span>
-                        <span class="o">/</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">cyto_indices</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="p">:]</span> <span class="o">-</span> <span class="n">centroid</span><span class="p">,</span>
-                                  <span class="n">cyto_indices</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="p">:]</span> <span class="o">-</span> <span class="n">centroid</span><span class="p">)</span>
-                        <span class="o">**</span> <span class="mf">0.5</span><span class="p">))</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_voxels</span><span class="p">)]</span>
+    <span class="n">angles</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">arccos</span><span class="p">(</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">unit_z_vector</span><span class="p">,</span> <span class="n">cyto_indices</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="p">:]</span> <span class="o">-</span> <span class="n">centroid</span><span class="p">)</span>
+            <span class="o">/</span> <span class="p">(</span>
+                <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">cyto_indices</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="p">:]</span> <span class="o">-</span> <span class="n">centroid</span><span class="p">,</span> <span class="n">cyto_indices</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="p">:]</span> <span class="o">-</span> <span class="n">centroid</span><span class="p">)</span>
+                <span class="o">**</span> <span class="mf">0.5</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_voxels</span><span class="p">)</span>
+    <span class="p">]</span>
 
-    <span class="n">seg_dna_shell</span> <span class="o">=</span> <span class="n">ndi</span><span class="o">.</span><span class="n">distance_transform_cdt</span><span class="p">(</span><span class="n">seg_dna</span> <span class="o">==</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;taxicab&#39;</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span>
+    <span class="n">seg_dna_shell</span> <span class="o">=</span> <span class="n">ndi</span><span class="o">.</span><span class="n">distance_transform_cdt</span><span class="p">(</span><span class="n">seg_dna</span> <span class="o">==</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;taxicab&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span>
     <span class="n">nucleus_shell_indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">seg_dna_shell</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span>
     <span class="n">nucleus_shell_indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">nucleus_shell_indices</span><span class="p">)</span><span class="o">.</span><span class="n">T</span>
     <span class="n">nucleus_shell_indices</span> <span class="o">=</span> <span class="n">nucleus_shell_indices</span> <span class="o">*</span> <span class="n">scale_factors</span>  <span class="c1"># apply pixel scale</span>
 
     <span class="c1"># column 3 of the matrix</span>
-    <span class="n">nucleus_dists</span> <span class="o">=</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">distance</span><span class="o">.</span><span class="n">cdist</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">cyto_indices</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="p">:],</span>
-                     <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">)),</span> <span class="n">nucleus_shell_indices</span><span class="p">,</span> <span class="s1">&#39;euclidean&#39;</span><span class="p">))</span>
-                     <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_voxels</span><span class="p">)]</span>
+    <span class="n">nucleus_dists</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span>
+            <span class="n">distance</span><span class="o">.</span><span class="n">cdist</span><span class="p">(</span>
+                <span class="n">np</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">cyto_indices</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="p">:],</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">)),</span>
+                <span class="n">nucleus_shell_indices</span><span class="p">,</span>
+                <span class="s2">&quot;euclidean&quot;</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_voxels</span><span class="p">)</span>
+    <span class="p">]</span>
 
-    <span class="n">seg_mem_shell</span> <span class="o">=</span> <span class="n">ndi</span><span class="o">.</span><span class="n">distance_transform_cdt</span><span class="p">(</span><span class="n">seg_mem</span> <span class="o">==</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;taxicab&#39;</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span>
+    <span class="n">seg_mem_shell</span> <span class="o">=</span> <span class="n">ndi</span><span class="o">.</span><span class="n">distance_transform_cdt</span><span class="p">(</span><span class="n">seg_mem</span> <span class="o">==</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;taxicab&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span>
     <span class="n">mem_shell_indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">seg_mem_shell</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span>
     <span class="n">mem_shell_indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">mem_shell_indices</span><span class="p">)</span><span class="o">.</span><span class="n">T</span>
     <span class="n">mem_shell_indices</span> <span class="o">=</span> <span class="n">mem_shell_indices</span> <span class="o">*</span> <span class="n">scale_factors</span>  <span class="c1"># apply pixel scale</span>
 
     <span class="c1"># column 4 of the matrix</span>
-    <span class="n">mem_dists</span> <span class="o">=</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">distance</span><span class="o">.</span><span class="n">cdist</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">cyto_indices</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="p">:],</span>
-                 <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">)),</span> <span class="n">mem_shell_indices</span><span class="p">,</span> <span class="s1">&#39;euclidean&#39;</span><span class="p">))</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_voxels</span><span class="p">)]</span>
+    <span class="n">mem_dists</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span>
+            <span class="n">distance</span><span class="o">.</span><span class="n">cdist</span><span class="p">(</span>
+                <span class="n">np</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">cyto_indices</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="p">:],</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">)),</span> <span class="n">mem_shell_indices</span><span class="p">,</span> <span class="s2">&quot;euclidean&quot;</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_voxels</span><span class="p">)</span>
+    <span class="p">]</span>
 
     <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">cyto_intensities</span><span class="p">,</span> <span class="n">angles</span><span class="p">,</span> <span class="n">nucleus_dists</span><span class="p">,</span> <span class="n">mem_dists</span><span class="p">])</span><span class="o">.</span><span class="n">T</span></div>
 </pre></div>

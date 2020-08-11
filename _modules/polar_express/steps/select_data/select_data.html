@@ -207,9 +207,9 @@
 <div class="viewcode-block" id="SelectData.run"><a class="viewcode-back" href="../../../../polar_express.steps.select_data.html#polar_express.steps.SelectData.run">[docs]</a>    <span class="nd">@log_run_params</span>
     <span class="k">def</span> <span class="nf">run</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
-        <span class="n">dataset</span><span class="o">=</span><span class="s1">&#39;/allen/aics/modeling/theok/Projects/Data/Org3Dcells&#39;</span><span class="p">,</span>
+        <span class="n">dataset</span><span class="o">=</span><span class="s2">&quot;/allen/aics/modeling/theok/Projects/Data/Org3Dcells&quot;</span><span class="p">,</span>
         <span class="n">artflag</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-        <span class="o">**</span><span class="n">kwargs</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Select cells from annotation table</span>
@@ -246,7 +246,7 @@
 
         <span class="c1"># Point to master annotation file</span>
         <span class="n">cell3D_root</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">dataset</span><span class="p">)</span>
-        <span class="n">csvfile</span> <span class="o">=</span> <span class="n">cell3D_root</span> <span class="o">/</span> <span class="s1">&#39;Annotation&#39;</span> <span class="o">/</span> <span class="s1">&#39;ann.csv&#39;</span>
+        <span class="n">csvfile</span> <span class="o">=</span> <span class="n">cell3D_root</span> <span class="o">/</span> <span class="s2">&quot;Annotation&quot;</span> <span class="o">/</span> <span class="s2">&quot;ann.csv&quot;</span>
         <span class="n">cells</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">csvfile</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">artflag</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
@@ -262,19 +262,21 @@
             <span class="n">selectedcells</span> <span class="o">=</span> <span class="n">cells</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="n">n</span><span class="o">=</span><span class="n">N</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
             <span class="n">no_of_cells</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">selectedcells</span><span class="p">)</span>
             <span class="n">Nex</span> <span class="o">=</span> <span class="mi">2</span>
-            <span class="n">vizcells</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">selectedcells</span><span class="p">[</span><span class="s1">&#39;CellId&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="n">n</span><span class="o">=</span><span class="n">Nex</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span>
+            <span class="n">vizcells</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">selectedcells</span><span class="p">[</span><span class="s2">&quot;CellId&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="n">n</span><span class="o">=</span><span class="n">Nex</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span>
 
             <span class="c1"># Main loop to create</span>
             <span class="n">art_cells_compiled</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">()</span>
             <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">tqdm</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">no_of_cells</span><span class="p">),</span> <span class="n">desc</span><span class="o">=</span><span class="s2">&quot;Creating artificial cells&quot;</span><span class="p">):</span>
                 <span class="c1"># Pandas series with information about cell</span>
                 <span class="n">selectedcell</span> <span class="o">=</span> <span class="n">selectedcells</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
-                <span class="n">art_cells</span> <span class="o">=</span> <span class="n">makeartificialGFP</span><span class="p">(</span><span class="n">selectedcell</span><span class="p">,</span> <span class="n">artificial_cell_dir</span><span class="p">,</span>
-                                              <span class="n">vizcells</span><span class="p">,</span> <span class="n">artificial_plot_dir</span><span class="p">)</span>
-                <span class="n">art_cells_compiled</span> <span class="o">=</span> <span class="n">art_cells_compiled</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">art_cells</span><span class="p">,</span>
-                                                               <span class="n">ignore_index</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                <span class="n">art_cells</span> <span class="o">=</span> <span class="n">makeartificialGFP</span><span class="p">(</span>
+                    <span class="n">selectedcell</span><span class="p">,</span> <span class="n">artificial_cell_dir</span><span class="p">,</span> <span class="n">vizcells</span><span class="p">,</span> <span class="n">artificial_plot_dir</span>
+                <span class="p">)</span>
+                <span class="n">art_cells_compiled</span> <span class="o">=</span> <span class="n">art_cells_compiled</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                    <span class="n">art_cells</span><span class="p">,</span> <span class="n">ignore_index</span><span class="o">=</span><span class="kc">True</span>
+                <span class="p">)</span>
 
-            <span class="n">selected_cell_csv</span> <span class="o">=</span> <span class="n">cell_annotation_dir</span> <span class="o">/</span> <span class="s1">&#39;ann_sc.csv&#39;</span>
+            <span class="n">selected_cell_csv</span> <span class="o">=</span> <span class="n">cell_annotation_dir</span> <span class="o">/</span> <span class="s2">&quot;ann_sc.csv&quot;</span>
             <span class="n">art_cells_compiled</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">selected_cell_csv</span><span class="p">)</span>
             <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">selectedcells</span><span class="p">)</span><span class="si">}</span><span class="s2"> Art cells are selected&quot;</span><span class="p">)</span>
 
@@ -291,11 +293,12 @@
 
             <span class="c1"># Select ER cells</span>
             <span class="c1"># Load in and select ER cells in interphase (stage = 0)</span>
-            <span class="n">selectedcells</span> <span class="o">=</span> <span class="n">cells</span><span class="p">[(</span><span class="n">cells</span><span class="p">[</span><span class="s1">&#39;Interphase and Mitotic Stages (stage)&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span>
-                                  <span class="o">&amp;</span> <span class="p">(</span><span class="n">cells</span><span class="p">[(</span><span class="s1">&#39;Structure&#39;</span><span class="p">)]</span>
-                                     <span class="o">==</span> <span class="s1">&#39;Endoplasmic reticulum&#39;</span><span class="p">)]</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="n">n</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+            <span class="n">selectedcells</span> <span class="o">=</span> <span class="n">cells</span><span class="p">[</span>
+                <span class="p">(</span><span class="n">cells</span><span class="p">[</span><span class="s2">&quot;Interphase and Mitotic Stages (stage)&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span>
+                <span class="o">&amp;</span> <span class="p">(</span><span class="n">cells</span><span class="p">[(</span><span class="s2">&quot;Structure&quot;</span><span class="p">)]</span> <span class="o">==</span> <span class="s2">&quot;Endoplasmic reticulum&quot;</span><span class="p">)</span>
+            <span class="p">]</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="n">n</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
             <span class="c1"># Save selected cells</span>
-            <span class="n">selected_cell_csv</span> <span class="o">=</span> <span class="n">cell_annotation_dir</span> <span class="o">/</span> <span class="s1">&#39;ann_sc.csv&#39;</span>
+            <span class="n">selected_cell_csv</span> <span class="o">=</span> <span class="n">cell_annotation_dir</span> <span class="o">/</span> <span class="s2">&quot;ann_sc.csv&quot;</span>
             <span class="n">selectedcells</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">selected_cell_csv</span><span class="p">)</span>
             <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">selectedcells</span><span class="p">)</span><span class="si">}</span><span class="s2"> ER cells in interphase are selected&quot;</span><span class="p">)</span>
 

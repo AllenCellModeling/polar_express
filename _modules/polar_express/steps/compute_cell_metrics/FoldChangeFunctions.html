@@ -180,7 +180,7 @@
 <span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 
 
-<div class="viewcode-block" id="findFoldChange_AB"><a class="viewcode-back" href="../../../../polar_express.steps.compute_cell_metrics.html#polar_express.steps.compute_cell_metrics.FoldChangeFunctions.findFoldChange_AB">[docs]</a><span class="k">def</span> <span class="nf">findFoldChange_AB</span><span class="p">(</span><span class="n">masked_channels</span><span class="p">,</span> <span class="n">z_metrics</span><span class="p">,</span> <span class="n">vol_scale_factor</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;quadrants&#39;</span><span class="p">):</span>
+<div class="viewcode-block" id="findFoldChange_AB"><a class="viewcode-back" href="../../../../polar_express.steps.compute_cell_metrics.html#polar_express.steps.compute_cell_metrics.FoldChangeFunctions.findFoldChange_AB">[docs]</a><span class="k">def</span> <span class="nf">findFoldChange_AB</span><span class="p">(</span><span class="n">masked_channels</span><span class="p">,</span> <span class="n">z_metrics</span><span class="p">,</span> <span class="n">vol_scale_factor</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;quadrants&quot;</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="sd">    Helper method that finds and returns, for each of the cell sections, the fold change</span>
@@ -213,12 +213,12 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">if</span> <span class="p">(</span><span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;quadrants&#39;</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;quadrants&quot;</span><span class="p">:</span>
         <span class="n">num_compartments</span> <span class="o">=</span> <span class="mi">4</span>
-    <span class="k">elif</span> <span class="p">(</span><span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;hemispheres&#39;</span><span class="p">):</span>
+    <span class="k">elif</span> <span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;hemispheres&quot;</span><span class="p">:</span>
         <span class="n">num_compartments</span> <span class="o">=</span> <span class="mi">2</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Invalid mode entered. Enter </span><span class="se">\&#39;</span><span class="s1">quadrants</span><span class="se">\&#39;</span><span class="s1"> or </span><span class="se">\&#39;</span><span class="s1">hemispheres</span><span class="se">\&#39;</span><span class="s1">.&#39;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Invalid mode entered. Enter &#39;quadrants&#39; or &#39;hemispheres&#39;.&quot;</span><span class="p">)</span>
 
     <span class="n">cyto_vol</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">num_compartments</span><span class="p">)</span>
     <span class="n">gfp_intensities</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">num_compartments</span><span class="p">)</span>
@@ -240,15 +240,15 @@
     <span class="c1"># Find top and bottom of current z-stack</span>
     <span class="k">for</span> <span class="n">section</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_compartments</span><span class="p">):</span>
 
-        <span class="k">if</span> <span class="p">(</span><span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;quadrants&#39;</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;quadrants&quot;</span><span class="p">:</span>
 
-            <span class="k">if</span> <span class="p">(</span><span class="n">section</span> <span class="o">==</span> <span class="mi">0</span><span class="p">):</span>  <span class="c1"># top quarter of cell</span>
+            <span class="k">if</span> <span class="n">section</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>  <span class="c1"># top quarter of cell</span>
                 <span class="n">top_stack</span> <span class="o">=</span> <span class="n">top_of_cell</span> <span class="o">+</span> <span class="mi">1</span>
                 <span class="n">bot_stack</span> <span class="o">=</span> <span class="n">top_of_nucleus</span>
-            <span class="k">elif</span> <span class="p">(</span><span class="n">section</span> <span class="o">==</span> <span class="mi">1</span><span class="p">):</span>  <span class="c1"># top half of nucleus</span>
+            <span class="k">elif</span> <span class="n">section</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>  <span class="c1"># top half of nucleus</span>
                 <span class="n">top_stack</span> <span class="o">=</span> <span class="n">top_of_nucleus</span>
                 <span class="n">bot_stack</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">centroid_of_nucleus</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
-            <span class="k">elif</span> <span class="p">(</span><span class="n">section</span> <span class="o">==</span> <span class="mi">2</span><span class="p">):</span>  <span class="c1"># bottom half of nucleus</span>
+            <span class="k">elif</span> <span class="n">section</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>  <span class="c1"># bottom half of nucleus</span>
                 <span class="n">top_stack</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">centroid_of_nucleus</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
                 <span class="n">bot_stack</span> <span class="o">=</span> <span class="n">bot_of_nucleus</span>
             <span class="k">else</span><span class="p">:</span>  <span class="c1"># bottom quarter of cell</span>
@@ -257,7 +257,7 @@
 
         <span class="k">else</span><span class="p">:</span>  <span class="c1"># mode == &#39;hemispheres&#39;</span>
 
-            <span class="k">if</span> <span class="p">(</span><span class="n">section</span> <span class="o">==</span> <span class="mi">0</span><span class="p">):</span>  <span class="c1"># top half of cell</span>
+            <span class="k">if</span> <span class="n">section</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>  <span class="c1"># top half of cell</span>
                 <span class="n">top_stack</span> <span class="o">=</span> <span class="n">top_of_cell</span> <span class="o">+</span> <span class="mi">1</span>
                 <span class="n">bot_stack</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">centroid_of_nucleus</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
             <span class="k">else</span><span class="p">:</span>  <span class="c1"># bottom half of cell</span>
@@ -266,15 +266,16 @@
 
         <span class="k">for</span> <span class="n">stack</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">bot_stack</span><span class="p">,</span> <span class="n">top_stack</span><span class="p">):</span>
             <span class="c1"># Increment by number of voxels between cell membrane and nucleus</span>
-            <span class="n">cyto_vol</span><span class="p">[</span><span class="n">section</span><span class="p">]</span> <span class="o">+=</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">count_nonzero</span><span class="p">(</span><span class="n">seg_mem</span><span class="p">[</span><span class="n">stack</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span>
-                                  <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">count_nonzero</span><span class="p">(</span><span class="n">seg_dna</span><span class="p">[</span><span class="n">stack</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">))</span>
+            <span class="n">cyto_vol</span><span class="p">[</span><span class="n">section</span><span class="p">]</span> <span class="o">+=</span> <span class="n">np</span><span class="o">.</span><span class="n">count_nonzero</span><span class="p">(</span>
+                <span class="n">seg_mem</span><span class="p">[</span><span class="n">stack</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:]</span> <span class="o">&gt;</span> <span class="mi">0</span>
+            <span class="p">)</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">count_nonzero</span><span class="p">(</span><span class="n">seg_dna</span><span class="p">[</span><span class="n">stack</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span>
             <span class="c1"># Increment by total gfp intensity of this stack</span>
             <span class="n">gfp_intensities</span><span class="p">[</span><span class="n">section</span><span class="p">]</span> <span class="o">+=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">gfp</span><span class="p">[</span><span class="n">stack</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:])</span>
 
     <span class="c1"># Normalize</span>
     <span class="n">cyto_vol</span> <span class="o">=</span> <span class="n">cyto_vol</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">cyto_vol</span><span class="p">)</span>
 
-    <span class="c1"># Scale volume by pixel scale factor </span>
+    <span class="c1"># Scale volume by pixel scale factor</span>
     <span class="n">cyto_vol</span> <span class="o">=</span> <span class="n">cyto_vol</span> <span class="o">*</span> <span class="n">vol_scale_factor</span>
     <span class="n">gfp_intensities</span> <span class="o">=</span> <span class="n">gfp_intensities</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">gfp_intensities</span><span class="p">)</span>
 
@@ -284,15 +285,16 @@
     <span class="k">for</span> <span class="n">section</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_compartments</span><span class="p">):</span>
 
         <span class="c1"># Check for cytoplasm volume of 0</span>
-        <span class="k">if</span> <span class="p">(</span><span class="n">cyto_vol</span><span class="p">[</span><span class="n">section</span><span class="p">]</span> <span class="o">!=</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">gfp_intensities</span><span class="p">[</span><span class="n">section</span><span class="p">]</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">):</span>
-            <span class="n">fold_changes</span><span class="p">[</span><span class="n">section</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">log2</span><span class="p">(</span><span class="n">gfp_intensities</span><span class="p">[</span><span class="n">section</span><span class="p">]</span>
-                                            <span class="o">/</span> <span class="n">cyto_vol</span><span class="p">[</span><span class="n">section</span><span class="p">])</span>
+        <span class="k">if</span> <span class="n">cyto_vol</span><span class="p">[</span><span class="n">section</span><span class="p">]</span> <span class="o">!=</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">gfp_intensities</span><span class="p">[</span><span class="n">section</span><span class="p">]</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">fold_changes</span><span class="p">[</span><span class="n">section</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">log2</span><span class="p">(</span>
+                <span class="n">gfp_intensities</span><span class="p">[</span><span class="n">section</span><span class="p">]</span> <span class="o">/</span> <span class="n">cyto_vol</span><span class="p">[</span><span class="n">section</span><span class="p">]</span>
+            <span class="p">)</span>
 
-        <span class="k">elif</span> <span class="p">(</span><span class="n">cyto_vol</span><span class="p">[</span><span class="n">section</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">):</span>
-            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Cytoplasm volume of 0 detected&#39;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">cyto_vol</span><span class="p">[</span><span class="n">section</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Cytoplasm volume of 0 detected&quot;</span><span class="p">)</span>
 
-        <span class="k">elif</span> <span class="p">(</span><span class="n">gfp_intensities</span><span class="p">[</span><span class="n">section</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">):</span>
-            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;GFP intensity of 0 detected&#39;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">gfp_intensities</span><span class="p">[</span><span class="n">section</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;GFP intensity of 0 detected&quot;</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">fold_changes</span><span class="p">,</span> <span class="n">cyto_vol</span><span class="p">,</span> <span class="n">gfp_intensities</span></div>
 
@@ -382,7 +384,7 @@
         <span class="n">cos_upper_bound_angle</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">upper_bound_angle</span><span class="p">)</span>
         <span class="n">cos_lower_bound_angle</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">lower_bound_angle</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="p">(</span><span class="n">section</span> <span class="o">==</span> <span class="n">num_sections</span> <span class="o">-</span> <span class="mi">1</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">section</span> <span class="o">==</span> <span class="n">num_sections</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>
             <span class="n">mask</span> <span class="o">=</span> <span class="p">(</span><span class="n">res</span> <span class="o">&gt;=</span> <span class="n">cos_lower_bound_angle</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">res</span> <span class="o">&lt;=</span> <span class="n">cos_upper_bound_angle</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">mask</span> <span class="o">=</span> <span class="p">(</span><span class="n">res</span> <span class="o">&gt;=</span> <span class="n">cos_lower_bound_angle</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">res</span> <span class="o">&lt;</span> <span class="n">cos_upper_bound_angle</span><span class="p">)</span>
@@ -392,8 +394,9 @@
         <span class="n">masked_seg_dna</span> <span class="o">=</span> <span class="n">mask</span> <span class="o">*</span> <span class="n">seg_dna</span>
 
         <span class="c1"># Increment by number of voxels between cell membrane and nucleus</span>
-        <span class="n">cyto_vol</span><span class="p">[</span><span class="n">section</span><span class="p">]</span> <span class="o">+=</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">count_nonzero</span><span class="p">(</span><span class="n">masked_seg_mem</span><span class="p">)</span>
-                              <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">count_nonzero</span><span class="p">(</span><span class="n">masked_seg_dna</span><span class="p">))</span>
+        <span class="n">cyto_vol</span><span class="p">[</span><span class="n">section</span><span class="p">]</span> <span class="o">+=</span> <span class="n">np</span><span class="o">.</span><span class="n">count_nonzero</span><span class="p">(</span><span class="n">masked_seg_mem</span><span class="p">)</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">count_nonzero</span><span class="p">(</span>
+            <span class="n">masked_seg_dna</span>
+        <span class="p">)</span>
         <span class="n">gfp_intensities</span><span class="p">[</span><span class="n">section</span><span class="p">]</span> <span class="o">+=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">gfp</span> <span class="o">*</span> <span class="n">mask</span><span class="p">)</span>
 
         <span class="n">count</span> <span class="o">+=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">mask</span><span class="p">)</span>
@@ -411,15 +414,16 @@
     <span class="k">for</span> <span class="n">section</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_sections</span><span class="p">):</span>
 
         <span class="c1"># Check for cytoplasm volume of 0</span>
-        <span class="k">if</span> <span class="p">(</span><span class="n">cyto_vol</span><span class="p">[</span><span class="n">section</span><span class="p">]</span> <span class="o">!=</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">gfp_intensities</span><span class="p">[</span><span class="n">section</span><span class="p">]</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">):</span>
-            <span class="n">fold_changes</span><span class="p">[</span><span class="n">section</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">log2</span><span class="p">(</span><span class="n">gfp_intensities</span><span class="p">[</span><span class="n">section</span><span class="p">]</span>
-                                            <span class="o">/</span> <span class="n">cyto_vol</span><span class="p">[</span><span class="n">section</span><span class="p">])</span>
+        <span class="k">if</span> <span class="n">cyto_vol</span><span class="p">[</span><span class="n">section</span><span class="p">]</span> <span class="o">!=</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">gfp_intensities</span><span class="p">[</span><span class="n">section</span><span class="p">]</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">fold_changes</span><span class="p">[</span><span class="n">section</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">log2</span><span class="p">(</span>
+                <span class="n">gfp_intensities</span><span class="p">[</span><span class="n">section</span><span class="p">]</span> <span class="o">/</span> <span class="n">cyto_vol</span><span class="p">[</span><span class="n">section</span><span class="p">]</span>
+            <span class="p">)</span>
 
-        <span class="k">elif</span> <span class="p">(</span><span class="n">cyto_vol</span><span class="p">[</span><span class="n">section</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">):</span>
-            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Cytoplasm volume of 0 detected&#39;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">cyto_vol</span><span class="p">[</span><span class="n">section</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Cytoplasm volume of 0 detected&quot;</span><span class="p">)</span>
 
-        <span class="k">elif</span> <span class="p">(</span><span class="n">gfp_intensities</span><span class="p">[</span><span class="n">section</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">):</span>
-            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;GFP intensity of 0 detected&#39;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">gfp_intensities</span><span class="p">[</span><span class="n">section</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;GFP intensity of 0 detected&quot;</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">fold_changes</span><span class="p">,</span> <span class="n">cyto_vol</span><span class="p">,</span> <span class="n">gfp_intensities</span></div>
 </pre></div>

@@ -222,7 +222,7 @@
         <span class="n">filepath_column</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;filepath&quot;</span><span class="p">,</span>
         <span class="n">AB_mode</span><span class="o">=</span><span class="s2">&quot;quadrants&quot;</span><span class="p">,</span>
         <span class="n">num_angular_compartments</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span>
-        <span class="o">**</span><span class="n">kwargs</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Compute cell metrics</span>
@@ -288,8 +288,8 @@
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">tqdm</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">no_of_cells</span><span class="p">),</span> <span class="n">desc</span><span class="o">=</span><span class="s2">&quot;Computing metrics for cells&quot;</span><span class="p">):</span>
 
             <span class="c1"># image file</span>
-            <span class="n">file</span> <span class="o">=</span> <span class="n">selected_cells</span><span class="p">[</span><span class="s1">&#39;Path&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
-            <span class="n">cellid</span> <span class="o">=</span> <span class="n">selected_cells</span><span class="p">[</span><span class="s1">&#39;CellId&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="n">file</span> <span class="o">=</span> <span class="n">selected_cells</span><span class="p">[</span><span class="s2">&quot;Path&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="n">cellid</span> <span class="o">=</span> <span class="n">selected_cells</span><span class="p">[</span><span class="s2">&quot;CellId&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
 
             <span class="c1"># read in image file</span>
             <span class="k">try</span><span class="p">:</span>
@@ -302,101 +302,109 @@
                     <span class="k">raise</span>
 
             <span class="c1"># additional image information</span>
-            <span class="n">pixelScaleX</span> <span class="o">=</span> <span class="n">selected_cells</span><span class="p">[</span><span class="s1">&#39;PixelScaleX&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
-            <span class="n">pixelScaleY</span> <span class="o">=</span> <span class="n">selected_cells</span><span class="p">[</span><span class="s1">&#39;PixelScaleY&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
-            <span class="n">pixelScaleZ</span> <span class="o">=</span> <span class="n">selected_cells</span><span class="p">[</span><span class="s1">&#39;PixelScaleZ&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="n">pixelScaleX</span> <span class="o">=</span> <span class="n">selected_cells</span><span class="p">[</span><span class="s2">&quot;PixelScaleX&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="n">pixelScaleY</span> <span class="o">=</span> <span class="n">selected_cells</span><span class="p">[</span><span class="s2">&quot;PixelScaleY&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="n">pixelScaleZ</span> <span class="o">=</span> <span class="n">selected_cells</span><span class="p">[</span><span class="s2">&quot;PixelScaleZ&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
             <span class="n">vol_scale_factor</span> <span class="o">=</span> <span class="n">pixelScaleX</span> <span class="o">*</span> <span class="n">pixelScaleY</span> <span class="o">*</span> <span class="n">pixelScaleZ</span>
             <span class="c1"># pixel scale factors stored in (z,y,x) order</span>
             <span class="n">scale_factors</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">pixelScaleZ</span><span class="p">,</span> <span class="n">pixelScaleY</span><span class="p">,</span> <span class="n">pixelScaleX</span><span class="p">])</span>
 
             <span class="c1"># get the channel indices</span>
-            <span class="n">ch_dna</span> <span class="o">=</span> <span class="n">selected_cells</span><span class="p">[</span><span class="s1">&#39;ch_dna&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
-            <span class="n">ch_memb</span> <span class="o">=</span> <span class="n">selected_cells</span><span class="p">[</span><span class="s1">&#39;ch_memb&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
-            <span class="n">ch_struct</span> <span class="o">=</span> <span class="n">selected_cells</span><span class="p">[</span><span class="s1">&#39;ch_struct&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
-            <span class="n">ch_seg_nuc</span> <span class="o">=</span> <span class="n">selected_cells</span><span class="p">[</span><span class="s1">&#39;ch_seg_nuc&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
-            <span class="n">ch_seg_cell</span> <span class="o">=</span> <span class="n">selected_cells</span><span class="p">[</span><span class="s1">&#39;ch_seg_cell&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="n">ch_dna</span> <span class="o">=</span> <span class="n">selected_cells</span><span class="p">[</span><span class="s2">&quot;ch_dna&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="n">ch_memb</span> <span class="o">=</span> <span class="n">selected_cells</span><span class="p">[</span><span class="s2">&quot;ch_memb&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="n">ch_struct</span> <span class="o">=</span> <span class="n">selected_cells</span><span class="p">[</span><span class="s2">&quot;ch_struct&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="n">ch_seg_nuc</span> <span class="o">=</span> <span class="n">selected_cells</span><span class="p">[</span><span class="s2">&quot;ch_seg_nuc&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="n">ch_seg_cell</span> <span class="o">=</span> <span class="n">selected_cells</span><span class="p">[</span><span class="s2">&quot;ch_seg_cell&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
 
-            <span class="n">channel_indices</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;ch_dna&quot;</span> <span class="p">:</span> <span class="n">ch_dna</span><span class="p">,</span>
-                               <span class="s2">&quot;ch_memb&quot;</span> <span class="p">:</span> <span class="n">ch_memb</span><span class="p">,</span>
-                               <span class="s2">&quot;ch_struct&quot;</span> <span class="p">:</span> <span class="n">ch_struct</span><span class="p">,</span>
-                               <span class="s2">&quot;ch_seg_nuc&quot;</span> <span class="p">:</span> <span class="n">ch_seg_nuc</span><span class="p">,</span>
-                               <span class="s2">&quot;ch_seg_cell&quot;</span> <span class="p">:</span> <span class="n">ch_seg_cell</span><span class="p">}</span>
+            <span class="n">channel_indices</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="s2">&quot;ch_dna&quot;</span><span class="p">:</span> <span class="n">ch_dna</span><span class="p">,</span>
+                <span class="s2">&quot;ch_memb&quot;</span><span class="p">:</span> <span class="n">ch_memb</span><span class="p">,</span>
+                <span class="s2">&quot;ch_struct&quot;</span><span class="p">:</span> <span class="n">ch_struct</span><span class="p">,</span>
+                <span class="s2">&quot;ch_seg_nuc&quot;</span><span class="p">:</span> <span class="n">ch_seg_nuc</span><span class="p">,</span>
+                <span class="s2">&quot;ch_seg_cell&quot;</span><span class="p">:</span> <span class="n">ch_seg_cell</span><span class="p">,</span>
+            <span class="p">}</span>
 
             <span class="c1"># Get the segmentation channels</span>
-            <span class="p">(</span><span class="n">seg_dna</span><span class="p">,</span>
-             <span class="n">seg_mem</span><span class="p">,</span>
-             <span class="n">seg_gfp</span><span class="p">,</span>
-             <span class="n">dna</span><span class="p">,</span>
-             <span class="n">mem</span><span class="p">,</span>
-             <span class="n">gfp</span><span class="p">)</span> <span class="o">=</span> <span class="n">applySegmentationMasks</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">channel_indices</span><span class="p">)</span>
+            <span class="p">(</span><span class="n">seg_dna</span><span class="p">,</span> <span class="n">seg_mem</span><span class="p">,</span> <span class="n">seg_gfp</span><span class="p">,</span> <span class="n">dna</span><span class="p">,</span> <span class="n">mem</span><span class="p">,</span> <span class="n">gfp</span><span class="p">)</span> <span class="o">=</span> <span class="n">applySegmentationMasks</span><span class="p">(</span>
+                <span class="n">im</span><span class="p">,</span> <span class="n">channel_indices</span>
+            <span class="p">)</span>
 
-            <span class="n">masked_channels</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;seg_dna&quot;</span> <span class="p">:</span> <span class="n">seg_dna</span><span class="p">,</span>
-                               <span class="s2">&quot;seg_mem&quot;</span> <span class="p">:</span> <span class="n">seg_mem</span><span class="p">,</span>
-                               <span class="s2">&quot;seg_gfp&quot;</span> <span class="p">:</span> <span class="n">seg_gfp</span><span class="p">,</span>
-                               <span class="s2">&quot;dna&quot;</span> <span class="p">:</span> <span class="n">dna</span><span class="p">,</span>
-                               <span class="s2">&quot;mem&quot;</span> <span class="p">:</span> <span class="n">mem</span><span class="p">,</span>
-                               <span class="s2">&quot;gfp&quot;</span> <span class="p">:</span> <span class="n">gfp</span><span class="p">}</span>
+            <span class="n">masked_channels</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="s2">&quot;seg_dna&quot;</span><span class="p">:</span> <span class="n">seg_dna</span><span class="p">,</span>
+                <span class="s2">&quot;seg_mem&quot;</span><span class="p">:</span> <span class="n">seg_mem</span><span class="p">,</span>
+                <span class="s2">&quot;seg_gfp&quot;</span><span class="p">:</span> <span class="n">seg_gfp</span><span class="p">,</span>
+                <span class="s2">&quot;dna&quot;</span><span class="p">:</span> <span class="n">dna</span><span class="p">,</span>
+                <span class="s2">&quot;mem&quot;</span><span class="p">:</span> <span class="n">mem</span><span class="p">,</span>
+                <span class="s2">&quot;gfp&quot;</span><span class="p">:</span> <span class="n">gfp</span><span class="p">,</span>
+            <span class="p">}</span>
 
             <span class="c1"># compute z metrics</span>
-            <span class="p">(</span><span class="n">bot_of_cell</span><span class="p">,</span> <span class="n">bot_of_nucleus</span><span class="p">,</span> <span class="n">centroid_of_nucleus</span><span class="p">,</span> <span class="n">top_of_nucleus</span><span class="p">,</span>
-             <span class="n">top_of_cell</span><span class="p">)</span> <span class="o">=</span> <span class="n">findVerticalCutoffs</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">masked_channels</span><span class="p">)</span>
+            <span class="p">(</span>
+                <span class="n">bot_of_cell</span><span class="p">,</span>
+                <span class="n">bot_of_nucleus</span><span class="p">,</span>
+                <span class="n">centroid_of_nucleus</span><span class="p">,</span>
+                <span class="n">top_of_nucleus</span><span class="p">,</span>
+                <span class="n">top_of_cell</span><span class="p">,</span>
+            <span class="p">)</span> <span class="o">=</span> <span class="n">findVerticalCutoffs</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">masked_channels</span><span class="p">)</span>
 
-            <span class="n">z_metrics</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;bot_of_cell&quot;</span> <span class="p">:</span> <span class="n">bot_of_cell</span><span class="p">,</span>
-                         <span class="s2">&quot;bot_of_nucleus&quot;</span> <span class="p">:</span> <span class="n">bot_of_nucleus</span><span class="p">,</span>
-                         <span class="s2">&quot;centroid_of_nucleus&quot;</span> <span class="p">:</span> <span class="n">centroid_of_nucleus</span><span class="p">,</span>
-                         <span class="s2">&quot;top_of_nucleus&quot;</span> <span class="p">:</span> <span class="n">top_of_nucleus</span><span class="p">,</span>
-                         <span class="s2">&quot;top_of_cell&quot;</span> <span class="p">:</span> <span class="n">top_of_cell</span><span class="p">}</span>
+            <span class="n">z_metrics</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="s2">&quot;bot_of_cell&quot;</span><span class="p">:</span> <span class="n">bot_of_cell</span><span class="p">,</span>
+                <span class="s2">&quot;bot_of_nucleus&quot;</span><span class="p">:</span> <span class="n">bot_of_nucleus</span><span class="p">,</span>
+                <span class="s2">&quot;centroid_of_nucleus&quot;</span><span class="p">:</span> <span class="n">centroid_of_nucleus</span><span class="p">,</span>
+                <span class="s2">&quot;top_of_nucleus&quot;</span><span class="p">:</span> <span class="n">top_of_nucleus</span><span class="p">,</span>
+                <span class="s2">&quot;top_of_cell&quot;</span><span class="p">:</span> <span class="n">top_of_cell</span><span class="p">,</span>
+            <span class="p">}</span>
 
             <span class="c1"># compute fold change metrics</span>
-            <span class="p">(</span><span class="n">AB_fold_changes</span><span class="p">,</span>
-             <span class="n">AB_cyto_vol</span><span class="p">,</span>
-             <span class="n">AB_gfp_intensities</span><span class="p">)</span> <span class="o">=</span> <span class="n">findFoldChange_AB</span><span class="p">(</span>
+            <span class="p">(</span><span class="n">AB_fold_changes</span><span class="p">,</span> <span class="n">AB_cyto_vol</span><span class="p">,</span> <span class="n">AB_gfp_intensities</span><span class="p">)</span> <span class="o">=</span> <span class="n">findFoldChange_AB</span><span class="p">(</span>
+                <span class="n">masked_channels</span><span class="p">,</span> <span class="n">z_metrics</span><span class="p">,</span> <span class="n">vol_scale_factor</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="n">AB_mode</span>
+            <span class="p">)</span>
+            <span class="p">(</span>
+                <span class="n">Ang_fold_changes</span><span class="p">,</span>
+                <span class="n">Ang_cyto_vol</span><span class="p">,</span>
+                <span class="n">Ang_gfp_intensities</span><span class="p">,</span>
+            <span class="p">)</span> <span class="o">=</span> <span class="n">findFoldChange_Angular</span><span class="p">(</span>
                 <span class="n">masked_channels</span><span class="p">,</span>
                 <span class="n">z_metrics</span><span class="p">,</span>
                 <span class="n">vol_scale_factor</span><span class="p">,</span>
-                <span class="n">mode</span><span class="o">=</span><span class="n">AB_mode</span><span class="p">)</span>
-            <span class="p">(</span><span class="n">Ang_fold_changes</span><span class="p">,</span>
-             <span class="n">Ang_cyto_vol</span><span class="p">,</span>
-             <span class="n">Ang_gfp_intensities</span><span class="p">)</span> <span class="o">=</span> <span class="n">findFoldChange_Angular</span><span class="p">(</span>
-                <span class="n">masked_channels</span><span class="p">,</span>
-                <span class="n">z_metrics</span><span class="p">,</span>
-                <span class="n">vol_scale_factor</span><span class="p">,</span>
-                <span class="n">num_sections</span><span class="o">=</span><span class="n">num_angular_compartments</span><span class="p">)</span>
+                <span class="n">num_sections</span><span class="o">=</span><span class="n">num_angular_compartments</span><span class="p">,</span>
+            <span class="p">)</span>
 
             <span class="c1"># compute (nx4) voxel matrix</span>
-            <span class="n">voxel_matrix</span> <span class="o">=</span> <span class="n">compute_voxel_matrix</span><span class="p">(</span><span class="n">scale_factors</span><span class="p">,</span> <span class="n">centroid_of_nucleus</span><span class="p">,</span>
-                                                <span class="n">masked_channels</span><span class="p">)</span>
+            <span class="n">voxel_matrix</span> <span class="o">=</span> <span class="n">compute_voxel_matrix</span><span class="p">(</span>
+                <span class="n">scale_factors</span><span class="p">,</span> <span class="n">centroid_of_nucleus</span><span class="p">,</span> <span class="n">masked_channels</span>
+            <span class="p">)</span>
 
             <span class="c1"># store metrics</span>
-            <span class="n">metric</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;structure&quot;</span> <span class="p">:</span> <span class="n">selected_cells</span><span class="p">[</span><span class="s1">&#39;Structure&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">i</span><span class="p">],</span>
-                      <span class="s2">&quot;vol_cell&quot;</span> <span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">seg_mem</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="o">*</span> <span class="n">vol_scale_factor</span><span class="p">,</span>
-                      <span class="s2">&quot;height_cell&quot;</span> <span class="p">:</span> <span class="p">(</span><span class="n">top_of_cell</span> <span class="o">-</span> <span class="n">bot_of_cell</span><span class="p">)</span> <span class="o">*</span> <span class="n">pixelScaleZ</span><span class="p">,</span>
-                      <span class="s2">&quot;vol_nucleus&quot;</span> <span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">seg_dna</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="o">*</span> <span class="n">vol_scale_factor</span><span class="p">,</span>
-                      <span class="s2">&quot;height_nucleus&quot;</span> <span class="p">:</span> <span class="p">((</span><span class="n">top_of_nucleus</span> <span class="o">-</span> <span class="n">bot_of_nucleus</span><span class="p">)</span>
-                                          <span class="o">*</span> <span class="n">pixelScaleZ</span><span class="p">),</span>
-                      <span class="s2">&quot;min_z_dna&quot;</span> <span class="p">:</span> <span class="n">bot_of_nucleus</span><span class="p">,</span>
-                      <span class="s2">&quot;max_z_dna&quot;</span> <span class="p">:</span> <span class="n">top_of_nucleus</span><span class="p">,</span>
-                      <span class="s2">&quot;min_z_cell&quot;</span> <span class="p">:</span> <span class="n">bot_of_cell</span><span class="p">,</span>
-                      <span class="s2">&quot;max_z_cell&quot;</span> <span class="p">:</span> <span class="n">top_of_cell</span><span class="p">,</span>
-                      <span class="s2">&quot;nuclear_centroid&quot;</span> <span class="p">:</span> <span class="n">centroid_of_nucleus</span><span class="p">,</span>
-                      <span class="s2">&quot;total_dna_intensity&quot;</span> <span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">dna</span><span class="p">),</span>
-                      <span class="s2">&quot;total_mem_intensity&quot;</span> <span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">mem</span><span class="p">),</span>
-                      <span class="s2">&quot;total_gfp_intensity&quot;</span> <span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">gfp</span><span class="p">),</span>
-                      <span class="s2">&quot;AB_mode&quot;</span> <span class="p">:</span> <span class="n">AB_mode</span><span class="p">,</span>
-                      <span class="s2">&quot;AB_fold_changes&quot;</span> <span class="p">:</span> <span class="n">AB_fold_changes</span><span class="p">,</span>
-                      <span class="s2">&quot;AB_cyto_vol&quot;</span> <span class="p">:</span> <span class="n">AB_cyto_vol</span><span class="p">,</span>
-                      <span class="s2">&quot;AB_gfp_intensities&quot;</span> <span class="p">:</span> <span class="n">AB_gfp_intensities</span><span class="p">,</span>
-                      <span class="s2">&quot;num_angular_compartments&quot;</span> <span class="p">:</span> <span class="n">num_angular_compartments</span><span class="p">,</span>
-                      <span class="s2">&quot;Ang_fold_changes&quot;</span> <span class="p">:</span> <span class="n">Ang_fold_changes</span><span class="p">,</span>
-                      <span class="s2">&quot;Ang_cyto_vol&quot;</span> <span class="p">:</span> <span class="n">Ang_cyto_vol</span><span class="p">,</span>
-                      <span class="s2">&quot;Ang_gfp_intensities&quot;</span> <span class="p">:</span> <span class="n">Ang_gfp_intensities</span><span class="p">,</span>
-                      <span class="s2">&quot;x_dim&quot;</span> <span class="p">:</span> <span class="n">seg_dna</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> 
-                      <span class="s2">&quot;y_dim&quot;</span> <span class="p">:</span> <span class="n">seg_dna</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
-                      <span class="s2">&quot;z_dim&quot;</span> <span class="p">:</span> <span class="n">seg_dna</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
-                      <span class="s2">&quot;scale_factors&quot;</span> <span class="p">:</span> <span class="n">scale_factors</span><span class="p">,</span>
-                      <span class="s2">&quot;voxel_matrix&quot;</span> <span class="p">:</span> <span class="n">voxel_matrix</span><span class="p">,</span>
-                      <span class="s2">&quot;channels&quot;</span> <span class="p">:</span> <span class="n">masked_channels</span>
-                      <span class="p">}</span>
+            <span class="n">metric</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="s2">&quot;structure&quot;</span><span class="p">:</span> <span class="n">selected_cells</span><span class="p">[</span><span class="s2">&quot;Structure&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">i</span><span class="p">],</span>
+                <span class="s2">&quot;vol_cell&quot;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">seg_mem</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="o">*</span> <span class="n">vol_scale_factor</span><span class="p">,</span>
+                <span class="s2">&quot;height_cell&quot;</span><span class="p">:</span> <span class="p">(</span><span class="n">top_of_cell</span> <span class="o">-</span> <span class="n">bot_of_cell</span><span class="p">)</span> <span class="o">*</span> <span class="n">pixelScaleZ</span><span class="p">,</span>
+                <span class="s2">&quot;vol_nucleus&quot;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">seg_dna</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="o">*</span> <span class="n">vol_scale_factor</span><span class="p">,</span>
+                <span class="s2">&quot;height_nucleus&quot;</span><span class="p">:</span> <span class="p">((</span><span class="n">top_of_nucleus</span> <span class="o">-</span> <span class="n">bot_of_nucleus</span><span class="p">)</span> <span class="o">*</span> <span class="n">pixelScaleZ</span><span class="p">),</span>
+                <span class="s2">&quot;min_z_dna&quot;</span><span class="p">:</span> <span class="n">bot_of_nucleus</span><span class="p">,</span>
+                <span class="s2">&quot;max_z_dna&quot;</span><span class="p">:</span> <span class="n">top_of_nucleus</span><span class="p">,</span>
+                <span class="s2">&quot;min_z_cell&quot;</span><span class="p">:</span> <span class="n">bot_of_cell</span><span class="p">,</span>
+                <span class="s2">&quot;max_z_cell&quot;</span><span class="p">:</span> <span class="n">top_of_cell</span><span class="p">,</span>
+                <span class="s2">&quot;nuclear_centroid&quot;</span><span class="p">:</span> <span class="n">centroid_of_nucleus</span><span class="p">,</span>
+                <span class="s2">&quot;total_dna_intensity&quot;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">dna</span><span class="p">),</span>
+                <span class="s2">&quot;total_mem_intensity&quot;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">mem</span><span class="p">),</span>
+                <span class="s2">&quot;total_gfp_intensity&quot;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">gfp</span><span class="p">),</span>
+                <span class="s2">&quot;AB_mode&quot;</span><span class="p">:</span> <span class="n">AB_mode</span><span class="p">,</span>
+                <span class="s2">&quot;AB_fold_changes&quot;</span><span class="p">:</span> <span class="n">AB_fold_changes</span><span class="p">,</span>
+                <span class="s2">&quot;AB_cyto_vol&quot;</span><span class="p">:</span> <span class="n">AB_cyto_vol</span><span class="p">,</span>
+                <span class="s2">&quot;AB_gfp_intensities&quot;</span><span class="p">:</span> <span class="n">AB_gfp_intensities</span><span class="p">,</span>
+                <span class="s2">&quot;num_angular_compartments&quot;</span><span class="p">:</span> <span class="n">num_angular_compartments</span><span class="p">,</span>
+                <span class="s2">&quot;Ang_fold_changes&quot;</span><span class="p">:</span> <span class="n">Ang_fold_changes</span><span class="p">,</span>
+                <span class="s2">&quot;Ang_cyto_vol&quot;</span><span class="p">:</span> <span class="n">Ang_cyto_vol</span><span class="p">,</span>
+                <span class="s2">&quot;Ang_gfp_intensities&quot;</span><span class="p">:</span> <span class="n">Ang_gfp_intensities</span><span class="p">,</span>
+                <span class="s2">&quot;x_dim&quot;</span><span class="p">:</span> <span class="n">seg_dna</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span>
+                <span class="s2">&quot;y_dim&quot;</span><span class="p">:</span> <span class="n">seg_dna</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+                <span class="s2">&quot;z_dim&quot;</span><span class="p">:</span> <span class="n">seg_dna</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+                <span class="s2">&quot;scale_factors&quot;</span><span class="p">:</span> <span class="n">scale_factors</span><span class="p">,</span>
+                <span class="s2">&quot;voxel_matrix&quot;</span><span class="p">:</span> <span class="n">voxel_matrix</span><span class="p">,</span>
+                <span class="s2">&quot;channels&quot;</span><span class="p">:</span> <span class="n">masked_channels</span><span class="p">,</span>
+            <span class="p">}</span>
 
             <span class="c1"># save metric</span>
             <span class="n">pfile</span> <span class="o">=</span> <span class="n">cell_metrics_dir</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;cell_</span><span class="si">{</span><span class="n">cellid</span><span class="si">}</span><span class="s2">.pickle&quot;</span>

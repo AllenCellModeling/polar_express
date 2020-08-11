@@ -224,21 +224,19 @@
         <span class="n">prev_stack</span> <span class="o">=</span> <span class="n">stack</span> <span class="o">-</span> <span class="mi">1</span>
 
         <span class="c1"># The bottom of cell membrane is at the bottom of image</span>
-        <span class="k">if</span> <span class="p">(</span><span class="n">prev_stack</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">seg_mem</span><span class="p">[</span><span class="n">prev_stack</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:])</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">prev_stack</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">seg_mem</span><span class="p">[</span><span class="n">prev_stack</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:])</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
             <span class="n">bot_of_cell</span> <span class="o">=</span> <span class="n">prev_stack</span>
 
         <span class="c1"># The top of cell membrance is at the top of image</span>
-        <span class="k">if</span> <span class="p">(</span><span class="n">stack</span> <span class="o">==</span> <span class="n">num_z_stacks</span> <span class="o">-</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">seg_mem</span><span class="p">[</span><span class="n">stack</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:])</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">stack</span> <span class="o">==</span> <span class="n">num_z_stacks</span> <span class="o">-</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">seg_mem</span><span class="p">[</span><span class="n">stack</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:])</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
             <span class="n">top_of_cell</span> <span class="o">=</span> <span class="n">stack</span>
 
         <span class="c1"># The bottom layer of the cell membrane</span>
-        <span class="k">if</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">seg_mem</span><span class="p">[</span><span class="n">prev_stack</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:])</span> <span class="o">==</span> <span class="mi">0</span>
-                <span class="ow">and</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">seg_mem</span><span class="p">[</span><span class="n">stack</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:])</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">seg_mem</span><span class="p">[</span><span class="n">prev_stack</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:])</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">seg_mem</span><span class="p">[</span><span class="n">stack</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:])</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
             <span class="n">bot_of_cell</span> <span class="o">=</span> <span class="n">stack</span>
 
         <span class="c1"># The top layer of the cell membrane</span>
-        <span class="k">if</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">seg_mem</span><span class="p">[</span><span class="n">prev_stack</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:])</span> <span class="o">!=</span> <span class="mi">0</span>
-                <span class="ow">and</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">seg_mem</span><span class="p">[</span><span class="n">stack</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:])</span> <span class="o">==</span> <span class="mi">0</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">seg_mem</span><span class="p">[</span><span class="n">prev_stack</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:])</span> <span class="o">!=</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">seg_mem</span><span class="p">[</span><span class="n">stack</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:])</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
             <span class="n">top_of_cell</span> <span class="o">=</span> <span class="n">prev_stack</span>
 
     <span class="c1"># Find where the nucleus starts and ends</span>
@@ -247,32 +245,40 @@
         <span class="n">prev_stack</span> <span class="o">=</span> <span class="n">stack</span> <span class="o">-</span> <span class="mi">1</span>
 
         <span class="c1"># The bottom layer of the nucleus</span>
-        <span class="k">if</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">seg_dna</span><span class="p">[</span><span class="n">prev_stack</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:])</span> <span class="o">==</span> <span class="mi">0</span>
-                <span class="ow">and</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">seg_dna</span><span class="p">[</span><span class="n">stack</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:])</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">seg_dna</span><span class="p">[</span><span class="n">prev_stack</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:])</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">seg_dna</span><span class="p">[</span><span class="n">stack</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:])</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
             <span class="n">bot_of_nucleus</span> <span class="o">=</span> <span class="n">stack</span>
 
         <span class="c1"># The top layer of the nucleus</span>
-        <span class="k">if</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">seg_dna</span><span class="p">[</span><span class="n">prev_stack</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:])</span> <span class="o">!=</span> <span class="mi">0</span>
-                <span class="ow">and</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">seg_dna</span><span class="p">[</span><span class="n">stack</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:])</span> <span class="o">==</span> <span class="mi">0</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">seg_dna</span><span class="p">[</span><span class="n">prev_stack</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:])</span> <span class="o">!=</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">seg_dna</span><span class="p">[</span><span class="n">stack</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:])</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
             <span class="n">top_of_nucleus</span> <span class="o">=</span> <span class="n">prev_stack</span>
 
     <span class="c1"># Find the centroid of the nucleus</span>
     <span class="n">centroid_of_nucleus</span> <span class="o">=</span> <span class="n">ndimage</span><span class="o">.</span><span class="n">measurements</span><span class="o">.</span><span class="n">center_of_mass</span><span class="p">(</span><span class="n">seg_dna</span><span class="p">)</span>
 
     <span class="c1"># Check for unexpected positions of cell sections</span>
-    <span class="k">if</span> <span class="p">(</span><span class="n">top_of_nucleus</span> <span class="o">&gt;</span> <span class="n">top_of_cell</span> <span class="ow">or</span> <span class="n">bot_of_nucleus</span> <span class="o">&lt;</span> <span class="n">bot_of_cell</span><span class="p">):</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Nucleus exceeds boundaries of cell membrane!&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">top_of_nucleus</span> <span class="o">&gt;</span> <span class="n">top_of_cell</span> <span class="ow">or</span> <span class="n">bot_of_nucleus</span> <span class="o">&lt;</span> <span class="n">bot_of_cell</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Nucleus exceeds boundaries of cell membrane!&quot;</span><span class="p">)</span>
 
-    <span class="k">if</span> <span class="p">(</span><span class="n">centroid_of_nucleus</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">top_of_nucleus</span>
-            <span class="ow">or</span> <span class="n">centroid_of_nucleus</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">bot_of_nucleus</span><span class="p">):</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Centroid of nucleus exceeds boundaries of nucleus!&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="p">(</span>
+        <span class="n">centroid_of_nucleus</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">top_of_nucleus</span>
+        <span class="ow">or</span> <span class="n">centroid_of_nucleus</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">bot_of_nucleus</span>
+    <span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Centroid of nucleus exceeds boundaries of nucleus!&quot;</span><span class="p">)</span>
 
-    <span class="k">if</span> <span class="p">(</span><span class="n">bot_of_cell</span> <span class="o">&gt;</span> <span class="n">top_of_cell</span> <span class="ow">or</span> <span class="n">bot_of_nucleus</span> <span class="o">&gt;</span> <span class="n">top_of_nucleus</span><span class="p">):</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Bottom layer of organelle exceeds top layer!&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">bot_of_cell</span> <span class="o">&gt;</span> <span class="n">top_of_cell</span> <span class="ow">or</span> <span class="n">bot_of_nucleus</span> <span class="o">&gt;</span> <span class="n">top_of_nucleus</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Bottom layer of organelle exceeds top layer!&quot;</span><span class="p">)</span>
 
-    <span class="k">if</span> <span class="p">(</span><span class="nb">any</span><span class="p">(</span><span class="n">elem</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">for</span> <span class="n">elem</span> <span class="ow">in</span> <span class="p">[</span><span class="n">bot_of_cell</span><span class="p">,</span> <span class="n">bot_of_nucleus</span><span class="p">,</span> <span class="n">centroid_of_nucleus</span><span class="p">,</span>
-            <span class="n">top_of_nucleus</span><span class="p">,</span> <span class="n">top_of_cell</span><span class="p">])):</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;No value assigned to a vertical cutoff!&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">any</span><span class="p">(</span>
+        <span class="n">elem</span> <span class="ow">is</span> <span class="kc">None</span>
+        <span class="k">for</span> <span class="n">elem</span> <span class="ow">in</span> <span class="p">[</span>
+            <span class="n">bot_of_cell</span><span class="p">,</span>
+            <span class="n">bot_of_nucleus</span><span class="p">,</span>
+            <span class="n">centroid_of_nucleus</span><span class="p">,</span>
+            <span class="n">top_of_nucleus</span><span class="p">,</span>
+            <span class="n">top_of_cell</span><span class="p">,</span>
+        <span class="p">]</span>
+    <span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;No value assigned to a vertical cutoff!&quot;</span><span class="p">)</span>
 
     <span class="c1"># Return the results</span>
     <span class="k">return</span> <span class="n">bot_of_cell</span><span class="p">,</span> <span class="n">bot_of_nucleus</span><span class="p">,</span> <span class="n">centroid_of_nucleus</span><span class="p">,</span> <span class="n">top_of_nucleus</span><span class="p">,</span> <span class="n">top_of_cell</span></div>

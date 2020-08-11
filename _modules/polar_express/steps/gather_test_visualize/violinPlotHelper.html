@@ -183,8 +183,9 @@
 <span class="kn">import</span> <span class="nn">scipy</span> <span class="k">as</span> <span class="nn">sp</span>
 
 
-<div class="viewcode-block" id="makeViolinPlot"><a class="viewcode-back" href="../../../../polar_express.steps.gather_test_visualize.html#polar_express.steps.gather_test_visualize.violinPlotHelper.makeViolinPlot">[docs]</a><span class="k">def</span> <span class="nf">makeViolinPlot</span><span class="p">(</span><span class="n">method</span><span class="p">,</span> <span class="n">num_compartments</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">y_label</span><span class="p">,</span>
-                   <span class="n">structure</span><span class="p">,</span> <span class="n">num_samples</span><span class="p">,</span> <span class="n">path</span><span class="p">):</span>
+<div class="viewcode-block" id="makeViolinPlot"><a class="viewcode-back" href="../../../../polar_express.steps.gather_test_visualize.html#polar_express.steps.gather_test_visualize.violinPlotHelper.makeViolinPlot">[docs]</a><span class="k">def</span> <span class="nf">makeViolinPlot</span><span class="p">(</span>
+    <span class="n">method</span><span class="p">,</span> <span class="n">num_compartments</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">y_label</span><span class="p">,</span> <span class="n">structure</span><span class="p">,</span> <span class="n">num_samples</span><span class="p">,</span> <span class="n">path</span>
+<span class="p">):</span>
 
     <span class="sd">&quot;&quot;&quot;</span>
 
@@ -212,31 +213,43 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">if</span> <span class="p">(</span><span class="n">method</span> <span class="o">!=</span> <span class="s1">&#39;AB&#39;</span> <span class="ow">and</span> <span class="n">method</span> <span class="o">!=</span> <span class="s1">&#39;Angular&#39;</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Invalid mode entered. Please use </span><span class="se">\&#39;</span><span class="s1">AB</span><span class="se">\&#39;</span><span class="s1"> or </span><span class="se">\&#39;</span><span class="s1">Angular</span><span class="se">\&#39;</span><span class="s1">.&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">method</span> <span class="o">!=</span> <span class="s2">&quot;AB&quot;</span> <span class="ow">and</span> <span class="n">method</span> <span class="o">!=</span> <span class="s2">&quot;Angular&quot;</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Invalid mode entered. Please use &#39;AB&#39; or &#39;Angular&#39;.&quot;</span><span class="p">)</span>
 
     <span class="n">fig</span><span class="p">,</span> <span class="n">ax1</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
 
-    <span class="n">ax1</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="n">method</span> <span class="o">+</span> <span class="s1">&#39; Compartments: &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">structure</span><span class="p">)</span>
-                  <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">(&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">num_compartments</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39; compartments, &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">num_samples</span><span class="p">)</span>
-                  <span class="o">+</span> <span class="s1">&#39; samples)&#39;</span><span class="p">)</span>
+    <span class="n">ax1</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span>
+        <span class="n">method</span>
+        <span class="o">+</span> <span class="s2">&quot; Compartments: &quot;</span>
+        <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">structure</span><span class="p">)</span>
+        <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">(&quot;</span>
+        <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">num_compartments</span><span class="p">)</span>
+        <span class="o">+</span> <span class="s2">&quot; compartments, &quot;</span>
+        <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">num_samples</span><span class="p">)</span>
+        <span class="o">+</span> <span class="s2">&quot; samples)&quot;</span>
+    <span class="p">)</span>
     <span class="n">ax1</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="n">y_label</span><span class="p">)</span>
     <span class="n">ax1</span> <span class="o">=</span> <span class="n">sns</span><span class="o">.</span><span class="n">violinplot</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">)</span>
 
-    <span class="n">labels</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Sec &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_compartments</span><span class="p">)]</span>
-    <span class="n">ax1</span><span class="o">.</span><span class="n">get_xaxis</span><span class="p">()</span><span class="o">.</span><span class="n">set_tick_params</span><span class="p">(</span><span class="n">direction</span><span class="o">=</span><span class="s1">&#39;out&#39;</span><span class="p">)</span>
-    <span class="n">ax1</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">set_ticks_position</span><span class="p">(</span><span class="s1">&#39;bottom&#39;</span><span class="p">)</span>
+    <span class="n">labels</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;Sec &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_compartments</span><span class="p">)]</span>
+    <span class="n">ax1</span><span class="o">.</span><span class="n">get_xaxis</span><span class="p">()</span><span class="o">.</span><span class="n">set_tick_params</span><span class="p">(</span><span class="n">direction</span><span class="o">=</span><span class="s2">&quot;out&quot;</span><span class="p">)</span>
+    <span class="n">ax1</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">set_ticks_position</span><span class="p">(</span><span class="s2">&quot;bottom&quot;</span><span class="p">)</span>
     <span class="n">ax1</span><span class="o">.</span><span class="n">set_xticks</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">labels</span><span class="p">)))</span>
     <span class="n">ax1</span><span class="o">.</span><span class="n">set_xticklabels</span><span class="p">(</span><span class="n">labels</span><span class="p">)</span>
 
     <span class="n">cols</span> <span class="o">=</span> <span class="p">[</span><span class="n">data</span><span class="p">[:,</span> <span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">])]</span>
     <span class="n">kruskal_h</span><span class="p">,</span> <span class="n">kruskal_p</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">stats</span><span class="o">.</span><span class="n">kruskal</span><span class="p">(</span><span class="o">*</span><span class="n">cols</span><span class="p">)</span>
 
-    <span class="n">ax1</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="mf">0.95</span><span class="p">,</span> <span class="mf">0.01</span><span class="p">,</span> <span class="s1">&#39;Kruskal-Wallis p-value: &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">kruskal_p</span><span class="p">),</span>
-             <span class="n">verticalalignment</span><span class="o">=</span><span class="s1">&#39;bottom&#39;</span><span class="p">,</span> <span class="n">horizontalalignment</span><span class="o">=</span><span class="s1">&#39;right&#39;</span><span class="p">,</span>
-             <span class="n">transform</span><span class="o">=</span><span class="n">ax1</span><span class="o">.</span><span class="n">transAxes</span><span class="p">)</span>
+    <span class="n">ax1</span><span class="o">.</span><span class="n">text</span><span class="p">(</span>
+        <span class="mf">0.95</span><span class="p">,</span>
+        <span class="mf">0.01</span><span class="p">,</span>
+        <span class="s2">&quot;Kruskal-Wallis p-value: &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">kruskal_p</span><span class="p">),</span>
+        <span class="n">verticalalignment</span><span class="o">=</span><span class="s2">&quot;bottom&quot;</span><span class="p">,</span>
+        <span class="n">horizontalalignment</span><span class="o">=</span><span class="s2">&quot;right&quot;</span><span class="p">,</span>
+        <span class="n">transform</span><span class="o">=</span><span class="n">ax1</span><span class="o">.</span><span class="n">transAxes</span><span class="p">,</span>
+    <span class="p">)</span>
 
-    <span class="n">plt</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span><span class="n">y</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;r&#39;</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;-&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span><span class="n">y</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;r&quot;</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s2">&quot;-&quot;</span><span class="p">)</span>
 
     <span class="c1"># save visualization</span>
     <span class="k">if</span> <span class="n">path</span><span class="o">.</span><span class="n">is_file</span><span class="p">():</span>

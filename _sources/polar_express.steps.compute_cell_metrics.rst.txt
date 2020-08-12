@@ -44,6 +44,14 @@ polar\_express.steps.compute\_cell\_metrics.findVerticalCutoffs module
    :undoc-members:
    :show-inheritance:
 
+polar\_express.steps.compute\_cell\_metrics.metricsDict module
+--------------------------------------------------------------
+
+.. automodule:: polar_express.steps.compute_cell_metrics.metricsDict
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 
 Module contents
 ---------------

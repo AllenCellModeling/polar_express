@@ -184,7 +184,7 @@
 <span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
-<span class="kn">from</span> <span class="nn">tqdm</span> <span class="kn">import</span> <span class="n">tqdm</span>
+<span class="kn">from</span> <span class="nn">aics_dask_utils</span> <span class="kn">import</span> <span class="n">DistributedHandler</span>
 
 <span class="kn">from</span> <span class="nn">datastep</span> <span class="kn">import</span> <span class="n">Step</span><span class="p">,</span> <span class="n">log_run_params</span>
 <span class="kn">from</span> <span class="nn">.artificialGFP</span> <span class="kn">import</span> <span class="n">makeartificialGFP</span>
@@ -204,11 +204,34 @@
     <span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">direct_upstream_tasks</span><span class="o">=</span><span class="n">direct_upstream_tasks</span><span class="p">,</span> <span class="n">config</span><span class="o">=</span><span class="n">config</span><span class="p">)</span>
 
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_example_func</span><span class="p">(</span><span class="n">row_index</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">row</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="c1"># Invert a large matrix</span>
+        <span class="c1"># inv = np.linalg.inv(np.random.rand(1000, 1000))</span>
+        <span class="n">i</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">row_index</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">i</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_create_art_cells</span><span class="p">(</span>
+        <span class="n">row_index</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">selectedcell</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span>
+        <span class="n">artificial_cell_dir</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span>
+        <span class="n">vizcells</span><span class="p">:</span> <span class="n">List</span><span class="p">,</span>
+        <span class="n">artificial_plot_dir</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+        <span class="c1"># Create artificial cells</span>
+        <span class="n">art_cells</span> <span class="o">=</span> <span class="n">makeartificialGFP</span><span class="p">(</span>
+            <span class="n">selectedcell</span><span class="p">,</span> <span class="n">artificial_cell_dir</span><span class="p">,</span> <span class="n">vizcells</span><span class="p">,</span> <span class="n">artificial_plot_dir</span>
+        <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">art_cells</span>
+
 <div class="viewcode-block" id="SelectData.run"><a class="viewcode-back" href="../../../../polar_express.steps.select_data.html#polar_express.steps.SelectData.run">[docs]</a>    <span class="nd">@log_run_params</span>
     <span class="k">def</span> <span class="nf">run</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">dataset</span><span class="o">=</span><span class="s2">&quot;/allen/aics/modeling/theok/Projects/Data/Org3Dcells&quot;</span><span class="p">,</span>
         <span class="n">artflag</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">distributed_executor_address</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -232,6 +255,14 @@
 <span class="sd">            Path to the directory containing the .tiff files to be passed into the</span>
 <span class="sd">            datastep workflow. The directory should also contain a sub-directory</span>
 <span class="sd">            &quot;Annotation&quot; which holds ann.csv</span>
+
+<span class="sd">        artflag: Optional[Bool]</span>
+<span class="sd">            Flag indicating to run artificial GFP generation in cells</span>
+<span class="sd">            Default: False</span>
+
+<span class="sd">        distributed_executor_address: Optional[str]</span>
+<span class="sd">            An optional executor address to pass to some computation engine.</span>
+<span class="sd">            Default: None</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
@@ -260,20 +291,43 @@
             <span class="c1"># Select artificial cells</span>
             <span class="n">N</span> <span class="o">=</span> <span class="mi">5</span>
             <span class="n">selectedcells</span> <span class="o">=</span> <span class="n">cells</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="n">n</span><span class="o">=</span><span class="n">N</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-            <span class="n">no_of_cells</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">selectedcells</span><span class="p">)</span>
             <span class="n">Nex</span> <span class="o">=</span> <span class="mi">2</span>
             <span class="n">vizcells</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">selectedcells</span><span class="p">[</span><span class="s2">&quot;CellId&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="n">n</span><span class="o">=</span><span class="n">Nex</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span>
 
             <span class="c1"># Main loop to create</span>
-            <span class="n">art_cells_compiled</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">()</span>
-            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">tqdm</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">no_of_cells</span><span class="p">),</span> <span class="n">desc</span><span class="o">=</span><span class="s2">&quot;Creating artificial cells&quot;</span><span class="p">):</span>
-                <span class="c1"># Pandas series with information about cell</span>
-                <span class="n">selectedcell</span> <span class="o">=</span> <span class="n">selectedcells</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
-                <span class="n">art_cells</span> <span class="o">=</span> <span class="n">makeartificialGFP</span><span class="p">(</span>
-                    <span class="n">selectedcell</span><span class="p">,</span> <span class="n">artificial_cell_dir</span><span class="p">,</span> <span class="n">vizcells</span><span class="p">,</span> <span class="n">artificial_plot_dir</span>
+            <span class="c1"># art_cells_compiled = pd.DataFrame()</span>
+            <span class="c1"># for i in tqdm(range(no_of_cells), desc=&quot;Creating artificial cells&quot;):</span>
+            <span class="c1">#     # Pandas series with information about cell</span>
+            <span class="c1">#     selectedcell = selectedcells.iloc[i]</span>
+            <span class="c1">#     art_cells = makeartificialGFP(</span>
+            <span class="c1">#         selectedcell, artificial_cell_dir, vizcells, artificial_plot_dir</span>
+            <span class="c1">#     )</span>
+            <span class="c1">#     art_cells_compiled = art_cells_compiled.append(</span>
+            <span class="c1">#         art_cells, ignore_index=True</span>
+            <span class="c1">#     )</span>
+
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Starting distributed run&quot;</span><span class="p">)</span>
+            <span class="c1"># Process each row</span>
+            <span class="k">with</span> <span class="n">DistributedHandler</span><span class="p">(</span><span class="n">distributed_executor_address</span><span class="p">)</span> <span class="k">as</span> <span class="n">handler</span><span class="p">:</span>
+                <span class="c1"># Start processing</span>
+                <span class="n">results</span> <span class="o">=</span> <span class="n">handler</span><span class="o">.</span><span class="n">batched_map</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_create_art_cells</span><span class="p">,</span>
+                    <span class="c1"># Convert dataframe iterrows into two lists of items to iterate over</span>
+                    <span class="c1"># One list will be row index</span>
+                    <span class="c1"># One list will be the pandas series of every row</span>
+                    <span class="o">*</span><span class="nb">zip</span><span class="p">(</span><span class="o">*</span><span class="nb">list</span><span class="p">(</span><span class="n">selectedcells</span><span class="o">.</span><span class="n">iterrows</span><span class="p">())),</span>
+                    <span class="c1"># Pass the other parameters as list of the same thing for each</span>
+                    <span class="c1"># mapped function call</span>
+                    <span class="p">[</span><span class="n">artificial_cell_dir</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">dataset</span><span class="p">))],</span>
+                    <span class="p">[</span><span class="n">vizcells</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">dataset</span><span class="p">))],</span>
+                    <span class="p">[</span><span class="n">artificial_plot_dir</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">dataset</span><span class="p">))],</span>
                 <span class="p">)</span>
+
+            <span class="c1"># Generate features paths rows</span>
+            <span class="n">art_cells_compiled</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">result</span> <span class="ow">in</span> <span class="n">results</span><span class="p">:</span>
                 <span class="n">art_cells_compiled</span> <span class="o">=</span> <span class="n">art_cells_compiled</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-                    <span class="n">art_cells</span><span class="p">,</span> <span class="n">ignore_index</span><span class="o">=</span><span class="kc">True</span>
+                    <span class="n">result</span><span class="p">,</span> <span class="n">ignore_index</span><span class="o">=</span><span class="kc">True</span>
                 <span class="p">)</span>
 
             <span class="n">selected_cell_csv</span> <span class="o">=</span> <span class="n">cell_annotation_dir</span> <span class="o">/</span> <span class="s2">&quot;ann_sc.csv&quot;</span>
@@ -296,7 +350,7 @@
             <span class="n">selectedcells</span> <span class="o">=</span> <span class="n">cells</span><span class="p">[</span>
                 <span class="p">(</span><span class="n">cells</span><span class="p">[</span><span class="s2">&quot;Interphase and Mitotic Stages (stage)&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span>
                 <span class="o">&amp;</span> <span class="p">(</span><span class="n">cells</span><span class="p">[(</span><span class="s2">&quot;Structure&quot;</span><span class="p">)]</span> <span class="o">==</span> <span class="s2">&quot;Endoplasmic reticulum&quot;</span><span class="p">)</span>
-            <span class="p">]</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="n">n</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+            <span class="p">]</span>
             <span class="c1"># Save selected cells</span>
             <span class="n">selected_cell_csv</span> <span class="o">=</span> <span class="n">cell_annotation_dir</span> <span class="o">/</span> <span class="s2">&quot;ann_sc.csv&quot;</span>
             <span class="n">selectedcells</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">selected_cell_csv</span><span class="p">)</span>
@@ -310,6 +364,20 @@
             <span class="c1"># Save the manifest</span>
             <span class="n">manifest_file</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">step_local_staging_dir</span> <span class="o">/</span> <span class="s2">&quot;manifest.csv&quot;</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">manifest</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">manifest_file</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Starting distributed run&quot;</span><span class="p">)</span>
+            <span class="c1"># Process each row</span>
+            <span class="k">with</span> <span class="n">DistributedHandler</span><span class="p">(</span><span class="n">distributed_executor_address</span><span class="p">)</span> <span class="k">as</span> <span class="n">handler</span><span class="p">:</span>
+                <span class="c1"># Start processing</span>
+                <span class="n">results</span> <span class="o">=</span> <span class="n">handler</span><span class="o">.</span><span class="n">batched_map</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_example_func</span><span class="p">,</span>
+                    <span class="c1"># Convert dataframe iterrows into two lists of items to iterate over</span>
+                    <span class="c1"># One list will be row index</span>
+                    <span class="c1"># One list will be the pandas series of every row</span>
+                    <span class="o">*</span><span class="nb">zip</span><span class="p">(</span><span class="o">*</span><span class="nb">list</span><span class="p">(</span><span class="n">selectedcells</span><span class="o">.</span><span class="n">iterrows</span><span class="p">())),</span>
+                <span class="p">)</span>
+
+            <span class="nb">print</span><span class="p">(</span><span class="n">results</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="n">manifest_file</span></div></div>
 </pre></div>

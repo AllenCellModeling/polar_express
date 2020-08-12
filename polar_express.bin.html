@@ -196,11 +196,75 @@
 <div class="section" id="submodules">
 <h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
 </div>
-<div class="section" id="polar-express-bin-all-module">
-<h2>polar_express.bin.all module<a class="headerlink" href="#polar-express-bin-all-module" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="module-polar_express.bin.all">
+<span id="polar-express-bin-all-module"></span><h2>polar_express.bin.all module<a class="headerlink" href="#module-polar_express.bin.all" title="Permalink to this headline">¶</a></h2>
+<p>This script will run all tasks in a prefect Flow.</p>
+<p>When you add steps to you step workflow be sure to add them to the step list
+and configure their IO in the <cite>run</cite> function.</p>
+<dl class="class">
+<dt id="polar_express.bin.all.All">
+<em class="property">class </em><code class="sig-prename descclassname">polar_express.bin.all.</code><code class="sig-name descname">All</code><a class="reference internal" href="_modules/polar_express/bin/all.html#All"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#polar_express.bin.all.All" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Set all of your available steps here.
+This is only used for data logging operations, not computation purposes.</p>
+<dl class="method">
+<dt id="polar_express.bin.all.All.checkout">
+<code class="sig-name descname">checkout</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/polar_express/bin/all.html#All.checkout"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#polar_express.bin.all.All.checkout" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checkout all steps.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="polar_express.bin.all.All.clean">
+<code class="sig-name descname">clean</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/polar_express/bin/all.html#All.clean"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#polar_express.bin.all.All.clean" title="Permalink to this definition">¶</a></dt>
+<dd><p>Clean all steps.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="polar_express.bin.all.All.pull">
+<code class="sig-name descname">pull</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/polar_express/bin/all.html#All.pull"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#polar_express.bin.all.All.pull" title="Permalink to this definition">¶</a></dt>
+<dd><p>Pull all steps.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="polar_express.bin.all.All.push">
+<code class="sig-name descname">push</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/polar_express/bin/all.html#All.push"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#polar_express.bin.all.All.push" title="Permalink to this definition">¶</a></dt>
+<dd><p>Push all steps.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="polar_express.bin.all.All.run">
+<code class="sig-name descname">run</code><span class="sig-paren">(</span><em class="sig-param">clean: bool = False</em>, <em class="sig-param">debug: bool = False</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/polar_express/bin/all.html#All.run"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#polar_express.bin.all.All.run" title="Permalink to this definition">¶</a></dt>
+<dd><p>Run a flow with your steps.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>clean</strong> (<em>bool</em>) – Should the local staging directory be cleaned prior to this run.
+Default: False (Do not clean)</p></li>
+<li><p><strong>debug</strong> (<em>bool</em>) – A debug flag for the developer to use to manipulate how much data runs,
+how it is processed, etc.
+Default: False (Do not debug)</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>Documentation on prefect:
+<a class="reference external" href="https://docs.prefect.io/core/">https://docs.prefect.io/core/</a></p>
+<p>Basic prefect example:
+<a class="reference external" href="https://docs.prefect.io/core/">https://docs.prefect.io/core/</a></p>
+</dd></dl>
+
+</dd></dl>
+
 </div>
-<div class="section" id="polar-express-bin-cli-module">
-<h2>polar_express.bin.cli module<a class="headerlink" href="#polar-express-bin-cli-module" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="module-polar_express.bin.cli">
+<span id="polar-express-bin-cli-module"></span><h2>polar_express.bin.cli module<a class="headerlink" href="#module-polar_express.bin.cli" title="Permalink to this headline">¶</a></h2>
+<p>This script will convert all the steps into CLI callables.</p>
+<p>You should not edit this script.</p>
+<dl class="function">
+<dt id="polar_express.bin.cli.cli">
+<code class="sig-prename descclassname">polar_express.bin.cli.</code><code class="sig-name descname">cli</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/polar_express/bin/cli.html#cli"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#polar_express.bin.cli.cli" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 </div>
 <div class="section" id="module-polar_express.bin">
 <span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-polar_express.bin" title="Permalink to this headline">¶</a></h2>

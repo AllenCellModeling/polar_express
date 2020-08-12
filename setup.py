@@ -58,7 +58,8 @@ requirements = [
     "tqdm",
     "aicsimageio",
     "seaborn",
-    "opencv-python"
+    "opencv-python",
+    "aics_dask_utils"
 ]
 
 extra_requirements = {

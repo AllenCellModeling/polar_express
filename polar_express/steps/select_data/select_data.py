@@ -5,8 +5,6 @@ import logging
 from pathlib import Path
 from typing import Dict, List, Optional, Union
 import pandas as pd
-import numpy as np
-from tqdm import tqdm
 from aics_dask_utils import DistributedHandler
 
 from datastep import Step, log_run_params
@@ -30,7 +28,7 @@ class SelectData(Step):
     @staticmethod
     def _example_func(row_index: int, row: pd.Series) -> int:
         # Invert a large matrix
-        inv = np.linalg.inv(np.random.rand(1000, 1000))
+        # inv = np.linalg.inv(np.random.rand(1000, 1000))
         i = int(row_index)
         return i
 
@@ -43,7 +41,9 @@ class SelectData(Step):
         artificial_plot_dir: Path,
     ) -> pd.DataFrame:
         # Create artificial cells
-        art_cells = makeartificialGFP(selectedcell, artificial_cell_dir, vizcells, artificial_plot_dir)
+        art_cells = makeartificialGFP(
+            selectedcell, artificial_cell_dir, vizcells, artificial_plot_dir
+        )
 
         return art_cells
 
@@ -112,7 +112,6 @@ class SelectData(Step):
             # Select artificial cells
             N = 5
             selectedcells = cells.sample(n=N, random_state=1)
-            no_of_cells = len(selectedcells)
             Nex = 2
             vizcells = list(selectedcells["CellId"].sample(n=Nex, random_state=1))
 
@@ -128,7 +127,7 @@ class SelectData(Step):
             #         art_cells, ignore_index=True
             #     )
 
-            print('Starting distributed run')
+            print("Starting distributed run")
             # Process each row
             with DistributedHandler(distributed_executor_address) as handler:
                 # Start processing
@@ -148,7 +147,9 @@ class SelectData(Step):
             # Generate features paths rows
             art_cells_compiled = pd.DataFrame()
             for result in results:
-                art_cells_compiled = art_cells_compiled.append(result, ignore_index=True)
+                art_cells_compiled = art_cells_compiled.append(
+                    result, ignore_index=True
+                )
 
             selected_cell_csv = cell_annotation_dir / "ann_sc.csv"
             art_cells_compiled.to_csv(selected_cell_csv)
@@ -185,7 +186,7 @@ class SelectData(Step):
             manifest_file = self.step_local_staging_dir / "manifest.csv"
             self.manifest.to_csv(manifest_file, index=False)
 
-            print('Starting distributed run')
+            print("Starting distributed run")
             # Process each row
             with DistributedHandler(distributed_executor_address) as handler:
                 # Start processing

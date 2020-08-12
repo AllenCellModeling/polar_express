@@ -35,7 +35,7 @@ def test_image(data_dir):
 
 @pytest.fixture
 def true_image_metrics(data_metrics_dir):
-    # read in griybd truth metrics dictionary
+    # read in ground truth metrics dictionary
     metrics_file = data_metrics_dir / "cell_30827.pickle"
     with (open(metrics_file, "rb")) as openfile:
         metrics = pickle.load(openfile)
@@ -44,8 +44,15 @@ def true_image_metrics(data_metrics_dir):
 
 @pytest.fixture
 def test_image_metrics(data_metrics_dir):
-    # read in computed metrics dictionary
-    cell_30827 = "local_staging/computecellmetrics/metrics/cell_30827.pickle"
+
+    # Load cell metrics (from Path to Dataframe)
+    cell_metrics_manifest = data_metrics_dir / "cell_metrics_manifest.csv"
+    cell_metrics_manifest = pd.read_csv(cell_metrics_manifest)
+
+    cell_30827 = cell_metrics_manifest[
+        cell_metrics_manifest["filepath"].str.contains("cell_30827")
+    ].iloc[0]["filepath"]
+
     with (open(cell_30827, "rb")) as openfile:
         metrics = pickle.load(openfile)
 

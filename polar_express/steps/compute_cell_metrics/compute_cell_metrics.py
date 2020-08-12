@@ -5,21 +5,12 @@ import logging
 from pathlib import Path
 from typing import Dict, List, Optional, Union
 import pandas as pd
-from tqdm import tqdm
-from aicsimageio import imread
-import numpy as np
-import pickle
+from aics_dask_utils import DistributedHandler
 
 from datastep import Step, log_run_params
 
 from ..select_data import SelectData
-from .applySegmentationMasks import applySegmentationMasks
-from .findVerticalCutoffs import findVerticalCutoffs
-from .FoldChangeFunctions import findFoldChange_AB
-from .FoldChangeFunctions import findFoldChange_Angular
-from .computeVoxelMatrix import compute_voxel_matrix
-
-from polar_express.definitions import ROOT_DIR
+from .metricsDict import computeMetricsDict
 
 ###############################################################################
 
@@ -36,6 +27,21 @@ class ComputeCellMetrics(Step):
     ):
         super().__init__(direct_upstream_tasks=direct_upstream_tasks, config=config)
 
+    @staticmethod
+    def _compute_save_metrics(
+        row_index: int,
+        selectedcell: pd.Series,
+        cell_metrics_dir: Path,
+        AB_mode,
+        num_angular_compartments,
+    ) -> Path:
+        # Compute cell metrics
+        cellMetricsPath = computeMetricsDict(
+            selectedcell, cell_metrics_dir, AB_mode, num_angular_compartments
+        )
+
+        return cellMetricsPath
+
     @log_run_params
     def run(
         self,
@@ -43,6 +49,7 @@ class ComputeCellMetrics(Step):
         filepath_column: str = "filepath",
         AB_mode="quadrants",
         num_angular_compartments=8,
+        distributed_executor_address: Optional[str] = None,
         **kwargs,
     ):
         """
@@ -75,6 +82,9 @@ class ComputeCellMetrics(Step):
         num_angular_compartments : int
             The number of equal-size angles the cell should be split into for the
             angular compartment analysis.
+        distributed_executor_address: Optional[str]
+            An optional executor address to pass to some computation engine.
+            Default: None
 
         Returns
         -------
@@ -105,137 +115,27 @@ class ComputeCellMetrics(Step):
         # Configure manifest dataframe for storage tracking
         self.manifest = pd.DataFrame(index=range(no_of_cells), columns=["filepath"])
 
-        # Main loop to create
-        for i in tqdm(range(no_of_cells), desc="Computing metrics for cells"):
-
-            # image file
-            file = selected_cells["Path"].iloc[i]
-            cellid = selected_cells["CellId"].iloc[i]
-
-            # read in image file
-            try:
-                im = np.squeeze(imread(file))  # provided absolute path
-            except FileNotFoundError:
-                try:
-                    rel_path = ROOT_DIR + file  # provided relative path
-                    im = np.squeeze(imread(rel_path))
-                except FileNotFoundError:
-                    raise
-
-            # additional image information
-            pixelScaleX = selected_cells["PixelScaleX"].iloc[i]
-            pixelScaleY = selected_cells["PixelScaleY"].iloc[i]
-            pixelScaleZ = selected_cells["PixelScaleZ"].iloc[i]
-            vol_scale_factor = pixelScaleX * pixelScaleY * pixelScaleZ
-            # pixel scale factors stored in (z,y,x) order
-            scale_factors = np.array([pixelScaleZ, pixelScaleY, pixelScaleX])
-
-            # get the channel indices
-            ch_dna = selected_cells["ch_dna"].iloc[i]
-            ch_memb = selected_cells["ch_memb"].iloc[i]
-            ch_struct = selected_cells["ch_struct"].iloc[i]
-            ch_seg_nuc = selected_cells["ch_seg_nuc"].iloc[i]
-            ch_seg_cell = selected_cells["ch_seg_cell"].iloc[i]
-
-            channel_indices = {
-                "ch_dna": ch_dna,
-                "ch_memb": ch_memb,
-                "ch_struct": ch_struct,
-                "ch_seg_nuc": ch_seg_nuc,
-                "ch_seg_cell": ch_seg_cell,
-            }
-
-            # Get the segmentation channels
-            (seg_dna, seg_mem, seg_gfp, dna, mem, gfp) = applySegmentationMasks(
-                im, channel_indices
+        print("Starting distributed run")
+        # Process each row
+        with DistributedHandler(distributed_executor_address) as handler:
+            # Start processing
+            results = handler.batched_map(
+                self._compute_save_metrics,
+                # Convert dataframe iterrows into two lists of items to iterate over
+                # One list will be row index
+                # One list will be the pandas series of every row
+                *zip(*list(selected_cells.iterrows())),
+                # Pass the other parameters as list of the same thing for each
+                # mapped function call
+                [cell_metrics_dir for i in range(no_of_cells)],
+                [AB_mode for i in range(no_of_cells)],
+                [num_angular_compartments for i in range(no_of_cells)],
             )
 
-            masked_channels = {
-                "seg_dna": seg_dna,
-                "seg_mem": seg_mem,
-                "seg_gfp": seg_gfp,
-                "dna": dna,
-                "mem": mem,
-                "gfp": gfp,
-            }
-
-            # compute z metrics
-            (
-                bot_of_cell,
-                bot_of_nucleus,
-                centroid_of_nucleus,
-                top_of_nucleus,
-                top_of_cell,
-            ) = findVerticalCutoffs(im, masked_channels)
-
-            z_metrics = {
-                "bot_of_cell": bot_of_cell,
-                "bot_of_nucleus": bot_of_nucleus,
-                "centroid_of_nucleus": centroid_of_nucleus,
-                "top_of_nucleus": top_of_nucleus,
-                "top_of_cell": top_of_cell,
-            }
-
-            # compute fold change metrics
-            (AB_fold_changes, AB_cyto_vol, AB_gfp_intensities) = findFoldChange_AB(
-                masked_channels, z_metrics, vol_scale_factor, mode=AB_mode
-            )
-            (
-                Ang_fold_changes,
-                Ang_cyto_vol,
-                Ang_gfp_intensities,
-            ) = findFoldChange_Angular(
-                masked_channels,
-                z_metrics,
-                vol_scale_factor,
-                num_sections=num_angular_compartments,
-            )
-
-            # compute (nx4) voxel matrix
-            voxel_matrix = compute_voxel_matrix(
-                scale_factors, centroid_of_nucleus, masked_channels
-            )
-
-            # store metrics
-            metric = {
-                "structure": selected_cells["Structure"].iloc[i],
-                "vol_cell": np.sum(seg_mem > 0) * vol_scale_factor,
-                "height_cell": (top_of_cell - bot_of_cell) * pixelScaleZ,
-                "vol_nucleus": np.sum(seg_dna > 0) * vol_scale_factor,
-                "height_nucleus": ((top_of_nucleus - bot_of_nucleus) * pixelScaleZ),
-                "min_z_dna": bot_of_nucleus,
-                "max_z_dna": top_of_nucleus,
-                "min_z_cell": bot_of_cell,
-                "max_z_cell": top_of_cell,
-                "nuclear_centroid": centroid_of_nucleus,
-                "total_dna_intensity": np.sum(dna),
-                "total_mem_intensity": np.sum(mem),
-                "total_gfp_intensity": np.sum(gfp),
-                "AB_mode": AB_mode,
-                "AB_fold_changes": AB_fold_changes,
-                "AB_cyto_vol": AB_cyto_vol,
-                "AB_gfp_intensities": AB_gfp_intensities,
-                "num_angular_compartments": num_angular_compartments,
-                "Ang_fold_changes": Ang_fold_changes,
-                "Ang_cyto_vol": Ang_cyto_vol,
-                "Ang_gfp_intensities": Ang_gfp_intensities,
-                "x_dim": seg_dna.shape[2],
-                "y_dim": seg_dna.shape[1],
-                "z_dim": seg_dna.shape[0],
-                "scale_factors": scale_factors,
-                "voxel_matrix": voxel_matrix,
-                "channels": masked_channels,
-            }
-
-            # save metric
-            pfile = cell_metrics_dir / f"cell_{cellid}.pickle"
-            if pfile.is_file():
-                pfile.unlink()
-            with open(pfile, "wb") as f:
-                pickle.dump(metric, f)
-
+        # Gather paths to computed metrics dictionaries
+        for index, result in enumerate(results):
             # Add the path to the manifest
-            self.manifest.at[i, "filepath"] = pfile
+            self.manifest.at[index, "filepath"] = result
 
         # Save the manifest
         manifest_file = self.step_local_staging_dir / "manifest.csv"

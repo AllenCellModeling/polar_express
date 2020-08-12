@@ -237,7 +237,7 @@ def makeTIFFsliceandstack(selected_cell, artificial_plot_dir):
 
     wl = 30
     hl = 30
-    xyzpic_root = Path("./adddata")
+    xyzpic_root = Path("./polar_express/adddata")
     # x
     xpic = xyzpic_root / "x.tif"
     ximg = np.array(Image.open(xpic))
@@ -474,10 +474,10 @@ def makeTIFFsliceandstack(selected_cell, artificial_plot_dir):
     plot_array = np.flip(plot_array, axis=0)
 
     fig, axes = plt.subplots()
-    plt.imshow(plot_array)
+    axes.imshow(plot_array)
     slicefile = artificial_plot_dir / f"CenterSlice_{cellid}_{adt}.png"
-    plt.savefig(slicefile, format="png", dpi=1000)
-    plt.close()
+    fig.savefig(slicefile, format="png", dpi=1000)
+    plt.close(fig)
 
     # slice builders
 

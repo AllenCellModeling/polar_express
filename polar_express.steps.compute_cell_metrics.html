@@ -202,7 +202,7 @@
 <span id="polar-express-steps-compute-cell-metrics-foldchangefunctions-module"></span><h2>polar_express.steps.compute_cell_metrics.FoldChangeFunctions module<a class="headerlink" href="#module-polar_express.steps.compute_cell_metrics.FoldChangeFunctions" title="Permalink to this headline">¶</a></h2>
 <dl class="function">
 <dt id="polar_express.steps.compute_cell_metrics.FoldChangeFunctions.findFoldChange_AB">
-<code class="sig-prename descclassname">polar_express.steps.compute_cell_metrics.FoldChangeFunctions.</code><code class="sig-name descname">findFoldChange_AB</code><span class="sig-paren">(</span><em class="sig-param">masked_channels</em>, <em class="sig-param">z_metrics</em>, <em class="sig-param">vol_scale_factor</em>, <em class="sig-param">mode='quadrants'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/polar_express/steps/compute_cell_metrics/FoldChangeFunctions.html#findFoldChange_AB"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#polar_express.steps.compute_cell_metrics.FoldChangeFunctions.findFoldChange_AB" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">polar_express.steps.compute_cell_metrics.FoldChangeFunctions.</code><code class="sig-name descname">findFoldChange_AB</code><span class="sig-paren">(</span><em class="sig-param">masked_channels</em>, <em class="sig-param">z_metrics</em>, <em class="sig-param">vol_scale_factor</em>, <em class="sig-param">mode='quadrants'</em>, <em class="sig-param">silent=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/polar_express/steps/compute_cell_metrics/FoldChangeFunctions.html#findFoldChange_AB"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#polar_express.steps.compute_cell_metrics.FoldChangeFunctions.findFoldChange_AB" title="Permalink to this definition">¶</a></dt>
 <dd><p>Helper method that finds and returns, for each of the cell sections, the fold change
 of the proportion of gfp intensity to cytoplasm volume, as well as the corresponding
 cytoplasm volume and gfp intensity data. Takes the image with which to find the fold
@@ -217,6 +217,7 @@ on the cell being divided into 2 vertical quadrants.</p>
 <li><p><strong>vol_scale_factor</strong> (<em>int representing the multiplication factor to get from pixel</em>) – volume to real volume.</p></li>
 <li><p><strong>mode</strong> (<em>str</em>) – “quadrants” if AB compartments should split the cell into quadrants,
 “hemispheres” if AB compartments should split the cell into halves.</p></li>
+<li><p><strong>silent</strong> (<em>bool</em>) – True if outputs should be suppressed, False otherwise.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -232,7 +233,7 @@ on the cell being divided into 2 vertical quadrants.</p>
 
 <dl class="function">
 <dt id="polar_express.steps.compute_cell_metrics.FoldChangeFunctions.findFoldChange_Angular">
-<code class="sig-prename descclassname">polar_express.steps.compute_cell_metrics.FoldChangeFunctions.</code><code class="sig-name descname">findFoldChange_Angular</code><span class="sig-paren">(</span><em class="sig-param">masked_channels</em>, <em class="sig-param">z_metrics</em>, <em class="sig-param">vol_scale_factor</em>, <em class="sig-param">num_sections</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/polar_express/steps/compute_cell_metrics/FoldChangeFunctions.html#findFoldChange_Angular"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#polar_express.steps.compute_cell_metrics.FoldChangeFunctions.findFoldChange_Angular" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">polar_express.steps.compute_cell_metrics.FoldChangeFunctions.</code><code class="sig-name descname">findFoldChange_Angular</code><span class="sig-paren">(</span><em class="sig-param">masked_channels</em>, <em class="sig-param">z_metrics</em>, <em class="sig-param">vol_scale_factor</em>, <em class="sig-param">num_sections</em>, <em class="sig-param">silent=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/polar_express/steps/compute_cell_metrics/FoldChangeFunctions.html#findFoldChange_Angular"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#polar_express.steps.compute_cell_metrics.FoldChangeFunctions.findFoldChange_Angular" title="Permalink to this definition">¶</a></dt>
 <dd><p>Helper method that finds and returns, for each of the cell sections, the fold change
 of the proportion of gfp intensity to cytoplasm volume, as well as the corresponding
 cytoplasm volume and gfp intensity data. Takes the image with which to find the fold
@@ -246,6 +247,7 @@ compartments.</p>
 <li><p><strong>vol_scale_factor</strong> (<em>int representing the multiplication factor to get from pixel</em>) – volume to real volume.</p></li>
 <li><p><strong>num_sections</strong> (<em>int</em>) – The number of equal-size angles the cell should be split into for the angular
 compartment analysis.</p></li>
+<li><p><strong>silent</strong> (<em>bool</em>) – True if outputs should be suppressed, False otherwise.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -306,7 +308,7 @@ membrane, and gfp channels after the segmentation has been applied to the image.
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">datastep.step.Step</span></code></p>
 <dl class="method">
 <dt id="polar_express.steps.compute_cell_metrics.compute_cell_metrics.ComputeCellMetrics.run">
-<code class="sig-name descname">run</code><span class="sig-paren">(</span><em class="sig-param">selected_cells_manifest: Optional[pathlib.Path] = None</em>, <em class="sig-param">filepath_column: str = 'filepath'</em>, <em class="sig-param">AB_mode='quadrants'</em>, <em class="sig-param">num_angular_compartments=8</em>, <em class="sig-param">distributed_executor_address: Optional[str] = None</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/polar_express/steps/compute_cell_metrics/compute_cell_metrics.html#ComputeCellMetrics.run"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#polar_express.steps.compute_cell_metrics.compute_cell_metrics.ComputeCellMetrics.run" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">run</code><span class="sig-paren">(</span><em class="sig-param">selected_cells_manifest: Optional[pathlib.Path] = None</em>, <em class="sig-param">filepath_column: str = 'filepath'</em>, <em class="sig-param">AB_mode='quadrants'</em>, <em class="sig-param">num_angular_compartments=8</em>, <em class="sig-param">distributed_executor_address: Optional[str] = None</em>, <em class="sig-param">cell_metrics_dir=None</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/polar_express/steps/compute_cell_metrics/compute_cell_metrics.html#ComputeCellMetrics.run"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#polar_express.steps.compute_cell_metrics.compute_cell_metrics.ComputeCellMetrics.run" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compute cell metrics</p>
 <dl class="simple">
 <dt>distributed_executor_address: Optional[str]</dt><dd><p>An optional executor address to pass to some computation engine.</p>
@@ -412,7 +414,7 @@ angular compartment analysis.</p></li>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">datastep.step.Step</span></code></p>
 <dl class="method">
 <dt id="polar_express.steps.compute_cell_metrics.ComputeCellMetrics.run">
-<code class="sig-name descname">run</code><span class="sig-paren">(</span><em class="sig-param">selected_cells_manifest: Optional[pathlib.Path] = None</em>, <em class="sig-param">filepath_column: str = 'filepath'</em>, <em class="sig-param">AB_mode='quadrants'</em>, <em class="sig-param">num_angular_compartments=8</em>, <em class="sig-param">distributed_executor_address: Optional[str] = None</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/polar_express/steps/compute_cell_metrics/compute_cell_metrics.html#ComputeCellMetrics.run"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#polar_express.steps.compute_cell_metrics.ComputeCellMetrics.run" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">run</code><span class="sig-paren">(</span><em class="sig-param">selected_cells_manifest: Optional[pathlib.Path] = None</em>, <em class="sig-param">filepath_column: str = 'filepath'</em>, <em class="sig-param">AB_mode='quadrants'</em>, <em class="sig-param">num_angular_compartments=8</em>, <em class="sig-param">distributed_executor_address: Optional[str] = None</em>, <em class="sig-param">cell_metrics_dir=None</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/polar_express/steps/compute_cell_metrics/compute_cell_metrics.html#ComputeCellMetrics.run"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#polar_express.steps.compute_cell_metrics.ComputeCellMetrics.run" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compute cell metrics</p>
 <dl class="simple">
 <dt>distributed_executor_address: Optional[str]</dt><dd><p>An optional executor address to pass to some computation engine.</p>

@@ -287,13 +287,14 @@
 
     <span class="c1"># compute fold change metrics</span>
     <span class="p">(</span><span class="n">AB_fold_changes</span><span class="p">,</span> <span class="n">AB_cyto_vol</span><span class="p">,</span> <span class="n">AB_gfp_intensities</span><span class="p">)</span> <span class="o">=</span> <span class="n">findFoldChange_AB</span><span class="p">(</span>
-        <span class="n">masked_channels</span><span class="p">,</span> <span class="n">z_metrics</span><span class="p">,</span> <span class="n">vol_scale_factor</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="n">AB_mode</span>
+        <span class="n">masked_channels</span><span class="p">,</span> <span class="n">z_metrics</span><span class="p">,</span> <span class="n">vol_scale_factor</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="n">AB_mode</span><span class="p">,</span> <span class="n">silent</span><span class="o">=</span><span class="kc">True</span>
     <span class="p">)</span>
     <span class="p">(</span><span class="n">Ang_fold_changes</span><span class="p">,</span> <span class="n">Ang_cyto_vol</span><span class="p">,</span> <span class="n">Ang_gfp_intensities</span><span class="p">,)</span> <span class="o">=</span> <span class="n">findFoldChange_Angular</span><span class="p">(</span>
         <span class="n">masked_channels</span><span class="p">,</span>
         <span class="n">z_metrics</span><span class="p">,</span>
         <span class="n">vol_scale_factor</span><span class="p">,</span>
         <span class="n">num_sections</span><span class="o">=</span><span class="n">num_angular_compartments</span><span class="p">,</span>
+        <span class="n">silent</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="p">)</span>
 
     <span class="c1"># compute (nx4) voxel matrix</span>

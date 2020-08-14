@@ -22,7 +22,15 @@ def data_dir() -> Path:
 
 @pytest.fixture
 def data_metrics_dir() -> Path:
+    # where the ground truth metrics for cell 30827 are stored as pickle files
     return Path(__file__).parent / "test_data_metrics"
+
+
+@pytest.fixture
+def new_data_metrics_dir() -> Path:
+    # where the newly computed metrics for cell 30827 are stored and should be
+    # accessed for testing
+    return Path(__file__).parent / "new_data_metrics"
 
 
 @pytest.fixture
@@ -43,27 +51,22 @@ def true_image_metrics(data_metrics_dir):
 
 
 @pytest.fixture
-def test_image_metrics(data_metrics_dir):
-
-    # Load cell metrics (from Path to Dataframe)
-    cell_metrics_manifest = data_metrics_dir / "cell_metrics_manifest.csv"
-    cell_metrics_manifest = pd.read_csv(cell_metrics_manifest)
-
-    cell_30827 = cell_metrics_manifest[
-        cell_metrics_manifest["filepath"].str.contains("cell_30827")
-    ].iloc[0]["filepath"]
-
+def test_image_metrics(new_data_metrics_dir):
+    # read in computed metrics dictionary
+    cell_30827 = new_data_metrics_dir / "cell_30827.pickle"
     with (open(cell_30827, "rb")) as openfile:
         metrics = pickle.load(openfile)
-
     return metrics
 
 
-@pytest.fixture(scope="session", autouse=True)  # Execute this before running any tests
+# Execute this once before running any tests
+@pytest.fixture(scope="session", autouse=True)
 def execute_before_any_test():
 
+    # fixture with 'session' scope cannot take fixtures with 'function' scope
     data_dir = Path(__file__).parent / "test_data"
     data_metrics_dir = Path(__file__).parent / "test_data_metrics"
+    new_data_metrics_dir = Path(__file__).parent / "new_data_metrics"
 
     # Initialize step
     step = SelectData()
@@ -76,7 +79,11 @@ def execute_before_any_test():
     step = ComputeCellMetrics()
 
     # Ensure that it still runs
-    cell_metrics_manifest = step.run(AB_mode="quadrants", num_angular_compartments=8)
+    cell_metrics_manifest = step.run(
+        AB_mode="quadrants",
+        num_angular_compartments=8,
+        cell_metrics_dir=new_data_metrics_dir,
+    )
 
     # Load manifest (from Path to Dataframe)
     cell_metrics_manifest = pd.read_csv(cell_metrics_manifest)

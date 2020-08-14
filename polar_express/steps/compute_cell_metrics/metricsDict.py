@@ -108,13 +108,14 @@ def computeMetricsDict(
 
     # compute fold change metrics
     (AB_fold_changes, AB_cyto_vol, AB_gfp_intensities) = findFoldChange_AB(
-        masked_channels, z_metrics, vol_scale_factor, mode=AB_mode
+        masked_channels, z_metrics, vol_scale_factor, mode=AB_mode, silent=True
     )
     (Ang_fold_changes, Ang_cyto_vol, Ang_gfp_intensities,) = findFoldChange_Angular(
         masked_channels,
         z_metrics,
         vol_scale_factor,
         num_sections=num_angular_compartments,
+        silent=True,
     )
 
     # compute (nx4) voxel matrix

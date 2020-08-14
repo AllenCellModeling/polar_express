@@ -1,7 +1,12 @@
 import numpy as np
 
 
-def findFoldChange_AB(masked_channels, z_metrics, vol_scale_factor, mode="quadrants"):
+def findFoldChange_AB(masked_channels,
+                      z_metrics,
+                      vol_scale_factor,
+                      mode="quadrants",
+                      silent=True):
+
     """
 
     Helper method that finds and returns, for each of the cell sections, the fold change
@@ -22,6 +27,8 @@ def findFoldChange_AB(masked_channels, z_metrics, vol_scale_factor, mode="quadra
     mode : str
         "quadrants" if AB compartments should split the cell into quadrants,
         "hemispheres" if AB compartments should split the cell into halves.
+    silent : bool
+        True if outputs should be suppressed, False otherwise.
 
     Returns
     -------
@@ -111,16 +118,20 @@ def findFoldChange_AB(masked_channels, z_metrics, vol_scale_factor, mode="quadra
                 gfp_intensities[section] / cyto_vol[section]
             )
 
-        elif cyto_vol[section] == 0:
+        elif (not silent and cyto_vol[section] == 0):
             print("Cytoplasm volume of 0 detected")
 
-        elif gfp_intensities[section] == 0:
+        elif (not silent and gfp_intensities[section] == 0):
             print("GFP intensity of 0 detected")
 
     return fold_changes, cyto_vol, gfp_intensities
 
 
-def findFoldChange_Angular(masked_channels, z_metrics, vol_scale_factor, num_sections):
+def findFoldChange_Angular(masked_channels,
+                           z_metrics,
+                           vol_scale_factor,
+                           num_sections,
+                           silent=True):
 
     """
 
@@ -141,6 +152,8 @@ def findFoldChange_Angular(masked_channels, z_metrics, vol_scale_factor, num_sec
     num_sections : int
         The number of equal-size angles the cell should be split into for the angular
         compartment analysis.
+    silent : bool
+        True if outputs should be suppressed, False otherwise.
 
     Returns
     -------
@@ -240,10 +253,10 @@ def findFoldChange_Angular(masked_channels, z_metrics, vol_scale_factor, num_sec
                 gfp_intensities[section] / cyto_vol[section]
             )
 
-        elif cyto_vol[section] == 0:
+        elif (not silent and cyto_vol[section] == 0):
             print("Cytoplasm volume of 0 detected")
 
-        elif gfp_intensities[section] == 0:
+        elif (not silent and gfp_intensities[section] == 0):
             print("GFP intensity of 0 detected")
 
     return fold_changes, cyto_vol, gfp_intensities

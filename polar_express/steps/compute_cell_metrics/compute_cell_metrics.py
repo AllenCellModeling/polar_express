@@ -50,6 +50,7 @@ class ComputeCellMetrics(Step):
         AB_mode="quadrants",
         num_angular_compartments=8,
         distributed_executor_address: Optional[str] = None,
+        cell_metrics_dir=None,
         **kwargs,
     ):
         """
@@ -94,7 +95,9 @@ class ComputeCellMetrics(Step):
         """
 
         # Directory assignments
-        cell_metrics_dir = self.step_local_staging_dir / "metrics"
+        if cell_metrics_dir is None:
+            cell_metrics_dir = self.step_local_staging_dir / "metrics"
+
         cell_metrics_dir.mkdir(exist_ok=True)
 
         # Manifest from previous step

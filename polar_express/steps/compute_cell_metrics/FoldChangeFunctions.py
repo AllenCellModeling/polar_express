@@ -1,11 +1,9 @@
 import numpy as np
 
 
-def findFoldChange_AB(masked_channels,
-                      z_metrics,
-                      vol_scale_factor,
-                      mode="quadrants",
-                      silent=True):
+def findFoldChange_AB(
+    masked_channels, z_metrics, vol_scale_factor, mode="quadrants", silent=True
+):
 
     """
 
@@ -118,20 +116,18 @@ def findFoldChange_AB(masked_channels,
                 gfp_intensities[section] / cyto_vol[section]
             )
 
-        elif (not silent and cyto_vol[section] == 0):
+        elif not silent and cyto_vol[section] == 0:
             print("Cytoplasm volume of 0 detected")
 
-        elif (not silent and gfp_intensities[section] == 0):
+        elif not silent and gfp_intensities[section] == 0:
             print("GFP intensity of 0 detected")
 
     return fold_changes, cyto_vol, gfp_intensities
 
 
-def findFoldChange_Angular(masked_channels,
-                           z_metrics,
-                           vol_scale_factor,
-                           num_sections,
-                           silent=True):
+def findFoldChange_Angular(
+    masked_channels, z_metrics, vol_scale_factor, num_sections, silent=True
+):
 
     """
 
@@ -253,10 +249,10 @@ def findFoldChange_Angular(masked_channels,
                 gfp_intensities[section] / cyto_vol[section]
             )
 
-        elif (not silent and cyto_vol[section] == 0):
+        elif not silent and cyto_vol[section] == 0:
             print("Cytoplasm volume of 0 detected")
 
-        elif (not silent and gfp_intensities[section] == 0):
+        elif not silent and gfp_intensities[section] == 0:
             print("GFP intensity of 0 detected")
 
     return fold_changes, cyto_vol, gfp_intensities

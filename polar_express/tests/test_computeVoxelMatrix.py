@@ -15,4 +15,4 @@ def testVoxelMatricesEqual(test_image_metrics, true_image_metrics):
 
     matrix_diff = np.max(np.abs(test_matrix - true_matrix))
 
-    assert matrix_diff == 0
+    assert matrix_diff < 0.0001

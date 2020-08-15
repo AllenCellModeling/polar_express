@@ -180,11 +180,9 @@
 <span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 
 
-<div class="viewcode-block" id="findFoldChange_AB"><a class="viewcode-back" href="../../../../polar_express.steps.compute_cell_metrics.html#polar_express.steps.compute_cell_metrics.FoldChangeFunctions.findFoldChange_AB">[docs]</a><span class="k">def</span> <span class="nf">findFoldChange_AB</span><span class="p">(</span><span class="n">masked_channels</span><span class="p">,</span>
-                      <span class="n">z_metrics</span><span class="p">,</span>
-                      <span class="n">vol_scale_factor</span><span class="p">,</span>
-                      <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;quadrants&quot;</span><span class="p">,</span>
-                      <span class="n">silent</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<div class="viewcode-block" id="findFoldChange_AB"><a class="viewcode-back" href="../../../../polar_express.steps.compute_cell_metrics.html#polar_express.steps.compute_cell_metrics.FoldChangeFunctions.findFoldChange_AB">[docs]</a><span class="k">def</span> <span class="nf">findFoldChange_AB</span><span class="p">(</span>
+    <span class="n">masked_channels</span><span class="p">,</span> <span class="n">z_metrics</span><span class="p">,</span> <span class="n">vol_scale_factor</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;quadrants&quot;</span><span class="p">,</span> <span class="n">silent</span><span class="o">=</span><span class="kc">True</span>
+<span class="p">):</span>
 
     <span class="sd">&quot;&quot;&quot;</span>
 
@@ -297,20 +295,18 @@
                 <span class="n">gfp_intensities</span><span class="p">[</span><span class="n">section</span><span class="p">]</span> <span class="o">/</span> <span class="n">cyto_vol</span><span class="p">[</span><span class="n">section</span><span class="p">]</span>
             <span class="p">)</span>
 
-        <span class="k">elif</span> <span class="p">(</span><span class="ow">not</span> <span class="n">silent</span> <span class="ow">and</span> <span class="n">cyto_vol</span><span class="p">[</span><span class="n">section</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">):</span>
+        <span class="k">elif</span> <span class="ow">not</span> <span class="n">silent</span> <span class="ow">and</span> <span class="n">cyto_vol</span><span class="p">[</span><span class="n">section</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
             <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Cytoplasm volume of 0 detected&quot;</span><span class="p">)</span>
 
-        <span class="k">elif</span> <span class="p">(</span><span class="ow">not</span> <span class="n">silent</span> <span class="ow">and</span> <span class="n">gfp_intensities</span><span class="p">[</span><span class="n">section</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">):</span>
+        <span class="k">elif</span> <span class="ow">not</span> <span class="n">silent</span> <span class="ow">and</span> <span class="n">gfp_intensities</span><span class="p">[</span><span class="n">section</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
             <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;GFP intensity of 0 detected&quot;</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">fold_changes</span><span class="p">,</span> <span class="n">cyto_vol</span><span class="p">,</span> <span class="n">gfp_intensities</span></div>
 
 
-<div class="viewcode-block" id="findFoldChange_Angular"><a class="viewcode-back" href="../../../../polar_express.steps.compute_cell_metrics.html#polar_express.steps.compute_cell_metrics.FoldChangeFunctions.findFoldChange_Angular">[docs]</a><span class="k">def</span> <span class="nf">findFoldChange_Angular</span><span class="p">(</span><span class="n">masked_channels</span><span class="p">,</span>
-                           <span class="n">z_metrics</span><span class="p">,</span>
-                           <span class="n">vol_scale_factor</span><span class="p">,</span>
-                           <span class="n">num_sections</span><span class="p">,</span>
-                           <span class="n">silent</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<div class="viewcode-block" id="findFoldChange_Angular"><a class="viewcode-back" href="../../../../polar_express.steps.compute_cell_metrics.html#polar_express.steps.compute_cell_metrics.FoldChangeFunctions.findFoldChange_Angular">[docs]</a><span class="k">def</span> <span class="nf">findFoldChange_Angular</span><span class="p">(</span>
+    <span class="n">masked_channels</span><span class="p">,</span> <span class="n">z_metrics</span><span class="p">,</span> <span class="n">vol_scale_factor</span><span class="p">,</span> <span class="n">num_sections</span><span class="p">,</span> <span class="n">silent</span><span class="o">=</span><span class="kc">True</span>
+<span class="p">):</span>
 
     <span class="sd">&quot;&quot;&quot;</span>
 
@@ -432,10 +428,10 @@
                 <span class="n">gfp_intensities</span><span class="p">[</span><span class="n">section</span><span class="p">]</span> <span class="o">/</span> <span class="n">cyto_vol</span><span class="p">[</span><span class="n">section</span><span class="p">]</span>
             <span class="p">)</span>
 
-        <span class="k">elif</span> <span class="p">(</span><span class="ow">not</span> <span class="n">silent</span> <span class="ow">and</span> <span class="n">cyto_vol</span><span class="p">[</span><span class="n">section</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">):</span>
+        <span class="k">elif</span> <span class="ow">not</span> <span class="n">silent</span> <span class="ow">and</span> <span class="n">cyto_vol</span><span class="p">[</span><span class="n">section</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
             <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Cytoplasm volume of 0 detected&quot;</span><span class="p">)</span>
 
-        <span class="k">elif</span> <span class="p">(</span><span class="ow">not</span> <span class="n">silent</span> <span class="ow">and</span> <span class="n">gfp_intensities</span><span class="p">[</span><span class="n">section</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">):</span>
+        <span class="k">elif</span> <span class="ow">not</span> <span class="n">silent</span> <span class="ow">and</span> <span class="n">gfp_intensities</span><span class="p">[</span><span class="n">section</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
             <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;GFP intensity of 0 detected&quot;</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">fold_changes</span><span class="p">,</span> <span class="n">cyto_vol</span><span class="p">,</span> <span class="n">gfp_intensities</span></div>

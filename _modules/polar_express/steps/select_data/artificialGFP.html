@@ -193,6 +193,8 @@
 <span class="kn">import</span> <span class="nn">matplotlib</span>
 <span class="kn">import</span> <span class="nn">cv2</span>
 
+<span class="kn">from</span> <span class="nn">polar_express.definitions</span> <span class="kn">import</span> <span class="n">ROOT_DIR</span>
+
 
 <div class="viewcode-block" id="makeartificialGFP"><a class="viewcode-back" href="../../../../polar_express.steps.select_data.html#polar_express.steps.select_data.artificialGFP.makeartificialGFP">[docs]</a><span class="k">def</span> <span class="nf">makeartificialGFP</span><span class="p">(</span>
     <span class="n">selected_cell</span><span class="p">,</span> <span class="n">artificial_cell_dir</span><span class="p">,</span> <span class="n">vizcells</span><span class="p">,</span> <span class="n">artificial_plot_dir</span>
@@ -228,8 +230,16 @@
         <span class="n">viz_flag</span> <span class="o">=</span> <span class="kc">False</span>
 
     <span class="c1"># read in image file</span>
-    <span class="n">imorg</span> <span class="o">=</span> <span class="n">imread</span><span class="p">(</span><span class="n">file</span><span class="p">)</span>
-    <span class="n">im</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="n">imorg</span><span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">imorg</span> <span class="o">=</span> <span class="n">imread</span><span class="p">(</span><span class="n">file</span><span class="p">)</span>
+        <span class="n">im</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="n">imorg</span><span class="p">)</span>  <span class="c1"># provided absolute path</span>
+    <span class="k">except</span> <span class="ne">FileNotFoundError</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">rel_path</span> <span class="o">=</span> <span class="n">ROOT_DIR</span> <span class="o">+</span> <span class="n">file</span>  <span class="c1"># provided relative path</span>
+            <span class="n">imorg</span> <span class="o">=</span> <span class="n">imread</span><span class="p">(</span><span class="n">rel_path</span><span class="p">)</span>
+            <span class="n">im</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="n">imorg</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">FileNotFoundError</span><span class="p">:</span>
+            <span class="k">raise</span>
 
     <span class="c1"># get the channel indices</span>
     <span class="n">ch_struct</span> <span class="o">=</span> <span class="n">selected_cell</span><span class="p">[</span><span class="s2">&quot;ch_struct&quot;</span><span class="p">]</span>

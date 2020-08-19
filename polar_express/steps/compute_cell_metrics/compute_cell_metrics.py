@@ -49,20 +49,22 @@ class ComputeCellMetrics(Step):
         filepath_column: str = "filepath",
         AB_mode="quadrants",
         num_angular_compartments=8,
-        distributed_executor_address: Optional[str] = None,
         cell_metrics_dir=None,
+        distributed_executor_address: Optional[str] = None,
+        batch_size: Optional[int] = None,
         **kwargs,
     ):
         """
         Compute cell metrics
-
         Protected Parameters
         --------------------
         distributed_executor_address: Optional[str]
             An optional executor address to pass to some computation engine.
+
         clean: bool
             Should the local staging directory be cleaned prior to this run.
             Default: False (Do not clean)
+
         debug: bool
             A debug flag for the developer to use to manipulate how much data runs,
             how it is processed, etc.
@@ -74,18 +76,26 @@ class ComputeCellMetrics(Step):
             Path to manifest file that contains a path to a CSV file with annotation of
             selected cells
             Default: self.step_local_staging_dir.parent / selectdata / manifest.csv
+
         filepath_column: str
             If providing a path to a csv manifest, the column to use for matrices.
             Default: "filepath"
+
         AB_mode: str
             "quadrants" if AB compartments should split the cell into quadrants,
             "hemispheres" if AB compartments should split the cell into halves.
+
         num_angular_compartments : int
             The number of equal-size angles the cell should be split into for the
             angular compartment analysis.
+
         distributed_executor_address: Optional[str]
             An optional executor address to pass to some computation engine.
             Default: None
+
+        batch_size: Optional[int]
+            An optional batch size to process n cells at a time.
+            Default: None (Process all at once)
 
         Returns
         -------
@@ -133,6 +143,7 @@ class ComputeCellMetrics(Step):
                 [cell_metrics_dir for i in range(no_of_cells)],
                 [AB_mode for i in range(no_of_cells)],
                 [num_angular_compartments for i in range(no_of_cells)],
+                batch_size=batch_size,
             )
 
         # Gather paths to computed metrics dictionaries

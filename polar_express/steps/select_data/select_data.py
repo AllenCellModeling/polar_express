@@ -26,13 +26,6 @@ class SelectData(Step):
         super().__init__(direct_upstream_tasks=direct_upstream_tasks, config=config)
 
     @staticmethod
-    def _example_func(row_index: int, row: pd.Series) -> int:
-        # Invert a large matrix
-        # inv = np.linalg.inv(np.random.rand(1000, 1000))
-        i = int(row_index)
-        return i
-
-    @staticmethod
     def _create_art_cells(
         row_index: int,
         selectedcell: pd.Series,
@@ -53,6 +46,7 @@ class SelectData(Step):
         dataset="/allen/aics/modeling/theok/Projects/Data/Org3Dcells",
         artflag=False,
         distributed_executor_address: Optional[str] = None,
+        batch_size: Optional[int] = None,
         **kwargs,
     ):
         """
@@ -62,9 +56,11 @@ class SelectData(Step):
         --------------------
         distributed_executor_address: Optional[str]
             An optional executor address to pass to some computation engine.
+
         clean: bool
             Should the local staging directory be cleaned prior to this run.
             Default: False (Do not clean)
+
         debug: bool
             A debug flag for the developer to use to manipulate how much data runs,
             how it is processed, etc.
@@ -84,6 +80,10 @@ class SelectData(Step):
         distributed_executor_address: Optional[str]
             An optional executor address to pass to some computation engine.
             Default: None
+
+        batch_size: Optional[int]
+            An optional batch size to process n cells at a time.
+            Default: None (Process all at once)
 
         Returns
         -------
@@ -115,19 +115,8 @@ class SelectData(Step):
             Nex = 2
             vizcells = list(selectedcells["CellId"].sample(n=Nex, random_state=1))
 
-            # Main loop to create
-            # art_cells_compiled = pd.DataFrame()
-            # for i in tqdm(range(no_of_cells), desc="Creating artificial cells"):
-            #     # Pandas series with information about cell
-            #     selectedcell = selectedcells.iloc[i]
-            #     art_cells = makeartificialGFP(
-            #         selectedcell, artificial_cell_dir, vizcells, artificial_plot_dir
-            #     )
-            #     art_cells_compiled = art_cells_compiled.append(
-            #         art_cells, ignore_index=True
-            #     )
-
             print("Starting distributed run")
+
             # Process each row
             with DistributedHandler(distributed_executor_address) as handler:
                 # Start processing
@@ -142,6 +131,7 @@ class SelectData(Step):
                     [artificial_cell_dir for i in range(len(dataset))],
                     [vizcells for i in range(len(dataset))],
                     [artificial_plot_dir for i in range(len(dataset))],
+                    batch_size=batch_size,
                 )
 
             # Generate features paths rows
@@ -185,19 +175,5 @@ class SelectData(Step):
             # Save the manifest
             manifest_file = self.step_local_staging_dir / "manifest.csv"
             self.manifest.to_csv(manifest_file, index=False)
-
-            print("Starting distributed run")
-            # Process each row
-            with DistributedHandler(distributed_executor_address) as handler:
-                # Start processing
-                results = handler.batched_map(
-                    self._example_func,
-                    # Convert dataframe iterrows into two lists of items to iterate over
-                    # One list will be row index
-                    # One list will be the pandas series of every row
-                    *zip(*list(selectedcells.iterrows())),
-                )
-
-            print(results)
 
         return manifest_file

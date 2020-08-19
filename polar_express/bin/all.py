@@ -3,13 +3,13 @@
 
 """
 This script will run all tasks in a prefect Flow.
-
 When you add steps to you step workflow be sure to add them to the step list
 and configure their IO in the `run` function.
 """
 
 import logging
 
+import psutil
 from distributed import LocalCluster
 from prefect import Flow
 from prefect.engine.executors import DaskExecutor, LocalExecutor
@@ -39,7 +39,6 @@ class All:
     ):
         """
         Run a flow with your steps.
-
         Parameters
         ----------
         clean: bool
@@ -49,12 +48,10 @@ class All:
             A debug flag for the developer to use to manipulate how much data runs,
             how it is processed, etc.
             Default: False (Do not debug)
-
         Notes
         -----
         Documentation on prefect:
         https://docs.prefect.io/core/
-
         Basic prefect example:
         https://docs.prefect.io/core/
         """
@@ -67,14 +64,24 @@ class All:
         if debug:
             exe = LocalExecutor()
         else:
-            # Set up connection to computation cluster
-            cluster = LocalCluster()
 
-            # Inform of Dask UI
-            log.info(f"Cluster dashboard available at: {cluster.dashboard_link}")
+            # Create local cluster
+            log.info("Creating LocalCluster")
+            n_workers = 8
+            cluster = LocalCluster(n_workers=n_workers)
+            log.info("Created LocalCluster")
 
-            # Create dask executor
-            exe = DaskExecutor(cluster.scheduler_address)
+            # Set distributed_executor_address
+            distributed_executor_address = cluster.scheduler_address
+
+            # Batch size on local cluster
+            batch_size = int(psutil.cpu_count() // n_workers)
+
+            # Log dashboard URI
+            log.info(f"Dask dashboard available at: {cluster.dashboard_link}")
+
+            # Use dask cluster
+            exe = DaskExecutor(distributed_executor_address)
 
         # Configure your flow
         with Flow("polar_express") as flow:
@@ -86,6 +93,8 @@ class All:
             selected_cells_manifest = select_data(
                 clean=clean,
                 debug=debug,
+                distributed_executor_address=distributed_executor_address,
+                batch_size=batch_size,
                 **kwargs,  # Allows us to pass `--n {some integer}` or other params
             )
 
@@ -94,6 +103,8 @@ class All:
                 selected_cells_manifest,
                 clean=clean,
                 debug=debug,
+                distributed_executor_address=distributed_executor_address,
+                batch_size=batch_size,
                 **kwargs,  # Allows us to pass `--n {some integer}` or other params
             )
 

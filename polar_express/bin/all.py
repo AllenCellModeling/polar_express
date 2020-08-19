@@ -67,7 +67,8 @@ class All:
 
             # Create local cluster
             log.info("Creating LocalCluster")
-            n_workers = 8
+            current_mem_gb = psutil.virtual_memory().available / 2 ** 30
+            n_workers = int(current_mem_gb // 4)
             cluster = LocalCluster(n_workers=n_workers)
             log.info("Created LocalCluster")
 

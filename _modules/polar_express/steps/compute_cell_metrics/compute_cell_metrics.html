@@ -228,20 +228,22 @@
         <span class="n">filepath_column</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;filepath&quot;</span><span class="p">,</span>
         <span class="n">AB_mode</span><span class="o">=</span><span class="s2">&quot;quadrants&quot;</span><span class="p">,</span>
         <span class="n">num_angular_compartments</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span>
-        <span class="n">distributed_executor_address</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">cell_metrics_dir</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">distributed_executor_address</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">batch_size</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Compute cell metrics</span>
-
 <span class="sd">        Protected Parameters</span>
 <span class="sd">        --------------------</span>
 <span class="sd">        distributed_executor_address: Optional[str]</span>
 <span class="sd">            An optional executor address to pass to some computation engine.</span>
+
 <span class="sd">        clean: bool</span>
 <span class="sd">            Should the local staging directory be cleaned prior to this run.</span>
 <span class="sd">            Default: False (Do not clean)</span>
+
 <span class="sd">        debug: bool</span>
 <span class="sd">            A debug flag for the developer to use to manipulate how much data runs,</span>
 <span class="sd">            how it is processed, etc.</span>
@@ -253,18 +255,26 @@
 <span class="sd">            Path to manifest file that contains a path to a CSV file with annotation of</span>
 <span class="sd">            selected cells</span>
 <span class="sd">            Default: self.step_local_staging_dir.parent / selectdata / manifest.csv</span>
+
 <span class="sd">        filepath_column: str</span>
 <span class="sd">            If providing a path to a csv manifest, the column to use for matrices.</span>
 <span class="sd">            Default: &quot;filepath&quot;</span>
+
 <span class="sd">        AB_mode: str</span>
 <span class="sd">            &quot;quadrants&quot; if AB compartments should split the cell into quadrants,</span>
 <span class="sd">            &quot;hemispheres&quot; if AB compartments should split the cell into halves.</span>
+
 <span class="sd">        num_angular_compartments : int</span>
 <span class="sd">            The number of equal-size angles the cell should be split into for the</span>
 <span class="sd">            angular compartment analysis.</span>
+
 <span class="sd">        distributed_executor_address: Optional[str]</span>
 <span class="sd">            An optional executor address to pass to some computation engine.</span>
 <span class="sd">            Default: None</span>
+
+<span class="sd">        batch_size: Optional[int]</span>
+<span class="sd">            An optional batch size to process n cells at a time.</span>
+<span class="sd">            Default: None (Process all at once)</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
@@ -312,6 +322,7 @@
                 <span class="p">[</span><span class="n">cell_metrics_dir</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">no_of_cells</span><span class="p">)],</span>
                 <span class="p">[</span><span class="n">AB_mode</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">no_of_cells</span><span class="p">)],</span>
                 <span class="p">[</span><span class="n">num_angular_compartments</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">no_of_cells</span><span class="p">)],</span>
+                <span class="n">batch_size</span><span class="o">=</span><span class="n">batch_size</span><span class="p">,</span>
             <span class="p">)</span>
 
         <span class="c1"># Gather paths to computed metrics dictionaries</span>

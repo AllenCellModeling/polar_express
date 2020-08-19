@@ -110,10 +110,10 @@ class SelectData(Step):
             artificial_plot_dir.mkdir(exist_ok=True)
 
             # Select artificial cells
-            N = 3
+            N = 1
             selectedcells = cells.sample(n=N, random_state=1)
             no_of_cells = len(selectedcells)
-            Nex = 2
+            Nex = 1
             vizcells = list(selectedcells["CellId"].sample(n=Nex, random_state=1))
 
             print("Starting distributed run")

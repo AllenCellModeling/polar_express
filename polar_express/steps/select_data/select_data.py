@@ -110,8 +110,9 @@ class SelectData(Step):
             artificial_plot_dir.mkdir(exist_ok=True)
 
             # Select artificial cells
-            N = 5
+            N = 3
             selectedcells = cells.sample(n=N, random_state=1)
+            no_of_cells = len(selectedcells)
             Nex = 2
             vizcells = list(selectedcells["CellId"].sample(n=Nex, random_state=1))
 
@@ -128,9 +129,9 @@ class SelectData(Step):
                     *zip(*list(selectedcells.iterrows())),
                     # Pass the other parameters as list of the same thing for each
                     # mapped function call
-                    [artificial_cell_dir for i in range(len(dataset))],
-                    [vizcells for i in range(len(dataset))],
-                    [artificial_plot_dir for i in range(len(dataset))],
+                    [artificial_cell_dir for i in range(no_of_cells)],
+                    [vizcells for i in range(no_of_cells)],
+                    [artificial_plot_dir for i in range(no_of_cells)],
                     batch_size=batch_size,
                 )
 

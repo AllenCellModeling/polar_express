@@ -24,6 +24,17 @@ def select_data_manifest(data_dir):
 
 
 @pytest.fixture
+def art_select_data_manifest(data_dir):
+    # Initialize step
+    step = SelectData()
+
+    # Run with artificial cell setting
+    output_manifest = step.run(dataset=data_dir, artflag=True)
+    output_manifest = dd.read_csv(output_manifest)
+    return output_manifest
+
+
+@pytest.fixture
 def cell_metrics_manifest_1(select_data_manifest):
     # Initialize step
     step = ComputeCellMetrics()
@@ -70,6 +81,25 @@ def test_selectData(data_dir, select_data_manifest):
 
     # Check all expected files exist
     assert all(Path(f).resolve(strict=True) for f in select_data_manifest["filepath"])
+
+
+def test_selectArtificialData(art_select_data_manifest):
+
+    # Run asserts
+
+    # Check expected columns
+    assert all(
+        expected_col in art_select_data_manifest.columns
+        for expected_col in ["filepath"]
+    )
+
+    # Check output length
+    assert len(art_select_data_manifest) == 1
+
+    # Check all expected files exist
+    assert all(
+        Path(f).resolve(strict=True) for f in art_select_data_manifest["filepath"]
+    )
 
 
 # AB compartments: hemispheres, Angular compartments: 2

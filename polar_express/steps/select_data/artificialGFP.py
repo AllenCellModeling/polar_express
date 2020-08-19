@@ -14,6 +14,8 @@ import matplotlib.pyplot as plt
 import matplotlib
 import cv2
 
+from polar_express.definitions import ROOT_DIR
+
 
 def makeartificialGFP(
     selected_cell, artificial_cell_dir, vizcells, artificial_plot_dir
@@ -49,8 +51,16 @@ def makeartificialGFP(
         viz_flag = False
 
     # read in image file
-    imorg = imread(file)
-    im = np.squeeze(imorg)
+    try:
+        imorg = imread(file)
+        im = np.squeeze(imorg)  # provided absolute path
+    except FileNotFoundError:
+        try:
+            rel_path = ROOT_DIR + file  # provided relative path
+            imorg = imread(rel_path)
+            im = np.squeeze(imorg)
+        except FileNotFoundError:
+            raise
 
     # get the channel indices
     ch_struct = selected_cell["ch_struct"]

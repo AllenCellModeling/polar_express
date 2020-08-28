@@ -187,6 +187,7 @@
 <span class="kn">from</span> <span class="nn">tqdm</span> <span class="kn">import</span> <span class="n">tqdm</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">pickle</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
 
 <span class="kn">from</span> <span class="nn">datastep</span> <span class="kn">import</span> <span class="n">Step</span><span class="p">,</span> <span class="n">log_run_params</span>
 
@@ -270,6 +271,7 @@
 
         <span class="n">structure</span> <span class="o">=</span> <span class="n">curr_metrics</span><span class="p">[</span><span class="s2">&quot;structure&quot;</span><span class="p">]</span>
 
+        <span class="c1"># Set the number of compartments based on the input setting</span>
         <span class="k">if</span> <span class="n">curr_metrics</span><span class="p">[</span><span class="s2">&quot;AB_mode&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;quadrants&quot;</span><span class="p">:</span>
             <span class="n">num_AB_compartments</span> <span class="o">=</span> <span class="mi">4</span>
         <span class="k">elif</span> <span class="n">curr_metrics</span><span class="p">[</span><span class="s2">&quot;AB_mode&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;hemispheres&quot;</span><span class="p">:</span>
@@ -291,26 +293,126 @@
         <span class="n">Angular_cyto_storage</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="n">no_of_cells</span><span class="p">,</span> <span class="n">num_angular_compartments</span><span class="p">])</span>
         <span class="n">Angular_gfp_storage</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="n">no_of_cells</span><span class="p">,</span> <span class="n">num_angular_compartments</span><span class="p">])</span>
 
+        <span class="c1"># Define the angle bins for the polar heatmap</span>
+        <span class="n">anglebins</span> <span class="o">=</span> <span class="mi">16</span>
+        <span class="n">max_angle</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span>
+        <span class="n">abins</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">max_angle</span><span class="p">,</span> <span class="n">anglebins</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">abinlabels</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">anglebins</span><span class="p">)</span>
+
+        <span class="c1"># Define the distance bins for the polar heatmap</span>
+        <span class="n">distancebins</span> <span class="o">=</span> <span class="mi">10</span>
+        <span class="n">max_distance</span> <span class="o">=</span> <span class="mi">4</span>
+        <span class="n">dbins</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">max_distance</span><span class="p">,</span> <span class="n">distancebins</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">dbinlabels</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">distancebins</span><span class="p">)</span>
+
+        <span class="n">radius</span> <span class="o">=</span> <span class="n">max_distance</span>  <span class="c1"># can be something else</span>
+
+        <span class="n">cols</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;nucleus_bins&quot;</span><span class="p">,</span> <span class="s2">&quot;angle_bins&quot;</span><span class="p">,</span> <span class="s2">&quot;cyto_intensities&quot;</span><span class="p">]</span>
+
+        <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="c1"># Gather the metrics from all of the cells and create visualizations</span>
         <span class="k">for</span> <span class="n">index</span> <span class="ow">in</span> <span class="n">tqdm</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">no_of_cells</span><span class="p">),</span> <span class="n">desc</span><span class="o">=</span><span class="s2">&quot;Generating Visualizations&quot;</span><span class="p">):</span>
 
             <span class="k">with</span> <span class="p">(</span><span class="nb">open</span><span class="p">(</span><span class="n">cell_pickles</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">index</span><span class="p">],</span> <span class="s2">&quot;rb&quot;</span><span class="p">))</span> <span class="k">as</span> <span class="n">openfile</span><span class="p">:</span>
                 <span class="n">curr_metrics</span> <span class="o">=</span> <span class="n">pickle</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">openfile</span><span class="p">)</span>
 
+            <span class="c1"># Load metrics for AB Compartments setting</span>
             <span class="n">AB_fc_storage</span><span class="p">[</span><span class="n">index</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">curr_metrics</span><span class="p">[</span><span class="s2">&quot;AB_fold_changes&quot;</span><span class="p">]</span>
             <span class="n">AB_cyto_storage</span><span class="p">[</span><span class="n">index</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">curr_metrics</span><span class="p">[</span><span class="s2">&quot;AB_cyto_vol&quot;</span><span class="p">]</span>
             <span class="n">AB_gfp_storage</span><span class="p">[</span><span class="n">index</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">curr_metrics</span><span class="p">[</span><span class="s2">&quot;AB_gfp_intensities&quot;</span><span class="p">]</span>
 
+            <span class="c1"># Load metrics for Angular Compartments setting</span>
             <span class="n">Angular_fc_storage</span><span class="p">[</span><span class="n">index</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">curr_metrics</span><span class="p">[</span><span class="s2">&quot;Ang_fold_changes&quot;</span><span class="p">]</span>
             <span class="n">Angular_cyto_storage</span><span class="p">[</span><span class="n">index</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">curr_metrics</span><span class="p">[</span><span class="s2">&quot;Ang_cyto_vol&quot;</span><span class="p">]</span>
             <span class="n">Angular_gfp_storage</span><span class="p">[</span><span class="n">index</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">curr_metrics</span><span class="p">[</span><span class="s2">&quot;Ang_gfp_intensities&quot;</span><span class="p">]</span>
 
-        <span class="n">num_plots</span> <span class="o">=</span> <span class="mi">6</span>
+            <span class="n">i</span> <span class="o">=</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span>
+            <span class="n">matrix</span> <span class="o">=</span> <span class="n">curr_metrics</span><span class="p">[</span><span class="s2">&quot;voxel_matrix&quot;</span><span class="p">]</span>
+
+            <span class="c1"># cyto_intensities, normalize</span>
+            <span class="n">gfp_i</span> <span class="o">=</span> <span class="n">matrix</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span>
+            <span class="n">gfp_i</span> <span class="o">=</span> <span class="mf">1e6</span> <span class="o">*</span> <span class="n">gfp_i</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">gfp_i</span><span class="p">)</span>  <span class="c1"># change from gfp_i to vol</span>
+            <span class="c1"># Alternatively to get volume: gfp_i = 1e6 * 1 / len(gfp_i)</span>
+            <span class="n">matrix</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">gfp_i</span>
+
+            <span class="c1"># angles, clip to range to fit in bins</span>
+            <span class="n">angles</span> <span class="o">=</span> <span class="n">matrix</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span>
+            <span class="n">angles</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">angles</span><span class="p">,</span> <span class="mf">1e-6</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">)</span>
+            <span class="n">matrix</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">angles</span>
+
+            <span class="c1"># nuclear distances, clip to range to fit in bins</span>
+            <span class="n">nuc_d</span> <span class="o">=</span> <span class="n">matrix</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">]</span>
+            <span class="n">nuc_d</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">nuc_d</span><span class="p">,</span> <span class="mf">1e-6</span><span class="p">,</span> <span class="n">max_distance</span><span class="p">)</span>
+            <span class="n">matrix</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">nuc_d</span>
+
+            <span class="c1"># membrane distances, clip to range to fit in bins</span>
+            <span class="n">mem_d</span> <span class="o">=</span> <span class="n">matrix</span><span class="p">[:,</span> <span class="mi">3</span><span class="p">]</span>
+            <span class="n">mem_d</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">mem_d</span><span class="p">,</span> <span class="mf">1e-6</span><span class="p">,</span> <span class="n">max_distance</span><span class="p">)</span>
+            <span class="n">matrix</span><span class="p">[:,</span> <span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="n">mem_d</span>
+
+            <span class="c1"># 2d bin</span>
+            <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
+                <span class="n">data</span><span class="o">=</span><span class="n">matrix</span><span class="p">,</span>
+                <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;cyto_intensities&quot;</span><span class="p">,</span> <span class="s2">&quot;angles&quot;</span><span class="p">,</span> <span class="s2">&quot;nucleus_dists&quot;</span><span class="p">,</span> <span class="s2">&quot;mem_dists&quot;</span><span class="p">],</span>
+            <span class="p">)</span>
+
+            <span class="c1"># Perform the binning operation</span>
+            <span class="n">df</span><span class="p">[</span><span class="s2">&quot;angle_bins&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">cut</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;angles&quot;</span><span class="p">],</span> <span class="n">bins</span><span class="o">=</span><span class="n">abins</span><span class="p">,</span> <span class="n">labels</span><span class="o">=</span><span class="n">abinlabels</span><span class="p">)</span>
+            <span class="n">df</span><span class="p">[</span><span class="s2">&quot;nucleus_bins&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">cut</span><span class="p">(</span>
+                <span class="n">x</span><span class="o">=</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;nucleus_dists&quot;</span><span class="p">],</span> <span class="n">bins</span><span class="o">=</span><span class="n">dbins</span><span class="p">,</span> <span class="n">labels</span><span class="o">=</span><span class="n">dbinlabels</span>
+            <span class="p">)</span>
+
+            <span class="c1"># Gathering the matrices over all cells</span>
+            <span class="n">cell_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
+                <span class="mi">0</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">anglebins</span> <span class="o">*</span> <span class="n">distancebins</span><span class="p">),</span> <span class="n">columns</span><span class="o">=</span><span class="n">cols</span>
+            <span class="p">)</span>
+            <span class="n">row</span> <span class="o">=</span> <span class="mi">0</span>
+
+            <span class="k">for</span> <span class="n">x_idx</span><span class="p">,</span> <span class="n">x_bin</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">abinlabels</span><span class="p">):</span>
+                <span class="k">for</span> <span class="n">y_idx</span><span class="p">,</span> <span class="n">y_bin</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">dbinlabels</span><span class="p">):</span>
+                    <span class="c1"># temp is used to get the GFP intensity</span>
+                    <span class="n">temp</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span>
+                        <span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;angle_bins&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">x_bin</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;nucleus_bins&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">y_bin</span><span class="p">)</span>
+                    <span class="p">]</span>
+                    <span class="n">cyto_sum</span> <span class="o">=</span> <span class="n">temp</span><span class="p">[</span><span class="s2">&quot;cyto_intensities&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+
+                    <span class="c1"># Store values in appropriate columns</span>
+                    <span class="n">cell_df</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">row</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">x_idx</span>
+                    <span class="n">cell_df</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">row</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">y_idx</span>
+                    <span class="n">cell_df</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">row</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">cyto_sum</span>
+                    <span class="n">row</span> <span class="o">=</span> <span class="n">row</span> <span class="o">+</span> <span class="mi">1</span>
+            <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>  <span class="c1"># create and store the first matrix</span>
+                <span class="n">allcell_df</span> <span class="o">=</span> <span class="n">cell_df</span><span class="o">.</span><span class="n">pivot</span><span class="p">(</span>
+                    <span class="s2">&quot;angle_bins&quot;</span><span class="p">,</span> <span class="s2">&quot;nucleus_bins&quot;</span><span class="p">,</span> <span class="s2">&quot;cyto_intensities&quot;</span>
+                <span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>  <span class="c1"># sum with each additional matrix</span>
+                <span class="n">allcell_df</span> <span class="o">+=</span> <span class="n">cell_df</span><span class="o">.</span><span class="n">pivot</span><span class="p">(</span>
+                    <span class="s2">&quot;angle_bins&quot;</span><span class="p">,</span> <span class="s2">&quot;nucleus_bins&quot;</span><span class="p">,</span> <span class="s2">&quot;cyto_intensities&quot;</span>
+                <span class="p">)</span>
+
+        <span class="c1"># Set parameters for polar heatmap plot</span>
+        <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="mi">6</span><span class="p">),</span> <span class="n">subplot_kw</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">polar</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
+        <span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">max_angle</span><span class="p">,</span> <span class="n">anglebins</span><span class="p">)</span>
+        <span class="n">rad</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">max_distance</span><span class="p">,</span> <span class="n">distancebins</span><span class="p">)</span>
+        <span class="n">r</span><span class="p">,</span> <span class="n">th</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">meshgrid</span><span class="p">(</span><span class="n">rad</span><span class="p">,</span> <span class="n">a</span><span class="p">)</span>
+        <span class="n">z</span> <span class="o">=</span> <span class="n">allcell_df</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span><span class="o">.</span><span class="n">T</span>
+        <span class="n">z</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">flip</span><span class="p">(</span><span class="n">z</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+        <span class="c1"># Create and save the polar heatmap plot</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">pcolormesh</span><span class="p">(</span><span class="n">th</span> <span class="o">-</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">,</span> <span class="n">radius</span> <span class="o">+</span> <span class="n">r</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s2">&quot;plasma&quot;</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s2">&quot;off&quot;</span><span class="p">)</span>
+        <span class="n">path</span> <span class="o">=</span> <span class="n">vis_dir</span> <span class="o">/</span> <span class="p">(</span><span class="n">structure</span> <span class="o">+</span> <span class="s2">&quot;_inv_C.png&quot;</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+
+        <span class="n">num_plots</span> <span class="o">=</span> <span class="mi">6</span>  <span class="c1"># the number of violinplots generated for methods 1 &amp; 2</span>
 
         <span class="c1"># Configure manifest dataframe for storage tracking</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">manifest</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="nb">range</span><span class="p">(</span><span class="n">num_plots</span><span class="p">),</span> <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;filepath&quot;</span><span class="p">])</span>
 
         <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span>
 
+        <span class="c1"># Generating violinplots for the various settings</span>
         <span class="k">for</span> <span class="n">mode</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;AB&quot;</span><span class="p">,</span> <span class="s2">&quot;Angular&quot;</span><span class="p">]:</span>
             <span class="k">for</span> <span class="n">plot</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;FC&quot;</span><span class="p">,</span> <span class="s2">&quot;Cyto&quot;</span><span class="p">,</span> <span class="s2">&quot;GFP&quot;</span><span class="p">]:</span>
 

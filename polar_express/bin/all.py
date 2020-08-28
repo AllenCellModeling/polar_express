@@ -35,7 +35,10 @@ class All:
         ]
 
     def run(
-        self, clean: bool = False, debug: bool = False, **kwargs,
+        self,
+        clean: bool = False,
+        debug: bool = False,
+        **kwargs,
     ):
         """
         Run a flow with your steps.

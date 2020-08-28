@@ -113,7 +113,7 @@ class SelectData(Step):
             N = 1
             selectedcells = cells.sample(n=N, random_state=1)
             no_of_cells = len(selectedcells)
-            Nex = 1
+            Nex = 0
             vizcells = list(selectedcells["CellId"].sample(n=Nex, random_state=1))
 
             print("Starting distributed run")

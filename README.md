@@ -1,6 +1,6 @@
 # polar_express
 
-[![Build Status](https://github.com/WillChen789/polar_express/workflows/Build%20Master/badge.svg)](https://github.com/WillChen789/polar_express/actions)
+[![Build Status](https://github.com/AllenCellModeling/polar_express/workflows/Build%20Master/badge.svg)](https://github.com/AllenCellModeling/polar_express/actions)
 [![Code Coverage](https://codecov.io/gh/WillChen789/polar_express/branch/master/graph/badge.svg)](https://codecov.io/gh/WillChen789/polar_express)
 
 A datastep workflow to analyze GFP intensity of organelles along the Z-dimension to uncover potential polarity along that dimension.

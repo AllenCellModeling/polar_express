@@ -23,7 +23,6 @@ def select_data_manifest(data_dir):
     return output_manifest
 
 
-"""
 @pytest.fixture
 def art_select_data_manifest(data_dir):
     # Initialize step
@@ -33,7 +32,6 @@ def art_select_data_manifest(data_dir):
     output_manifest = step.run(dataset=data_dir, artflag=True)
     output_manifest = dd.read_csv(output_manifest)
     return output_manifest
-"""
 
 
 @pytest.fixture
@@ -85,7 +83,6 @@ def test_selectData(data_dir, select_data_manifest):
     assert all(Path(f).resolve(strict=True) for f in select_data_manifest["filepath"])
 
 
-"""
 def test_selectArtificialData(art_select_data_manifest):
 
     # Run asserts
@@ -103,7 +100,6 @@ def test_selectArtificialData(art_select_data_manifest):
     assert all(
         Path(f).resolve(strict=True) for f in art_select_data_manifest["filepath"]
     )
-"""
 
 
 # AB compartments: hemispheres, Angular compartments: 2

@@ -8,6 +8,7 @@ import pandas as pd
 from tqdm import tqdm
 import numpy as np
 import pickle
+import matplotlib.pyplot as plt
 
 from datastep import Step, log_run_params
 
@@ -91,6 +92,7 @@ class GatherTestVisualize(Step):
 
         structure = curr_metrics["structure"]
 
+        # Set the number of compartments based on the input setting
         if curr_metrics["AB_mode"] == "quadrants":
             num_AB_compartments = 4
         elif curr_metrics["AB_mode"] == "hemispheres":
@@ -112,26 +114,126 @@ class GatherTestVisualize(Step):
         Angular_cyto_storage = np.zeros([no_of_cells, num_angular_compartments])
         Angular_gfp_storage = np.zeros([no_of_cells, num_angular_compartments])
 
+        # Define the angle bins for the polar heatmap
+        anglebins = 16
+        max_angle = np.pi
+        abins = np.linspace(0, max_angle, anglebins + 1)
+        abinlabels = np.arange(anglebins)
+
+        # Define the distance bins for the polar heatmap
+        distancebins = 10
+        max_distance = 4
+        dbins = np.linspace(0, max_distance, distancebins + 1)
+        dbinlabels = np.arange(distancebins)
+
+        radius = max_distance  # can be something else
+
+        cols = ["nucleus_bins", "angle_bins", "cyto_intensities"]
+
+        i = 0
+
+        # Gather the metrics from all of the cells and create visualizations
         for index in tqdm(range(no_of_cells), desc="Generating Visualizations"):
 
             with (open(cell_pickles.iloc[index], "rb")) as openfile:
                 curr_metrics = pickle.load(openfile)
 
+            # Load metrics for AB Compartments setting
             AB_fc_storage[index, :] = curr_metrics["AB_fold_changes"]
             AB_cyto_storage[index, :] = curr_metrics["AB_cyto_vol"]
             AB_gfp_storage[index, :] = curr_metrics["AB_gfp_intensities"]
 
+            # Load metrics for Angular Compartments setting
             Angular_fc_storage[index, :] = curr_metrics["Ang_fold_changes"]
             Angular_cyto_storage[index, :] = curr_metrics["Ang_cyto_vol"]
             Angular_gfp_storage[index, :] = curr_metrics["Ang_gfp_intensities"]
 
-        num_plots = 6
+            i = i + 1
+            matrix = curr_metrics["voxel_matrix"]
+
+            # cyto_intensities, normalize
+            gfp_i = matrix[:, 0]
+            gfp_i = 1e6 * gfp_i / np.sum(gfp_i)  # change from gfp_i to vol
+            # Alternatively to get volume: gfp_i = 1e6 * 1 / len(gfp_i)
+            matrix[:, 0] = gfp_i
+
+            # angles, clip to range to fit in bins
+            angles = matrix[:, 1]
+            angles = np.clip(angles, 1e-6, np.pi)
+            matrix[:, 1] = angles
+
+            # nuclear distances, clip to range to fit in bins
+            nuc_d = matrix[:, 2]
+            nuc_d = np.clip(nuc_d, 1e-6, max_distance)
+            matrix[:, 2] = nuc_d
+
+            # membrane distances, clip to range to fit in bins
+            mem_d = matrix[:, 3]
+            mem_d = np.clip(mem_d, 1e-6, max_distance)
+            matrix[:, 3] = mem_d
+
+            # 2d bin
+            df = pd.DataFrame(
+                data=matrix,
+                columns=["cyto_intensities", "angles", "nucleus_dists", "mem_dists"],
+            )
+
+            # Perform the binning operation
+            df["angle_bins"] = pd.cut(x=df["angles"], bins=abins, labels=abinlabels)
+            df["nucleus_bins"] = pd.cut(
+                x=df["nucleus_dists"], bins=dbins, labels=dbinlabels
+            )
+
+            # Gathering the matrices over all cells
+            cell_df = pd.DataFrame(
+                0, index=np.arange(anglebins * distancebins), columns=cols
+            )
+            row = 0
+
+            for x_idx, x_bin in enumerate(abinlabels):
+                for y_idx, y_bin in enumerate(dbinlabels):
+                    # temp is used to get the GFP intensity
+                    temp = df[
+                        (df["angle_bins"] == x_bin) & (df["nucleus_bins"] == y_bin)
+                    ]
+                    cyto_sum = temp["cyto_intensities"].sum()
+
+                    # Store values in appropriate columns
+                    cell_df.iloc[row][0] = x_idx
+                    cell_df.iloc[row][1] = y_idx
+                    cell_df.iloc[row][2] = cyto_sum
+                    row = row + 1
+            if i == 1:  # create and store the first matrix
+                allcell_df = cell_df.pivot(
+                    "angle_bins", "nucleus_bins", "cyto_intensities"
+                )
+            else:  # sum with each additional matrix
+                allcell_df += cell_df.pivot(
+                    "angle_bins", "nucleus_bins", "cyto_intensities"
+                )
+
+        # Set parameters for polar heatmap plot
+        fig, ax = plt.subplots(figsize=(6, 6), subplot_kw=dict(polar=True))
+        a = np.linspace(0, max_angle, anglebins)
+        rad = np.linspace(0, max_distance, distancebins)
+        r, th = np.meshgrid(rad, a)
+        z = allcell_df.to_numpy().T
+        z = np.flip(z, axis=0)
+
+        # Create and save the polar heatmap plot
+        plt.pcolormesh(th - 0.5 * np.pi, radius + r, z, cmap="plasma")
+        plt.axis("off")
+        path = vis_dir / (structure + "_inv_C.png")
+        plt.savefig(path)
+
+        num_plots = 6  # the number of violinplots generated for methods 1 & 2
 
         # Configure manifest dataframe for storage tracking
         self.manifest = pd.DataFrame(index=range(num_plots), columns=["filepath"])
 
         i = 0
 
+        # Generating violinplots for the various settings
         for mode in ["AB", "Angular"]:
             for plot in ["FC", "Cyto", "GFP"]:
 

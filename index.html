@@ -194,12 +194,80 @@
 <a class="reference external image-reference" href="https://github.com/AllenCellModeling/polar_express/actions"><img alt="Build Status" src="https://github.com/AllenCellModeling/polar_express/workflows/Build%20Master/badge.svg" /></a>
 <a class="reference external image-reference" href="https://AllenCellModeling.github.io/polar_express"><img alt="Documentation" src="https://github.com/AllenCellModeling/polar_express/workflows/Documentation/badge.svg" /></a>
 <a class="reference external image-reference" href="https://codecov.io/gh/AllenCellModeling/polar_express"><img alt="Code Coverage" src="https://codecov.io/gh/AllenCellModeling/polar_express/branch/master/graph/badge.svg" /></a>
-<p>A datastep workflow to analyze GFP intensity of organelles along the Z-dimension to uncover potential polarity along that dimension.</p>
+<p>Polar Express: 3D Image Analysis Pipeline</p>
 <hr class="docutils" />
-<p><em>Edit this README and make it relevant to your project</em></p>
+<p>A DataStep pipeline to process 3D single-cell microscopy images, perform large-scale statistical analysis on GFP intensity distribution for target organelles, and generate summary visualizations for the data.</p>
+<div class="section" id="features">
+<h2>Features<a class="headerlink" href="#features" title="Permalink to this headline">¶</a></h2>
+<p>All steps and functionality in this package can be run as single steps or all together
+by using the command line.</p>
+<p>In general, all commands for this package will follow the format:
+<code class="docutils literal notranslate"><span class="pre">polar_express</span> <span class="pre">{step}</span> <span class="pre">{command}</span></code></p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">step</span></code> is the name of the step, such as “selectdata” or “computecellmetrics”</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">command</span></code> is what you want that step to do, such as “run” or “push”</p></li>
+</ul>
+<p>Example datasets can be accessed <a class="reference external" href="https://open.quiltdata.com/b/allencell">here</a>.</p>
+<div class="section" id="pipeline">
+<h3>Pipeline<a class="headerlink" href="#pipeline" title="Permalink to this headline">¶</a></h3>
+<p>To run the entire pipeline from start to finish you can simply run:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>polar_express all run --dataset <span class="o">{</span>path to dataset<span class="o">}</span>
+</pre></div>
+</div>
+<p>Step specific parameters can additionally be passed by simply appending them.
+For example: the step <code class="docutils literal notranslate"><span class="pre">computecellmetrics</span></code> has a parameter for
+<code class="docutils literal notranslate"><span class="pre">num_angular_compartments</span></code> and this can be set on both the individual step run level and
+also for the entire pipeline with:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>polar_express all run --dataset <span class="o">{</span>path to dataset<span class="o">}</span> --num_angular_compartments <span class="o">{</span>integer<span class="o">}</span>
+</pre></div>
+</div>
+<p>See the <a class="reference external" href="https://allencellmodeling.github.io/polar_express/polar_express.steps.html">steps module in our documentation</a>
+for a full list of parameters for each step</p>
+<div class="section" id="pipeline-config">
+<h4>Pipeline Config<a class="headerlink" href="#pipeline-config" title="Permalink to this headline">¶</a></h4>
+<p>A configuration file can be provided to the underlying <code class="docutils literal notranslate"><span class="pre">datastep</span></code> library that manages
+the data storage and upload of the steps in this workflow.</p>
+<p>The config file should simply be called <code class="docutils literal notranslate"><span class="pre">workflow_config.json</span></code> and be available from
+whichever directory you run <code class="docutils literal notranslate"><span class="pre">polar_express</span></code> from. If this config is not found in the current
+working directory, defaults are selected by the <code class="docutils literal notranslate"><span class="pre">datastep</span></code> package.</p>
+<p>Here is an example of our production config:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;quilt_storage_bucket&quot;</span><span class="p">:</span> <span class="s2">&quot;s3://allencell&quot;</span><span class="p">,</span>
+    <span class="nt">&quot;project_local_staging_dir&quot;</span><span class="p">:</span> <span class="s2">&quot;/allen/aics/modeling/william.chen/results/polar_express&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>You can even additionally attach step-specific configuration in this file by using the
+name of the step like so:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;quilt_storage_bucket&quot;</span><span class="p">:</span> <span class="s2">&quot;s3://example_config_7&quot;</span><span class="p">,</span>
+    <span class="nt">&quot;project_local_staging_dir&quot;</span><span class="p">:</span> <span class="s2">&quot;example/config/7&quot;</span><span class="p">,</span>
+    <span class="nt">&quot;example&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;step_local_staging_dir&quot;</span><span class="p">:</span> <span class="s2">&quot;example/step/local/staging/&quot;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="individual-steps">
+<h3>Individual Steps<a class="headerlink" href="#individual-steps" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">polar_express</span> <span class="pre">selectdata</span> <span class="pre">run</span> <span class="pre">--dataset</span> <span class="pre">{path</span> <span class="pre">to</span> <span class="pre">dataset}</span></code>, Load 3D cell images
+filtered for the target structure or organelle, or alternatively, generate artificial cells.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">polar_express</span> <span class="pre">computecellmetrics</span> <span class="pre">run</span></code>, Compute and save key metrics relating to the
+structure of the cell and GFP distribution.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">polar_express</span> <span class="pre">gathertestvisualize</span> <span class="pre">run</span></code>, Generate visualizations for the compartmentalized
+GFP distributions, including polar heatmaps, and run statistical tests over the entire dataset.</p></li>
+</ul>
+</div>
+</div>
 <div class="section" id="installation">
 <h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
-<p><code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">git+https://github.com/WillChen789/polar_express.git</span></code></p>
+<p><strong>Install Requires:</strong> The python package, <code class="docutils literal notranslate"><span class="pre">numpy</span></code>, must be installed prior to the
+installation of this package: <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">numpy</span></code></p>
+<p><strong>Stable Release:</strong> <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">polar_express</span></code><span class="raw-html-m2r"><br></span>
+<strong>Development Head:</strong> <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">git+https://github.com/AllenCellModeling/polar_express.git</span></code></p>
 </div>
 <div class="section" id="documentation">
 <h2>Documentation<a class="headerlink" href="#documentation" title="Permalink to this headline">¶</a></h2>
@@ -209,10 +277,20 @@
 <div class="section" id="development">
 <h2>Development<a class="headerlink" href="#development" title="Permalink to this headline">¶</a></h2>
 <p>See <a class="reference external" href="CONTRIBUTING.md">CONTRIBUTING.md</a> for information related to developing the code.</p>
+<p>For more details on how this pipeline is constructed please see
+<a class="reference external" href="https://github.com/AllenCellModeling/cookiecutter-stepworkflow">cookiecutter-stepworkflow</a>
+and <a class="reference external" href="https://github.com/AllenCellModeling/datastep">datastep</a>.</p>
+<p>To add new steps to this pipeline, run <code class="docutils literal notranslate"><span class="pre">make_new_step</span></code> and follow the instructions in
+<a class="reference external" href="CONTRIBUTING.md">CONTRIBUTING.md</a></p>
 <div class="section" id="developer-installation">
-<h3>Developer installation<a class="headerlink" href="#developer-installation" title="Permalink to this headline">¶</a></h3>
-<p><code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">-e</span> <span class="pre">.[dev]</span></code></p>
-<p><a href="#id1"><span class="problematic" id="id2">**</span></a><em>Free software: Allen Institute Software License</em>**</p>
+<h3>Developer Installation<a class="headerlink" href="#developer-installation" title="Permalink to this headline">¶</a></h3>
+<p>The following two commands will install the package with dev dependencies in editable
+mode and download all resources required for testing.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip install -e .<span class="o">[</span>dev<span class="o">]</span>
+python scripts/download_test_data.py
+</pre></div>
+</div>
+<p><a href="#id2"><span class="problematic" id="id3">**</span></a><em>Free software: Allen Institute Software License</em>**</p>
 </div>
 </div>
 </div>
